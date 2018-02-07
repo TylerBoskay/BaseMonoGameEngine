@@ -21,7 +21,7 @@ namespace BaseMonoGameEngine
 
         public Player()
         {
-            playerSprite = new Sprite(AssetManager.Instance.LoadRawTexture2D($"{ContentGlobals.SpriteRoot}Will4.png"),
+            playerSprite = new Sprite(AssetManager.Instance.LoadRawTexture2D($"{ContentGlobals.SpriteRoot}Will.png"),
                 new Rectangle(212, 376, 21, 34));
 
             //Effect outline = AssetManager.Instance.LoadAsset<Effect>($"{ContentGlobals.ShaderRoot}Outline");

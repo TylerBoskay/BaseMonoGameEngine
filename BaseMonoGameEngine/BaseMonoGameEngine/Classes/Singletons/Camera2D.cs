@@ -113,7 +113,7 @@ namespace BaseMonoGameEngine
         /// <param name="point">The point to look at.</param>
         public void LookAt(Vector2 point)
         {
-            Position = point - new Vector2(ScreenBounds.Width * TranslationConstant, ScreenBounds.Height * TranslationConstant);
+            Position = point;
         }
 
         #region Transform Manipulations

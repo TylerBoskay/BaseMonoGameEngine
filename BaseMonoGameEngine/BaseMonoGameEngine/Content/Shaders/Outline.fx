@@ -22,7 +22,7 @@ float4 Outline(VertexShaderOutput input) : COLOR
 {
 	float4 color = tex2D(s0, input.TextureCoordinates);
 
-	if (color.a != 1)
+	if (color.a == 0)
 	{
 		float2 coord = input.TextureCoordinates;
 
