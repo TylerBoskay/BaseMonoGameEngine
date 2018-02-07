@@ -1,0 +1,539 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
+
+namespace BaseMonoGameEngine
+{
+    /// <summary>
+    /// Class for global utility functions
+    /// </summary>
+    public static class UtilityGlobals
+    {
+        public static readonly double TwoPI = (Math.PI * 2d);
+        public static readonly double HalfPI = (Math.PI / 2d);
+
+        public static int Clamp(int value, int min, int max) => (value < min) ? min : (value > max) ? max : value;
+        public static float Clamp(float value, float min, float max) => (value < min) ? min : (value > max) ? max : value;
+        public static double Clamp(double value, double min, double max) => (value < min) ? min : (value > max) ? max : value;
+        public static uint Clamp(uint value, uint min, uint max) => (value < min) ? min : (value > max) ? max : value;
+
+        public static int Wrap(int value, int min, int max) => (value < min) ? max : (value > max) ? min : value;
+        public static float Wrap(float value, float min, float max) => (value < min) ? max : (value > max) ? min : value;
+        public static double Wrap(double value, double min, double max) => (value < min) ? max : (value > max) ? min : value;
+
+        public static T Min<T>(T val1, T val2) where T : IComparable => (val1.CompareTo(val2) < 0) ? val1 : (val2.CompareTo(val1) < 0) ? val2 : val1;
+        public static T Max<T>(T val1, T val2) where T : IComparable => (val1.CompareTo(val2) > 0) ? val1 : (val2.CompareTo(val1) > 0) ? val2 : val1;
+
+        public static float ToDegrees(float radians) => Microsoft.Xna.Framework.MathHelper.ToDegrees(radians);
+        public static float ToRadians(float degrees) => Microsoft.Xna.Framework.MathHelper.ToRadians(degrees);
+
+        public static double ToDegrees(double radians) => (radians * (180d / Math.PI));
+        public static double ToRadians(double degrees) => (degrees * (Math.PI / 180d));
+
+        public static int Lerp(int value1, int value2, float amount) => value1 + (int)((value2 - value1) * amount);
+        public static float Lerp(float value1, float value2, float amount) => value1 + ((value2 - value1) * amount);
+        public static double Lerp(double value1, double value2, float amount) => value1 + ((value2 - value1) * amount);
+
+        public static double LerpPrecise(double value1, double value2, float amount) => ((1 - amount) * value1) + (value2 * amount);
+        public static float LerpPrecise(float value1, float value2, float amount) => ((1 - amount) * value1) + (value2 * amount);
+        public static int LerpPrecise(int value1, int value2, float amount) => (int)(((1 - amount) * value1) + (value2 * amount));
+
+        /// <summary>
+        /// Bounces a value between 0 and a max value.
+        /// </summary>
+        /// <param name="time">The time value.</param>
+        /// <param name="maxVal">The max value.</param>
+        /// <returns>A double with a value between 0 and <paramref name="maxVal"/>.</returns>
+        public static double PingPong(double time, double maxVal)
+        {
+            double lengthTimesTwo = maxVal * 2d;
+            double timeMod = time % lengthTimesTwo;
+
+            if (timeMod >= 0 && timeMod < maxVal)
+                return timeMod;
+            else
+                return lengthTimesTwo - timeMod;
+        }
+
+        /// <summary>
+        /// Bounces a value between 0 and a max value.
+        /// </summary>
+        /// <param name="time">The time value.</param>
+        /// <param name="maxVal">The max value.</param>
+        /// <returns>A float with a value between 0 and <paramref name="maxVal"/>.</returns>
+        public static float PingPong(double time, float maxVal) => (float)PingPong(time, (double)maxVal);
+
+        /// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <remarks>This is a more verbose but readable version of MonoGame's Hermite.
+        /// It returns a double rather than a float.</remarks>
+        /// <param name="value1">The startpoint of the curve.</param>
+        /// <param name="tangent1">Initial tangent; the direction and speed to how the curve leaves the startpoint.</param>
+        /// <param name="value2">The endpoint of the curve.</param>
+        /// <param name="tangent2">End tangent; the direction and speed to how the curve leaves the endpoint.</param>
+        /// <param name="amount">Weighting factor; between 0 and 1.</param>
+        /// <returns>A double representing the result of the Hermite spline interpolation.</returns>
+        public static double Hermite(float value1, float tangent1, float value2, float tangent2, float amount)
+        {
+            /*Hermite basis functions:
+             * s = amount (or time)
+             * h1 = 2s^3 - 3s^2 + 1
+             * h2 = -2s^3 + 3s^2
+             * h3 = s^3 - 2s^2 + s
+             * h4 = s^3 - s^2
+             * 
+             * The values are multiplied by the basis functions and added together like so:
+             * result = (h1 * val1) + (h2 * val2) + (h3 * tan1) + (h4 * tan2);
+            */
+
+            double val1 = value1;
+            double val2 = value2;
+            double tan1 = tangent1;
+            double tan2 = tangent2;
+            double amt = amount;
+            double result = 0d;
+
+            //Define cube and squares
+            double amtCubed = amt * amt * amt;
+            double amtSquared = amt * amt;
+
+            //If 0, return the initial value
+            if (amount == 0f)
+            {
+                result = value1;
+            }
+            //If 1, return the 
+            else if (amount == 1f)
+            {
+                result = value2;
+            }
+            else
+            {
+                //Define hermite functions
+                //double h1 = (2 * amtCubed) - (3 * amtSquared) + 1;
+                //double h2 = (-2 * amtCubed) + (3 * amtSquared);
+                //double h3 = amtCubed - (2 * amtSquared) + amt;
+                //double h4 = amtCubed - amtSquared;
+
+                //Multiply the results
+                //result = (h1 * val1) + (h2 * val2) + (h3 * tan1) + (h4 * tan2);
+
+                //Condensed
+                result =
+                    (((2 * val1) - (2 * val2) + tan2 + tan1) * amtCubed) +
+                    (((3 * val2) - (3 * val1) - (2 * tan1) - tan2) * amtSquared) +
+                    (tan1 * amt) + val1;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Interpolates a value by weighted average.
+        /// The closer the value gets to the target, the slower it moves.
+        /// </summary>
+        /// <param name="curVal">The current value.</param>
+        /// <param name="targetVal">The target value.</param>
+        /// <param name="slowdownFactor">The slowdown factor. The higher this is, the slower <paramref name="curVal"/> will approach <paramref name="targetVal"/>.</param>
+        /// <returns>A double representing the weighted average interpolation.</returns>
+        public static double WeightedAverageInterpolation(double curVal, double targetVal, double slowdownFactor)
+        {
+            //Avoid division by 0
+            if (slowdownFactor == 0)
+            {
+                return targetVal;
+            }
+
+            return ((curVal * (slowdownFactor - 1)) + targetVal) / slowdownFactor;
+        }
+
+        /// <summary>
+        /// Swaps two references of the same Type.
+        /// </summary>
+        /// <typeparam name="T">The Type of the objects to swap.</typeparam>
+        /// <param name="obj1">The first object to swap.</param>
+        /// <param name="obj2">The second object to swap.</param>
+        public static void Swap<T>(ref T obj1, ref T obj2)
+        {
+            T temp = obj1;
+            obj1 = obj2;
+            obj2 = temp;
+        }
+
+        /// <summary>
+        /// Gets the tangent angle between two Vector2s in radians. This value is between -π and π. 
+        /// </summary>
+        /// <param name="vec1">The first vector2.</param>
+        /// <param name="vec2">The second vector.</param>
+        /// <returns>A double representing the tangent angle between the two vectors, in radians.</returns>
+        public static double TangentAngle(Vector2 vec1, Vector2 vec2) => Math.Atan2(vec2.Y - vec1.Y, vec2.X - vec1.X);
+
+        /// <summary>
+        /// Gets the cosign angle between two Vector2s in radians.
+        /// </summary>
+        /// <param name="vec1">The first vector.</param>
+        /// <param name="vec2">The second vector.</param>
+        /// <returns>A double representing the cosign angle between the two vectors, in radians.</returns>
+        public static double CosignAngle(Vector2 vec1, Vector2 vec2)
+        {
+            //a · b = (a.X * b.X) + (a.Y * b.Y) = ||a|| * ||b|| * cos(θ)
+            double dotProduct = Vector2.Dot(vec1, vec2);
+            double mag1 = vec1.Length();
+            double mag2 = vec2.Length();
+
+            double magMult = mag1 * mag2;
+
+            double div = dotProduct / magMult;
+
+            double angleRadians = Math.Acos(div);
+            
+            return angleRadians;
+        }
+
+        /// <summary>
+        /// Gets the cosign angle between two Vector2s in degrees.
+        /// </summary>
+        /// <param name="vec1">The first vector.</param>
+        /// <param name="vec2">The second vector.</param>
+        /// <returns>A double representing the cosign angle between the two vectors, in degrees.</returns>
+        public static double CosignAngleDegrees(Vector2 vec1, Vector2 vec2) => ToDegrees(CosignAngle(vec1, vec2));
+
+        /// <summary>
+        /// Obtains the 2D cross product result of two Vector2s.
+        /// </summary>
+        /// <param name="vector1">The first vector.</param>
+        /// <param name="vector2">The second vector.</param>
+        /// <returns>A float representing the 2D cross product result between the two Vectors.</returns>
+        public static double Cross(Vector2 vector1, Vector2 vector2)
+        {
+            //a x b = ((a.y * b.z) - (a.z * b.y), (a.z * b.x) - (a.x * b.z), (a.x * b.y) - (a.y * b.x))
+            //The Z component is the only one that remains since we're dealing with Vector2s
+            return (vector1.X * vector2.Y) - (vector1.Y * vector2.X);
+        }
+
+        /// <summary>
+        /// Gets the sine angle between two Vector2s in radians.
+        /// </summary>
+        /// <param name="vec1">The first vector.</param>
+        /// <param name="vec2">The second vector.</param>
+        /// <returns>A double representing the sine angle between the two vectors, in radians.</returns>
+        public static double SineAngle(Vector2 vec1, Vector2 vec2)
+        {
+            //||a x b|| = ||a|| * ||b|| * sin(θ)
+            double crossMag = Cross(vec1, vec2);
+
+            double mag1 = vec1.Length();
+            double mag2 = vec2.Length();
+
+            double magMult = mag1 * mag2;
+
+            double div = crossMag / magMult;
+
+            double angleRadians = Math.Asin(div);
+
+            return angleRadians;
+        }
+
+        /// <summary>
+        /// Finds a point around a circle at a particular angle.
+        /// </summary>
+        /// <param name="circle">The Circle.</param>
+        /// <param name="angle">The angle of the point.</param>
+        /// <param name="angleInDegrees">Whether the angle passed in is in degrees or not.</param>
+        /// <returns>A Vector2 with the X and Y components at the location around the circle.</returns>
+        public static Vector2 GetPointAroundCircle(Circle circle, double angle, bool angleInDegrees)
+        {
+            //If the angle is in degrees, convert it to radians
+            if (angleInDegrees == true)
+            {
+                angle = ToRadians(angle);
+            }
+
+            return circle.GetPointAround(angle);
+        }
+
+        /// <summary>
+        /// Tests a random condition with two values.
+        /// This is commonly used when calculating a total percentage of something happening.
+        /// For example, this is used when testing whether a move will inflict a Status Effect on a BattleEntity.
+        /// <para>Two values are multiplied by each other then divided by <see cref="GeneralGlobals.RandomConditionVal"/>.
+        /// A random value is then rolled; if it's less than the result, it returns true. This works for any non-negative values.</para>
+        /// </summary>
+        /// <param name="value1">The first value to test with, representing a percentage with a number from 0 to 100+.</param>
+        /// <param name="value2">The second value to test with, representing a percentage with a number from 0 to 100+.</param>
+        /// <returns>true if the RNG value is less than a calculated percentage result, otherwise false.</returns>
+        public static bool TestRandomCondition(double value1, double value2)
+        {
+            double value = GeneralGlobals.GenerateRandomDouble();
+
+            double percentageResult = ((value1 * value2) / (double)GeneralGlobals.RandomConditionVal);
+
+            return (value < percentageResult);
+        }
+
+        /// <summary>
+        /// Tests a random condition with one value.
+        /// </summary>
+        /// <param name="value">The value to test, representing a percentage with a number from 0 to 100+.</param>
+        /// <returns>true if the RNG value is less than a calculated percentage result, otherwise false.</returns>
+        public static bool TestRandomCondition(double value)
+        {
+            return TestRandomCondition(value, (double)GeneralGlobals.RandomConditionVal);
+        }
+
+        /// <summary>
+        /// Tests a random condition with two values. An int overload.
+        /// This is commonly used when calculating a total percentage of something happening.
+        /// <para>Two values are multiplied by each other then divided by <see cref="GeneralGlobals.RandomConditionVal"/>.
+        /// A random value is then rolled; if it's less than the result, it returns true. This works for any non-negative values.</para>
+        /// </summary>
+        /// <param name="value1">The first value to test with, representing a percentage with a number from 0 to 100+.</param>
+        /// <param name="value2">The second value to test with, representing a percentage with a number from 0 to 100+.</param>
+        /// <returns>true if the RNG value is less than a calculated percentage result, otherwise false.</returns>
+        public static bool TestRandomCondition(int value1, int value2)
+        {
+            int value = GeneralGlobals.GenerateRandomInt();
+
+            int percentageResult = ((value1 * value2) / GeneralGlobals.RandomConditionVal);
+
+            return (value < percentageResult);
+        }
+
+        /// <summary>
+        /// Tests a random condition with one value. An int overload.
+        /// </summary>
+        /// <param name="value">The value to test, representing a percentage with a number from 0 to 100+.</param>
+        /// <returns>true if the RNG value is less than a calculated percentage result, otherwise false.</returns>
+        public static bool TestRandomCondition(int value)
+        {
+            return TestRandomCondition(value, GeneralGlobals.RandomConditionVal);
+        }
+
+        /// <summary>
+        /// Chooses a random index in a list of percentages
+        /// </summary>
+        /// <param name="percentages">The container of percentages, each with positive values, with the sum adding up to 1</param>
+        /// <returns>The index in the container of percentages that was chosen</returns>
+        public static int ChoosePercentage(IList<double> percentages)
+        {
+            double randomVal = GeneralGlobals.Randomizer.NextDouble();
+            double value = 0d;
+
+            for (int i = 0; i < percentages.Count; i++)
+            {
+                value += percentages[i];
+                if (value > randomVal)
+                {
+                    return i;
+                }
+            }
+
+            //Return the last one if it goes through
+            return percentages.Count - 1;
+        }
+
+        public static T[] GetEnumValues<T>()
+        {
+            return (T[])Enum.GetValues(typeof(T));
+        }
+
+        /// <summary>
+        /// Indicates whether an <see cref="IList{T}"/> is null or empty.
+        /// </summary>
+        /// <typeparam name="T">The Type of the elements in the IList.</typeparam>
+        /// <param name="iList">The IList.</param>
+        /// <returns>true if <paramref name="iList"/> is null or empty, otherwise false.</returns>
+        public static bool IListIsNullOrEmpty<T>(IList<T> iList)
+        {
+            return (iList == null || iList.Count == 0);
+        }
+
+        #region Flag Check Utilities
+
+        /* Adding flags: flag1 |= flag2            ; 10 | 01 = 11
+         * Checking flags: (flag1 & flag2) != 0    ; 11 & 10 = 10
+         * Removing flags: (flag1 & (~flag2))      ; 1111 & (~0010) = 1111 & 1101 = 1101
+         * */
+
+        #endregion
+
+        /// <summary>
+        /// Subtracts a float from another float and divides the result by a dividing factor.
+        /// </summary>
+        /// <param name="value1">The float value which has its value subtracted by <paramref name="value2"/>.</param>
+        /// <param name="value2">The float value used in the subtraction.</param>
+        /// <returns>The difference between <paramref name="value2"/> and <paramref name="value1"/> divided by the
+        /// <paramref name="dividingFactor"/>.
+        /// If <paramref name="dividingFactor"/> is 0, then 0.
+        /// </returns>
+        public static float DifferenceDivided(float value1, float value2, float dividingFactor)
+        {
+            //Return 0 if we're trying to divide by 0
+            if (dividingFactor == 0f)
+            {
+                return 0f;
+            }
+
+            //Return the difference over the division
+            float diff = (value1 - value2);
+            return diff / dividingFactor;
+        }
+
+        /// <summary>
+        /// Creates a Rectangle from two Vector2s representing the position and scale of the Rectangle.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="scale"></param>
+        /// <returns></returns>
+        public static Rectangle CreateRect(Vector2 position, Vector2 scale)
+        {
+            return new Rectangle((int)position.X, (int)position.Y, (int)scale.X, (int)scale.Y);
+        }
+
+        #region Line Intersection
+
+        /// <summary>
+        /// A class for checking Line intersection.
+        /// </summary>
+        public static class LineIntersection
+        {
+            private const double CloseToZero = .00001d;
+
+            /// <summary>
+            /// Checks the overlap between two Lines. If no overlap exists, returns null.
+            /// </summary>
+            /// <param name="line1">The first Line to test overlap with.</param>
+            /// <param name="line2">The second Line to test overlap with.</param>
+            /// <remarks>Code obtained from here: http://stackoverflow.com/q/22456517 and modified to handle division by 0.</remarks>
+            /// <returns>A Line containing the overlap points between the two lines. null if no overlap exists.</returns>
+            public static Line? GetLineOverlap(Line line1, Line line2)
+            {
+                bool undefinedSlope = false;
+                double xDiff = (line1.P2.X - line1.P1.X);
+                if (xDiff == 0f) undefinedSlope = true;
+
+                double slope = 0d;
+                if (undefinedSlope == false) slope = (line1.P2.Y - line1.P1.Y) / (line1.P2.X - line1.P1.X);
+
+                bool isHorizontal = (undefinedSlope == true) ? false : AlmostZero(slope);
+                bool isDescending = slope < 0 && !isHorizontal;
+                double invertY = isDescending || isHorizontal ? -1 : 1;
+
+                Point min1 = new Point(Math.Min(line1.P1.X, line1.P2.X), (int)Math.Min(line1.P1.Y * invertY, line1.P2.Y * invertY));
+                Point max1 = new Point(Math.Max(line1.P1.X, line1.P2.X), (int)Math.Max(line1.P1.Y * invertY, line1.P2.Y * invertY));
+
+                Point min2 = new Point(Math.Min(line2.P1.X, line2.P2.X), (int)Math.Min(line2.P1.Y * invertY, line2.P2.Y * invertY));
+                Point max2 = new Point(Math.Max(line2.P1.X, line2.P2.X), (int)Math.Max(line2.P1.Y * invertY, line2.P2.Y * invertY));
+
+                Point minIntersection;
+                if (isDescending)
+                    minIntersection = new Point(Math.Max(min1.X, min2.X), (int)Math.Min(min1.Y * invertY, min2.Y * invertY));
+                else
+                    minIntersection = new Point(Math.Max(min1.X, min2.X), (int)Math.Max(min1.Y * invertY, min2.Y * invertY));
+
+                Point maxIntersection;
+                if (isDescending)
+                    maxIntersection = new Point(Math.Min(max1.X, max2.X), (int)Math.Max(max1.Y * invertY, max2.Y * invertY));
+                else
+                    maxIntersection = new Point(Math.Min(max1.X, max2.X), (int)Math.Min(max1.Y * invertY, max2.Y * invertY));
+
+                bool intersect = minIntersection.X <= maxIntersection.X &&
+                                 (!isDescending && minIntersection.Y <= maxIntersection.Y ||
+                                   isDescending && minIntersection.Y >= maxIntersection.Y);
+
+                if (!intersect)
+                    return null;
+
+                return new Line(minIntersection, maxIntersection);
+            }
+
+            /// <summary>
+            /// Determines if two Lines intersect.
+            /// </summary>
+            /// <param name="line1">The first Line to test intersection with.</param>
+            /// <param name="line2">The second Line to test intersection with.</param>
+            /// <remarks>Code obtained from here: http://gamedev.stackexchange.com/a/26022 </remarks>
+            /// <returns>true if the Lines intersect each other, otherwise false.</returns>
+            public static bool Intersects(Line line1, Line line2)
+            {
+                //Find if a Line intersects:
+                /*Formula:
+                 *Pa = P1+Ua(P2-P1)
+                 *Pb = P3+Ub(P4-P3)
+                 * 0 for U = start, 1 = end
+                 * Pa=Pb
+                 * P1+Ua(P2-P1)=P3+Ub(P4-P3)
+                 * X-Y Terms:
+                 * x1+Ua(x2-x1)=x3+Ub(x4-x3)
+                 * y1+Ua(y2-y1)=y3+Ub(y4-y3)
+                 * 
+                 * Solve for U:
+                 * Ua=((x4-x3)(y1-y3)-(y4-y3)(x1-x3))/((y4-y3)(x2-x1)-(x4-x3)(y2-y1))
+                 * Ub=((x2-x1)(y1-y3)-(y2-y1)(x1-x3))/((y4-y3)(x2-x1)-(x4-x3)(y2-y1))
+                 * 
+                 * Solve denominator first: if 0, then the lines are parallel and don't intersect
+                 * If both numerators are 0, then the two lines are coincident (lie on top of each other, but may or may not overlap)
+                 * 
+                 * Check:
+                 * 0<=Ua<= 1
+                 * 0<=Ub<=1
+                 * 
+                 * If so, the lines intersect. To find point of intersection:
+                 * x=x1+Ua(x2-x1)
+                 * y=y1+Ua(y2-y1)
+                */
+
+                Point a = line1.P1;
+                Point b = line1.P2;
+                Point c = line2.P1;
+                Point d = line2.P2;
+
+                //numerator1 = Ua, numerator2 = Ub
+                float denominator = ((d.Y - c.Y) * (b.X - a.X)) - ((d.X - c.X) * (b.Y - a.Y));
+                float numerator1 = ((d.X - c.X) * (a.Y - c.Y)) - ((d.Y - c.Y) * (a.X - c.X));
+                float numerator2 = ((b.X - a.X) * (a.Y - c.Y)) - ((b.Y - a.Y) * (a.X - c.X));
+
+                //Check for parallel - check for a close to 0 value since these are floats
+                if (Math.Abs(denominator) <= CloseToZero)
+                {
+                    //Parallel; check if they are coincident
+
+                    //Check if they're coincident - if so, make sure they don't overlap
+                    if (Math.Abs(numerator1) <= CloseToZero && Math.Abs(numerator2) <= CloseToZero)
+                    {
+                        //Check for an overlap
+                        Line? overlap = GetLineOverlap(line1, line2);
+
+                        return (overlap != null);
+                    }
+                    //Not coincident, no intersection
+                    else
+                    {
+                        return false;
+                    }
+                }
+
+                float r = numerator1 / denominator;
+                float s = numerator2 / denominator;
+
+                return ((r >= 0 && r <= 1) && (s >= 0 && s <= 1));
+            }
+
+            private static bool AlmostEqualTo(double value1, double value2)
+            {
+                return Math.Abs(value1 - value2) <= CloseToZero;
+            }
+
+            private static bool AlmostZero(double value)
+            {
+                return Math.Abs(value) <= CloseToZero;
+            }
+        }
+
+        #endregion
+    }
+}
