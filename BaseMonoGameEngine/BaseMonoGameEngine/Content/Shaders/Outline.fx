@@ -14,30 +14,31 @@ struct VertexShaderOutput
 	float2 TextureCoordinates : TEXCOORD0;
 };
 
-SamplerState s0 { AddressU = Clamp; AddressV = Clamp; };
-float2 texelSize;
+SamplerState s0;
+float2 sheetSize;
 float4 outlineColor;
 
 float4 Outline(VertexShaderOutput input) : COLOR
 {
-	float4 color = tex2D(s0, input.TextureCoordinates);
+	float4 currentPixel = tex2D(s0, input.TextureCoordinates) * input.Color;
+	float4 output = currentPixel;
 
-	if (color.a == 0)
+	if (currentPixel.a == 0.0f)
 	{
-		float2 coord = input.TextureCoordinates;
+		float2 uvPix = float2(1 / sheetSize.x, 1 / sheetSize.y);
 
-		float4 colorUp = tex2D(s0, coord - float2(0, texelSize.y));
-		float4 colorDown = tex2D(s0, coord + float2(0, texelSize.y));
-		float4 colorLeft = tex2D(s0, coord - float2(texelSize.x, 0));
-		float4 colorRight = tex2D(s0, coord + float2(texelSize.x, 0));
+		float4 colorRight = tex2D(s0, input.TextureCoordinates + float2(uvPix.x, 0));
+		float4 colorDown = tex2D(s0, input.TextureCoordinates + float2(0, uvPix.y));
+		float4 colorUp = tex2D(s0, input.TextureCoordinates + float2(0, -uvPix.y));
+		float4 colorLeft = tex2D(s0, input.TextureCoordinates + float2(-uvPix.x, 0));
 
-		if (colorUp.a != 0 || colorDown.a != 0 || colorLeft.a != 0 || colorRight.a != 0)
+		if (colorRight.a > 0 || colorDown.a > 0 || colorLeft.a > 0 || colorUp.a > 0)
 		{
-			color.rgba = outlineColor;
+			output = outlineColor;
 		}
 	}
 
-	return color;
+	return output;
 }
 
 technique BasicColorDrawing

@@ -148,7 +148,7 @@ namespace BaseMonoGameEngine
             {
                 RenderBatch curRenderBatch = RenderBatches[i];
 
-                DrawBatch(spriteBatch, SpriteSortMode.FrontToBack, BlendState.AlphaBlend, null, curRenderBatch.AppliedEffect,
+                DrawBatch(spriteBatch, SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, curRenderBatch.AppliedEffect,
                     Camera2D.Instance.TransformMatrix, curRenderBatch.Renderers);
             }
 
