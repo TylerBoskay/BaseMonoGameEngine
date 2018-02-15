@@ -230,7 +230,7 @@ namespace BaseMonoGameEngine
         /// <param name="button">The button index.</param>
         /// <param name="joystickState">The JoystickState to check.</param>
         /// <returns>true if the button was just pressed, otherwise false.</returns>
-        public static bool GetButtonDown(int index, int button, ref JoystickState joystickState)
+        public static bool GetButtonDown(int index, int button, in JoystickState joystickState)
         {
             //Check if this joystick has this button available
             if (HasButton(index, button) == false || joystickState.IsConnected == false)
@@ -269,7 +269,7 @@ namespace BaseMonoGameEngine
         /// <param name="button">The button index.</param>
         /// <param name="joystickState">The JoystickState to check.</param>
         /// <returns>true if the button was just released, otherwise false.</returns>
-        public static bool GetButtonUp(int index, int button, ref JoystickState joystickState)
+        public static bool GetButtonUp(int index, int button, in JoystickState joystickState)
         {
             //Check if this joystick has this button available
             if (HasButton(index, button) == false || joystickState.IsConnected == false)

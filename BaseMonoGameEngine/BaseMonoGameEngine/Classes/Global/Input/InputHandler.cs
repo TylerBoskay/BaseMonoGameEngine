@@ -87,7 +87,7 @@ namespace BaseMonoGameEngine
 
             InputMapValue val = InputMappings[action];
 
-            return GetAxisForInputType(playerIndex, ref val);
+            return GetAxisForInputType(playerIndex, val);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace BaseMonoGameEngine
 
             InputMapValue val = InputMappings[action];
 
-            return GetButtonForInputType(playerIndex, ref val);
+            return GetButtonForInputType(playerIndex, val);
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace BaseMonoGameEngine
 
             InputMapValue val = InputMappings[action];
 
-            return GetButtonDownForInputType(playerIndex, ref val);
+            return GetButtonDownForInputType(playerIndex, val);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace BaseMonoGameEngine
 
             InputMapValue val = InputMappings[action];
 
-            return GetButtonUpForInputType(playerIndex, ref val);
+            return GetButtonUpForInputType(playerIndex, val);
         }
 
         /// <summary>
@@ -150,18 +150,18 @@ namespace BaseMonoGameEngine
         /// <param name="playerIndex">The player index.</param>
         /// <param name="inputMapValue">The input mapping value.</param>
         /// <returns>A float from -1 to 1 representing the axis value.</returns>
-        private float GetAxisForInputType(int playerIndex, ref InputMapValue buttonMapValue)
+        private float GetAxisForInputType(int playerIndex, in InputMapValue buttonMapValue)
         {
             if (InputType == InputTypes.Keyboard)
             {
-                bool pressed = KeyboardInput.GetKey((Keys)buttonMapValue.InputVal, ref KBState);
+                bool pressed = KeyboardInput.GetKey((Keys)buttonMapValue.InputVal, KBState);
                 float axisVal = 0f;
 
                 //Check if there's a negative value if this isn't pressed
                 if (pressed == false)
                 {
                     //If the negative value is pressed, set the axis value to -1
-                    if (buttonMapValue.NegativeInputVal.HasValue == true && KeyboardInput.GetKey((Keys)buttonMapValue.NegativeInputVal, ref KBState) == true)
+                    if (buttonMapValue.NegativeInputVal.HasValue == true && KeyboardInput.GetKey((Keys)buttonMapValue.NegativeInputVal, KBState) == true)
                     {
                         axisVal = -1f;
                     }
@@ -185,11 +185,11 @@ namespace BaseMonoGameEngine
         /// <param name="playerIndex">The player index.</param>
         /// <param name="inputMapValue">The input mapping value.</param>
         /// <returns>true if so, otherwise false.</returns>
-        private bool GetButtonForInputType(int playerIndex, ref InputMapValue buttonMapValue)
+        private bool GetButtonForInputType(int playerIndex, in InputMapValue buttonMapValue)
         {
             if (InputType == InputTypes.Keyboard)
             {
-                return KeyboardInput.GetKey((Keys)buttonMapValue.InputVal, ref KBState);
+                return KeyboardInput.GetKey((Keys)buttonMapValue.InputVal, KBState);
             }
             else
             {
@@ -203,15 +203,15 @@ namespace BaseMonoGameEngine
         /// <param name="playerIndex">The player index.</param>
         /// <param name="inputMapValue">The input mapping value.</param>
         /// <returns>true if so, otherwise false.</returns>
-        private bool GetButtonDownForInputType(int playerIndex, ref InputMapValue buttonMapValue)
+        private bool GetButtonDownForInputType(int playerIndex, in InputMapValue buttonMapValue)
         {
             if (InputType == InputTypes.Keyboard)
             {
-                return KeyboardInput.GetKeyDown((Keys)buttonMapValue.InputVal, ref KBState);
+                return KeyboardInput.GetKeyDown((Keys)buttonMapValue.InputVal, KBState);
             }
             else
             {
-                return JoystickInput.GetButtonDown(playerIndex, buttonMapValue.InputVal, ref JSState);
+                return JoystickInput.GetButtonDown(playerIndex, buttonMapValue.InputVal, JSState);
             }
         }
 
@@ -221,15 +221,15 @@ namespace BaseMonoGameEngine
         /// <param name="playerIndex">The player index.</param>
         /// <param name="inputMapValue">The input mapping value.</param>
         /// <returns>true if so, otherwise false.</returns>
-        private bool GetButtonUpForInputType(int playerIndex, ref InputMapValue inputMapValue)
+        private bool GetButtonUpForInputType(int playerIndex, in InputMapValue inputMapValue)
         {
             if (InputType == InputTypes.Keyboard)
             {
-                return KeyboardInput.GetKeyUp((Keys)inputMapValue.InputVal, ref KBState);
+                return KeyboardInput.GetKeyUp((Keys)inputMapValue.InputVal, KBState);
             }
             else
             {
-                return JoystickInput.GetButtonUp(playerIndex, inputMapValue.InputVal, ref JSState);
+                return JoystickInput.GetButtonUp(playerIndex, inputMapValue.InputVal, JSState);
             }
         }
 

@@ -75,12 +75,12 @@
     <Compile Include="Classes\Global\FPSCounter.cs" />
     <Compile Include="Classes\Global\GameScene.cs" />
     <Compile Include="Classes\Global\GeneralGlobals.cs" />
-    <Compile Include="Classes\Global\Input.cs" />
-    <Compile Include="Classes\Global\InputHandler.cs" />
+    <Compile Include="Classes\Global\Input\Input.cs" />
+    <Compile Include="Classes\Global\Input\InputHandler.cs" />
     <Compile Include="Classes\Interfaces\IEnableable.cs" />
-    <Compile Include="Classes\Global\KeyboardInput.cs" />
-    <Compile Include="Classes\Global\InputGlobals.cs" />
-    <Compile Include="Classes\Global\JoystickInput.cs" />
+    <Compile Include="Classes\Global\Input\KeyboardInput.cs" />
+    <Compile Include="Classes\Global\Input\InputGlobals.cs" />
+    <Compile Include="Classes\Global\Input\JoystickInput.cs" />
     <Compile Include="Classes\Global\RenderingGlobals.cs" />
     <Compile Include="Classes\Global\SceneObject.cs" />
     <Compile Include="Classes\Global\Time.cs" />

@@ -194,7 +194,7 @@ namespace BaseMonoGameEngine
         {
             #if DEBUG
                 //Toggle debug
-                if (KeyboardInput.GetKey(Keys.LeftControl, ref DebugKeyboard) && KeyboardInput.GetKeyDown(Keys.D, ref DebugKeyboard))
+                if (KeyboardInput.GetKey(Keys.LeftControl, DebugKeyboard) && KeyboardInput.GetKeyDown(Keys.D, DebugKeyboard))
                 {
                     ToggleDebug();
                 }
@@ -215,29 +215,29 @@ namespace BaseMonoGameEngine
             AdvanceNextFrame = false;
 
             //Debug controls
-            if (KeyboardInput.GetKey(Keys.LeftControl, ref DebugKeyboard))
+            if (KeyboardInput.GetKey(Keys.LeftControl, DebugKeyboard))
             {
                 //Toggle pause
-                if (KeyboardInput.GetKeyDown(Keys.P, ref DebugKeyboard))
+                if (KeyboardInput.GetKeyDown(Keys.P, DebugKeyboard))
                 {
                     DebugPaused = !DebugPaused;
                 }
                 //Toggle frame advance
-                else if (KeyboardInput.GetKeyDown(Keys.OemSemicolon, ref DebugKeyboard))
+                else if (KeyboardInput.GetKeyDown(Keys.OemSemicolon, DebugKeyboard))
                 {
                     AdvanceNextFrame = true;
                 }
                 //Toggle logs
-                else if (KeyboardInput.GetKeyDown(Keys.L, ref DebugKeyboard))
+                else if (KeyboardInput.GetKeyDown(Keys.L, DebugKeyboard))
                 {
                     ToggleLogs();
                 }
                 //Take screenshot
-                else if (KeyboardInput.GetKeyDown(Keys.S, ref DebugKeyboard))
+                else if (KeyboardInput.GetKeyDown(Keys.S, DebugKeyboard))
                 {
                     TakeScreenshot();
                 }
-                else if (KeyboardInput.GetKeyDown(Keys.M, ref DebugKeyboard))
+                else if (KeyboardInput.GetKeyDown(Keys.M, DebugKeyboard))
                 {
                     //Log dump
                     DumpLogs();
@@ -245,9 +245,9 @@ namespace BaseMonoGameEngine
             }
 
             //Camera controls
-            if (KeyboardInput.GetKey(Keys.LeftShift, ref DebugKeyboard))
+            if (KeyboardInput.GetKey(Keys.LeftShift, DebugKeyboard))
             {
-                if (KeyboardInput.GetKeyDown(Keys.Space, ref DebugKeyboard))
+                if (KeyboardInput.GetKeyDown(Keys.Space, DebugKeyboard))
                 {
                     //Reset camera coordinates
                     Camera2D.Instance.SetTranslation(Vector2.Zero);
@@ -261,18 +261,18 @@ namespace BaseMonoGameEngine
                     float zoom = 0f;
 
                     //Translation
-                    if (KeyboardInput.GetKey(Keys.Left, ref DebugKeyboard)) translation.X -= 2;
-                    if (KeyboardInput.GetKey(Keys.Right, ref DebugKeyboard)) translation.X += 2;
-                    if (KeyboardInput.GetKey(Keys.Down, ref DebugKeyboard)) translation.Y += 2;
-                    if (KeyboardInput.GetKey(Keys.Up, ref DebugKeyboard)) translation.Y -= 2;
+                    if (KeyboardInput.GetKey(Keys.Left, DebugKeyboard)) translation.X -= 2;
+                    if (KeyboardInput.GetKey(Keys.Right, DebugKeyboard)) translation.X += 2;
+                    if (KeyboardInput.GetKey(Keys.Down, DebugKeyboard)) translation.Y += 2;
+                    if (KeyboardInput.GetKey(Keys.Up, DebugKeyboard)) translation.Y -= 2;
 
                     //Rotation
-                    if (KeyboardInput.GetKey(Keys.OemComma, ref DebugKeyboard)) rotation -= .1f;
-                    if (KeyboardInput.GetKey(Keys.OemPeriod, ref DebugKeyboard)) rotation += .1f;
+                    if (KeyboardInput.GetKey(Keys.OemComma, DebugKeyboard)) rotation -= .1f;
+                    if (KeyboardInput.GetKey(Keys.OemPeriod, DebugKeyboard)) rotation += .1f;
 
                     //Scale
-                    if (KeyboardInput.GetKey(Keys.OemMinus, ref DebugKeyboard)) zoom -= .1f;
-                    if (KeyboardInput.GetKey(Keys.OemPlus, ref DebugKeyboard)) zoom += .1f;
+                    if (KeyboardInput.GetKey(Keys.OemMinus, DebugKeyboard)) zoom -= .1f;
+                    if (KeyboardInput.GetKey(Keys.OemPlus, DebugKeyboard)) zoom += .1f;
 
                     if (translation != Vector2.Zero) Camera2D.Instance.Translate(translation);
                     if (rotation != 0f) Camera2D.Instance.Rotate(rotation);
