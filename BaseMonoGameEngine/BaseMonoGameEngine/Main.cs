@@ -53,6 +53,7 @@ namespace BaseMonoGameEngine
             Player player1 = new Player();
             currentScene.AddSceneObject(player1);
             currentScene.AddSceneObject(new TestEnemy());
+            currentScene.AddSceneObject(new TestEnemy2());
 
             base.Initialize();
         }

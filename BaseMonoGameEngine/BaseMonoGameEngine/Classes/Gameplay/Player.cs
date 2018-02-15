@@ -24,15 +24,8 @@ namespace BaseMonoGameEngine
             playerSprite = new Sprite(AssetManager.Instance.LoadRawTexture2D($"{ContentGlobals.SpriteRoot}Will.png"),
                 new Rectangle(210, 374, 25, 38));
 
-            //Effect outline = AssetManager.Instance.LoadAsset<Effect>($"{ContentGlobals.ShaderRoot}Outline");
-            //
-            //Vector2 sheetSize = new Vector2(playerSprite.Tex.Width, playerSprite.Tex.Height);
-            //
-            //outline.Parameters["outlineColor"].SetValue(new Vector4(1f, 1f, 1f, 1f));
-            //outline.Parameters["sheetSize"].SetValue(sheetSize);
-
             spriteRenderer = new SpriteRenderer(transform, playerSprite);
-            //spriteRenderer.Shader = outline;
+            spriteRenderer.Depth = .1f;
 
             renderer = spriteRenderer;
         }
