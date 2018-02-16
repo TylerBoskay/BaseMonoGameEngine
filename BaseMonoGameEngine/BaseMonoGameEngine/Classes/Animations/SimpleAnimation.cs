@@ -13,25 +13,51 @@ namespace BaseMonoGameEngine
     /// </summary>
     public class SimpleAnimation : IUpdateable
     {
+        public enum AnimTypes
+        {
+            Normal,
+            Looping
+        }
+
         public Sprite SpriteToChange = null;
         protected readonly AnimationFrame[] AnimFrames = null;
 
-        private int MaxFrameIndex => (AnimFrames.Length - 1);
-        private int CurFrameIndex = 0;
+        /// <summary>
+        /// A key identifying the animation.
+        /// </summary>
+        public string Key { get; private set; } = string.Empty;
+
+        public int MaxFrameIndex => (AnimFrames.Length - 1);
+        public int CurFrameIndex { get; protected set; } = 0;
 
         public ref AnimationFrame CurFrame => ref AnimFrames[CurFrameIndex];
 
+        public AnimTypes AnimType = AnimTypes.Normal;
+
         private double ElapsedFrameTime = 0d;
 
-        public SimpleAnimation(Sprite spriteToChange, params AnimationFrame[] frames)
+        public SimpleAnimation(Sprite spriteToChange, AnimTypes animType, params AnimationFrame[] frames)
         {
             SpriteToChange = spriteToChange;
+            AnimType = animType;
             AnimFrames = frames;
         }
         
+        public void SetKey(string key)
+        {
+            Key = key;
+        }
+
         protected void Progress()
         {
-            CurFrameIndex = UtilityGlobals.Wrap(CurFrameIndex + 1, 0, MaxFrameIndex);
+            if (AnimType == AnimTypes.Normal)
+            {
+                CurFrameIndex = UtilityGlobals.Clamp(CurFrameIndex + 1, 0, MaxFrameIndex);
+            }
+            else
+            {
+                CurFrameIndex = UtilityGlobals.Wrap(CurFrameIndex + 1, 0, MaxFrameIndex);
+            }
 
             ElapsedFrameTime = 0d;
 

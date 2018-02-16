@@ -25,9 +25,10 @@ namespace BaseMonoGameEngine
             renderer = spriteRenderer;
 
             AnimationManager = new AnimManager(spriteRenderer.SpriteToRender);
-            AnimationManager.AddAnimation("Idle", new SimpleAnimation(null, new AnimationFrame(new Rectangle(2, 2, 30, 32), 300d),
+            AnimationManager.AddAnimation("Idle", new SimpleAnimation(null, SimpleAnimation.AnimTypes.Looping,
+                new AnimationFrame(new Rectangle(2, 2, 30, 32), 300d),
                 new AnimationFrame(new Rectangle(34, 2, 26, 32), 300d)));
-            AnimationManager.AddAnimation("Roll", new SimpleAnimation(null,
+            AnimationManager.AddAnimation("Roll", new SimpleAnimation(null, SimpleAnimation.AnimTypes.Looping,
                 new AnimationFrame(new Rectangle(175, 91, 16, 16), 100d),
                 new AnimationFrame(new Rectangle(193, 91, 16, 16), 100d),
                 new AnimationFrame(new Rectangle(211, 91, 16, 16), 100d)));

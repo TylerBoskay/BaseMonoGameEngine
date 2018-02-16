@@ -521,7 +521,7 @@ namespace BaseMonoGameEngine
 
         public static void DebugStartDraw()
         {
-            DebugSpriteBatch?.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, null, null, null, null, Camera2D.Instance.TransformMatrix);
+            DebugSpriteBatch?.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, Camera2D.Instance.TransformMatrix);
             DebugUIBatch?.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, null, null, null, null, null);
         }
 

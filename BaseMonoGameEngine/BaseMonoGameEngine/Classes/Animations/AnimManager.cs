@@ -66,6 +66,9 @@ namespace BaseMonoGameEngine
             if (anim.SpriteToChange == null)
                 anim.SpriteToChange = AnimSprite;
 
+            //Set the animation's key
+            anim.SetKey(animName);
+
             Animations.Add(animName, anim);
 
             //Play the first animation that gets added by default

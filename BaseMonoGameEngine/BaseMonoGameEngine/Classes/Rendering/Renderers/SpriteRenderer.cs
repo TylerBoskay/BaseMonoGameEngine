@@ -25,13 +25,16 @@ namespace BaseMonoGameEngine
             get
             {
                 Rectangle bounds = Rectangle.Empty;
-                bounds.X = (int)TransformData.Position.X;
-                bounds.Y = (int)TransformData.Position.Y;
-                
+                Vector2 pivotOrigin = SpriteToRender.GetOrigin();
+                bounds.X = (int)TransformData.Position.X - (int)pivotOrigin.X;
+                bounds.Y = (int)TransformData.Position.Y - (int)pivotOrigin.Y;
+
                 if (SpriteToRender.SourceRect != null)
                 {
-                    bounds.Width = SpriteToRender.SourceRect.Value.Width;
-                    bounds.Height = SpriteToRender.SourceRect.Value.Height;
+                    Rectangle rect = SpriteToRender.SourceRect.Value;
+
+                    bounds.Width = rect.Width;
+                    bounds.Height = rect.Height;
                 }
                 else
                 {
@@ -56,6 +59,8 @@ namespace BaseMonoGameEngine
             
             RenderingManager.Instance.DrawSprite(SpriteToRender.Tex, TransformData.Position, SpriteToRender.SourceRect, TintColor,
                 TransformData.Rotation, SpriteToRender.GetOrigin(), TransformData.Scale, FlipData, Depth);
+
+           //Debug.DebugDrawHollowRect(Bounds, Color.Red, 1f, 1, false);
         }
     }
 }
