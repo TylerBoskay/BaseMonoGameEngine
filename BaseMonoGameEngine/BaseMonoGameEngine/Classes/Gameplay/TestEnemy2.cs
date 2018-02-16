@@ -11,7 +11,8 @@ namespace BaseMonoGameEngine
     public class TestEnemy2 : SceneObject
     {
         private SpriteRenderer spriteRenderer = null;
-        private SimpleAnimation Anim = null;
+
+        private AnimManager AnimationManager = null;
 
         public TestEnemy2()
         {
@@ -23,15 +24,29 @@ namespace BaseMonoGameEngine
 
             renderer = spriteRenderer;
 
-            Anim = new SimpleAnimation(spriteRenderer.SpriteToRender, new AnimationFrame(new Rectangle(2, 2, 30, 32), 300d), 
-                new AnimationFrame(new Rectangle(34, 2, 26, 32), 300d));
+            AnimationManager = new AnimManager(spriteRenderer.SpriteToRender);
+            AnimationManager.AddAnimation("Idle", new SimpleAnimation(null, new AnimationFrame(new Rectangle(2, 2, 30, 32), 300d),
+                new AnimationFrame(new Rectangle(34, 2, 26, 32), 300d)));
+            AnimationManager.AddAnimation("Roll", new SimpleAnimation(null,
+                new AnimationFrame(new Rectangle(175, 91, 16, 16), 100d),
+                new AnimationFrame(new Rectangle(193, 91, 16, 16), 100d),
+                new AnimationFrame(new Rectangle(211, 91, 16, 16), 100d)));
         }
 
         public override void Update()
         {
             base.Update();
 
-            Anim.Update();
+            if (Input.GetButton(0, InputActions.A))
+            {
+                AnimationManager.PlayAnimation("Idle");
+            }
+            else if (Input.GetButton(0, InputActions.B))
+            {
+                AnimationManager.PlayAnimation("Roll");
+            }
+
+            AnimationManager.CurrentAnim.Update();
         }
     }
 }

@@ -19,7 +19,7 @@ namespace BaseMonoGameEngine
         /// <summary>
         /// The pivot of the Sprite, from 0 to 1.
         /// </summary>
-        public Vector2 Pivot = Vector2.Zero;
+        public Vector2 Pivot = new Vector2(.5f, .5f);
 
         public Sprite(Texture2D texture, Rectangle? sourceRect)
         {

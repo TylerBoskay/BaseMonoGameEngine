@@ -47,5 +47,17 @@ namespace BaseMonoGameEngine
                 Progress();
             }
         }
+
+        /// <summary>
+        /// Plays an animation from the start.
+        /// </summary>
+        public void Play()
+        {
+            CurFrameIndex = 0;
+
+            ElapsedFrameTime = 0;
+
+            SpriteToChange.SourceRect = CurFrame.DrawRegion;
+        }
     }
 }
