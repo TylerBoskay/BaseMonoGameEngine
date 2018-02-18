@@ -131,10 +131,27 @@ namespace BaseMonoGameEngine
         {
             SimpleAnimation animToPlay = GetAnimation(animName);
 
+            //Return if null;
+            if (animToPlay == null)
+                return;
+
             //Play animation
             CurrentAnim = animToPlay;
 
             CurrentAnim.Play();
+        }
+
+        /// <summary>
+        /// Plays an animation, specified by name, if and only if it's different than the current animation.
+        /// If an Animation cannot be found with the name, nothing happens.
+        /// </summary>
+        /// <param name="animName"></param>
+        public void PlayAnimationIfDiff(string animName)
+        {
+            if (animName != CurrentAnim?.Key)
+            {
+                PlayAnimation(animName);
+            }
         }
     }
 }

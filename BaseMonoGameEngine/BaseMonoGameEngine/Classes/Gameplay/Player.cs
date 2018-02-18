@@ -16,9 +16,11 @@ namespace BaseMonoGameEngine
     {
         public Vector2 Speed = new Vector2(2f, 2f);
 
-        private AnimManager AnimationManager = null;
-        private SpriteRenderer spriteRenderer = null;
+        public AnimManager AnimationManager { get; private set; } = null;
+        public SpriteRenderer spriteRenderer { get; private set; } = null;
         private Vector2 PrevSpeed = Vector2.Zero;
+
+        private PlayerStateMachine CurStateMachine = null;
 
         public Player()
         {
@@ -54,6 +56,8 @@ namespace BaseMonoGameEngine
                 new AnimationFrame(new Rectangle(47, 91, 18, 38), 110d),
                 new AnimationFrame(new Rectangle(71, 89, 18, 40), 110d),
                 new AnimationFrame(new Rectangle(95, 92, 18, 37), 110d)));
+
+            ChangeState(new PlayerIdleState(this, Vector2.Zero));
         }
 
         public override void CleanUp()
@@ -63,10 +67,22 @@ namespace BaseMonoGameEngine
 
         public override void Update()
         {
-            HandleMove();
             ChangeColor();
 
+            CurStateMachine.Update();
+
             AnimationManager.CurrentAnim?.Update();
+        }
+
+        public void ChangeState(PlayerStateMachine stateMachine)
+        {
+            //Exit the previous state machine
+            CurStateMachine?.Exit();
+
+            CurStateMachine = stateMachine;
+
+            //Enter the new state
+            CurStateMachine.Enter();
         }
 
         private void ChangeColor()
@@ -87,62 +103,6 @@ namespace BaseMonoGameEngine
             {
                 spriteRenderer.TintColor = Color.Blue;
             }
-        }
-
-        private void HandleMove()
-        {
-            Vector2 moveAmt = Vector2.Zero;
-
-            moveAmt.X = Input.GetAxis(0, InputActions.Horizontal) * Speed.X;
-            moveAmt.Y = Input.GetAxis(0, InputActions.Vertical) * Speed.Y;
-
-            if (moveAmt != Vector2.Zero)
-            {
-                spriteRenderer.FlipData = SpriteEffects.None;
-                transform.Position += moveAmt;
-
-                if (moveAmt.Y > 0)
-                {
-                    if (moveAmt.X == 0 && AnimationManager.CurrentAnim.Key != "WalkD")
-                    {
-                        AnimationManager.PlayAnimation("WalkD");
-                    }
-                }
-                else if (moveAmt.Y < 0)
-                {
-                    if (moveAmt.X == 0 && AnimationManager.CurrentAnim.Key != "WalkU")
-                    {
-                        AnimationManager.PlayAnimation("WalkU");
-                    }
-                }
-                else if (moveAmt.X != 0)
-                {
-                    if (moveAmt.Y == 0 && AnimationManager.CurrentAnim.Key != "WalkL")
-                    {
-                        AnimationManager.PlayAnimation("WalkL");
-                    }
-                }
-
-                if (moveAmt.X < 0 && AnimationManager.CurrentAnim.Key == "WalkL")
-                    spriteRenderer.FlipData = SpriteEffects.FlipHorizontally;
-            }
-            else
-            {
-                if (PrevSpeed != Vector2.Zero)
-                {
-                    spriteRenderer.FlipData = SpriteEffects.None;
-                    if (PrevSpeed.X != 0)
-                    {
-                        AnimationManager.PlayAnimation("StandL");
-                        if (PrevSpeed.X > 0)
-                            spriteRenderer.FlipData = SpriteEffects.FlipHorizontally;
-                    }
-                    else if (PrevSpeed.Y < 0) AnimationManager.PlayAnimation("StandU");
-                    else if (PrevSpeed.Y > 0) AnimationManager.PlayAnimation("StandD");
-                }
-            }
-
-            PrevSpeed = moveAmt;
         }
     }
 }

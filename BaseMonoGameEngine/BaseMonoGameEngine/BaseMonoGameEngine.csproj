@@ -67,6 +67,9 @@
     <Compile Include="Classes\ExtendedTypes\NineSlicedTexture2D.cs" />
     <Compile Include="Classes\ExtendedTypes\SlicedTexture2D.cs" />
     <Compile Include="Classes\Gameplay\Player.cs" />
+    <Compile Include="Classes\Gameplay\PlayerStateMachines\PlayerIdleState.cs" />
+    <Compile Include="Classes\Gameplay\PlayerStateMachines\PlayerStateMachine.cs" />
+    <Compile Include="Classes\Gameplay\PlayerStateMachines\PlayerWalkState.cs" />
     <Compile Include="Classes\Gameplay\TestEnemy.cs" />
     <Compile Include="Classes\Gameplay\TestEnemy2.cs" />
     <Compile Include="Classes\Global\ContentGlobals.cs" />
@@ -78,6 +81,7 @@
     <Compile Include="Classes\Global\GeneralGlobals.cs" />
     <Compile Include="Classes\Global\Input\Input.cs" />
     <Compile Include="Classes\Global\Input\InputHandler.cs" />
+    <Compile Include="Classes\Interfaces\IFiniteStateMachine.cs" />
     <Compile Include="Classes\Interfaces\IEnableable.cs" />
     <Compile Include="Classes\Global\Input\KeyboardInput.cs" />
     <Compile Include="Classes\Global\Input\InputGlobals.cs" />
