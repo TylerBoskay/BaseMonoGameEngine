@@ -128,7 +128,9 @@ namespace BaseMonoGameEngine
             if (Debug.DebugPaused == false || Debug.AdvanceNextFrame == true)
                 Input.UpdateInput();
 
-            RenderingManager.Instance.SetupRendering(currentScene.GetActiveVisibleRenderersInScene());
+            RenderingManager.Instance.SetupRendering(new RenderingManager.RenderingSettings(RenderingManager.Instance.spriteBatch,
+                SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, Camera2D.Instance.TransformMatrix),
+                currentScene.GetActiveVisibleRenderersInScene());
 
             base.Update(gameTime);
 

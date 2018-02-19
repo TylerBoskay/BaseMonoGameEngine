@@ -38,6 +38,8 @@ namespace BaseMonoGameEngine
         public GraphicsDeviceManager graphicsDeviceManager { get; private set; } = null;
         public GraphicsDevice graphicsDevice => graphicsDeviceManager?.GraphicsDevice;
 
+        //public RenderingSettings RenderSettings = default(RenderingSettings);
+
         public SpriteBatch spriteBatch { get; private set; } = null;
 
         /// <summary>
@@ -62,7 +64,9 @@ namespace BaseMonoGameEngine
         /// </summary>
         private readonly List<Effect> PostProcessingEffects = new List<Effect>();
 
-        private readonly List<RenderBatch> RenderBatches = new List<RenderBatch>();
+        //private readonly List<RenderBatch> RenderBatches = new List<RenderBatch>();
+
+        private readonly List<RenderingGroup> RenderGroups = new List<RenderingGroup>();
 
         private RenderingManager()
         {
@@ -73,7 +77,8 @@ namespace BaseMonoGameEngine
         {
             RemoveAllPostProcessingEffects();
 
-            RenderBatches.Clear();
+            //RenderBatches.Clear();
+            RenderGroups.Clear();
         }
 
         public void Initialize(GraphicsDeviceManager graphicsDeviceMngr)
@@ -124,35 +129,68 @@ namespace BaseMonoGameEngine
             PostProcessingEffects.Clear();
         }
 
-        public void SetupRendering(List<Renderer> renderers)
+        /// <summary>
+        /// Prepares a list of Renderers with the specified RenderingSettings for rendering.
+        /// Renderers with the same shader are grouped together for batching.
+        /// </summary>
+        /// <param name="renderingSettings">The RenderingSettings to apply for these renderers.</param>
+        /// <param name="renderers">A list of Renderers to prepare for rendering.</param>
+        public void SetupRendering(RenderingSettings renderingSettings, List<Renderer> renderers)
         {
+            //RenderSettings = renderingSettings;
+
+            List<RenderBatch> renderBatches = new List<RenderBatch>();
+
+            //Put the renderers into batches with the appropriate shader
             for (int i = 0; i < renderers.Count; i++)
             {
                 Renderer renderer = renderers[i];
 
-                RenderBatch batch = RenderBatches.Find((rBatch) => rBatch.AppliedEffect == renderer.Shader);
+                RenderBatch batch = renderBatches.Find((rBatch) => rBatch.AppliedEffect == renderer.Shader);
 
                 if (batch == null)
                 {
                     batch = new RenderBatch(renderer.Shader);
-                    RenderBatches.Add(batch);
+                    renderBatches.Add(batch);
                 }
 
                 batch.Renderers.Add(renderer);
             }
+
+            RenderGroups.Add(new RenderingGroup(renderingSettings, renderBatches));
         }
 
         public void PerformRendering()
         {
-            for (int i = 0; i < RenderBatches.Count; i++)
+            for (int i = 0; i < RenderGroups.Count; i++)
             {
-                RenderBatch curRenderBatch = RenderBatches[i];
+                RenderingGroup renderGroup = RenderGroups[i];
+                RenderingSettings renderSettings = renderGroup.Rendersettings;
 
-                DrawBatch(spriteBatch, SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, curRenderBatch.AppliedEffect,
-                    Camera2D.Instance.TransformMatrix, curRenderBatch.Renderers);
+                for (int j = 0; j < renderGroup.RenderBatches.Count; j++)
+                {
+                    RenderBatch curRenderBatch = renderGroup.RenderBatches[j];
+
+                    DrawBatch(renderSettings.spriteBatch, renderSettings.spriteSortMode, renderSettings.blendState, renderSettings.samplerState,
+                        curRenderBatch.AppliedEffect, renderSettings.transformMatrix, curRenderBatch.Renderers);
+                }
+
+                //Clear each RenderingGroup's RenderBatches
+                renderGroup.RenderBatches.Clear();
             }
 
-            RenderBatches.Clear();
+            //Clear all rendering groups
+            RenderGroups.Clear();
+
+            //for (int i = 0; i < RenderBatches.Count; i++)
+            //{
+            //    RenderBatch curRenderBatch = RenderBatches[i];
+            //
+            //    DrawBatch(RenderSettings.spriteBatch, RenderSettings.spriteSortMode, RenderSettings.blendState, RenderSettings.samplerState,
+            //        curRenderBatch.AppliedEffect, RenderSettings.transformMatrix, curRenderBatch.Renderers);
+            //}
+            //
+            //RenderBatches.Clear();
         }
 
         private void StartBatch(SpriteBatch sb, SpriteSortMode spriteSortMode, BlendState blendState, SamplerState samplerState,
@@ -236,6 +274,24 @@ namespace BaseMonoGameEngine
             CurrentBatch.Draw(tex, destRectangle, sourceRect, color, rotation, origin, spriteEffects, depth);
         }
 
+        /// <summary>
+        /// Contains a list of RenderBatches to render with the specified RenderingSettings.
+        /// </summary>
+        private class RenderingGroup
+        {
+            public RenderingSettings Rendersettings = default(RenderingSettings);
+            public List<RenderBatch> RenderBatches = null;
+
+            public RenderingGroup(RenderingSettings renderSettings, List<RenderBatch> renderBatches)
+            {
+                Rendersettings = renderSettings;
+                RenderBatches = renderBatches;
+            }
+        }
+
+        /// <summary>
+        /// Contains a lists of Renderers to render with the specified shader.
+        /// </summary>
         private class RenderBatch
         {
             public Effect AppliedEffect = null;
@@ -244,6 +300,32 @@ namespace BaseMonoGameEngine
             public RenderBatch(Effect appliedEffect)
             {
                 AppliedEffect = appliedEffect;
+            }
+        }
+
+        /// <summary>
+        /// Settings for rendering.
+        /// </summary>
+        public struct RenderingSettings
+        {
+            public SpriteBatch spriteBatch;
+            public SpriteSortMode spriteSortMode;
+            public BlendState blendState;
+            public SamplerState samplerState;
+            public DepthStencilState depthStencilState;
+            public RasterizerState rasterizerState;
+            public Matrix? transformMatrix;
+
+            public RenderingSettings(SpriteBatch sb, SpriteSortMode ssm, BlendState bs, SamplerState ss, DepthStencilState dss,
+                RasterizerState rs, Matrix? transMatrix)
+            {
+                spriteBatch = sb;
+                spriteSortMode = ssm;
+                blendState = bs;
+                samplerState = ss;
+                depthStencilState = dss;
+                rasterizerState = rs;
+                transformMatrix = transMatrix;
             }
         }
     }
