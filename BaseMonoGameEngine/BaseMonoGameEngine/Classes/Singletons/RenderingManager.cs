@@ -35,6 +35,11 @@ namespace BaseMonoGameEngine
 
         #endregion
 
+        /// <summary>
+        /// Rendering metrics. This data is obtained after all rendering is complete for the frame.
+        /// </summary>
+        public GraphicsMetrics RenderingMetrics = default(GraphicsMetrics);
+
         public GraphicsDeviceManager graphicsDeviceManager { get; private set; } = null;
         public GraphicsDevice graphicsDevice => graphicsDeviceManager?.GraphicsDevice;
 
@@ -260,6 +265,9 @@ namespace BaseMonoGameEngine
                     EndCurrentBatch();
                 }
             }
+
+            //Get rendering metrics
+            RenderingMetrics = graphicsDevice.Metrics;
         }
 
         public void DrawSprite(Texture2D tex, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin,

@@ -540,6 +540,26 @@ namespace BaseMonoGameEngine
 
             SpriteFont font = AssetManager.Instance.LoadAsset<SpriteFont>($"{ContentGlobals.FontRoot}Font");
 
+            //Rendering info
+            //ClearCount is the number of times Clear was called
+            //PrimitiveCount is the number of number of rendered primitives
+            //DrawCount is the number of times Draw was called
+            //SpriteCount is the number of sprites and text characters rendered via SpriteBatch
+            //TextureCount is the number of times a texture was changed on the GPU
+            //TargetCount is the number of times a target was changed on the GPU
+            //PixelShaderCount is the number of times the pixel shader was changed on the GPU
+            //VertexShaderCount is the number of times the vertex shader was changed on the GPU
+            Vector2 renderBasePos = new Vector2(0, 40);
+            GraphicsMetrics metrics = RenderingManager.Instance.RenderingMetrics;
+            debugUIBatch.DrawString(font, "Clear count: " + metrics.ClearCount, renderBasePos, Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+            debugUIBatch.DrawString(font, "Primitive count: " + metrics.PrimitiveCount, renderBasePos + new Vector2(0, 20), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+            debugUIBatch.DrawString(font, "Draw calls: " + metrics.DrawCount, renderBasePos + new Vector2(0, 40), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+            debugUIBatch.DrawString(font, "Sprite count: " + metrics.SpriteCount, renderBasePos + new Vector2(0, 60), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+            debugUIBatch.DrawString(font, "Texture count: " + metrics.TextureCount, renderBasePos + new Vector2(0, 80), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+            debugUIBatch.DrawString(font, "Render Target count: " + metrics.TargetCount, renderBasePos + new Vector2(0, 100), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+            debugUIBatch.DrawString(font, "Pixel shaders: " + metrics.PixelShaderCount, renderBasePos + new Vector2(0, 120), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+            debugUIBatch.DrawString(font, "Vertex shaders: " + metrics.VertexShaderCount, renderBasePos + new Vector2(0, 140), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+
             //Camera info
             Vector2 cameraBasePos = new Vector2(0, 390);
             DebugUIBatch?.DrawString(font, "Camera:", cameraBasePos, Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
