@@ -14,6 +14,11 @@ namespace BaseMonoGameEngine
     public abstract class Renderer : IEnableable
     {
         /// <summary>
+        /// The layer order the renderer is in.
+        /// </summary>
+        public int Order { get; set; } = 0;
+
+        /// <summary>
         /// The shader to apply to this renderer.
         /// </summary>
         public Effect Shader { get; set; } = null;

@@ -20,7 +20,7 @@ namespace BaseMonoGameEngine
         /// </summary>
         public GameWindow GameWindow => Window;
         
-        GameScene currentScene = new GameScene();
+        private GameScene currentScene = null;
 
         public Main()
         {
@@ -49,6 +49,8 @@ namespace BaseMonoGameEngine
             AssetManager.Instance.Initialize(Content);
             RenderingManager.Instance.Initialize(graphics);
             Camera2D.Instance.SetBounds(new Rectangle(0, 0, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y));
+
+            currentScene = new GameScene();
 
             Player player1 = new Player();
             currentScene.AddSceneObject(player1);
@@ -128,10 +130,6 @@ namespace BaseMonoGameEngine
             if (Debug.DebugPaused == false || Debug.AdvanceNextFrame == true)
                 Input.UpdateInput();
 
-            RenderingManager.Instance.SetupRendering(new RenderingManager.RenderingSettings(RenderingManager.Instance.spriteBatch,
-                SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, Camera2D.Instance.TransformMatrix),
-                currentScene.GetActiveVisibleRenderersInScene());
-
             base.Update(gameTime);
 
             //Set time step and VSync settings
@@ -170,7 +168,7 @@ namespace BaseMonoGameEngine
         {
             PreDraw();
 
-            RenderingManager.Instance.PerformRendering();
+            RenderingManager.Instance.PerformRendering(currentScene);
             Debug.DebugDraw();
 
             base.Draw(gameTime);

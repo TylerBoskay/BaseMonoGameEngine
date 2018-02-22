@@ -160,7 +160,7 @@ namespace BaseMonoGameEngine
             {
                 return Matrix.CreateTranslation(new Vector3(-Position.X, -Position.Y, 0f)) *
                             Matrix.CreateRotationZ(Rotation) *
-                            Matrix.CreateScale(Scale) *
+                            Matrix.CreateScale(Scale, Scale, 1) *
                             Matrix.CreateTranslation(ScreenBounds.Width * TranslationConstant, ScreenBounds.Height * TranslationConstant, 0f);
             }
         }

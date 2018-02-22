@@ -81,6 +81,7 @@
     <Compile Include="Classes\Global\GeneralGlobals.cs" />
     <Compile Include="Classes\Global\Input\Input.cs" />
     <Compile Include="Classes\Global\Input\InputHandler.cs" />
+    <Compile Include="Classes\Global\SceneManager.cs" />
     <Compile Include="Classes\Interfaces\IFiniteStateMachine.cs" />
     <Compile Include="Classes\Interfaces\IEnableable.cs" />
     <Compile Include="Classes\Global\Input\KeyboardInput.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Classes\Rendering\Renderers\SlicedSpriteRenderer.cs" />
     <Compile Include="Classes\Rendering\Renderers\Renderer.cs" />
     <Compile Include="Classes\Rendering\Renderers\SpriteRenderer.cs" />
+    <Compile Include="Classes\Rendering\RenderLayer.cs" />
     <Compile Include="Classes\Rendering\SlicedSprite.cs" />
     <Compile Include="Classes\Rendering\Sprite.cs" />
     <Compile Include="Classes\Singletons\AssetManager.cs" />
@@ -134,6 +136,9 @@
     <EmbeddedResource Include="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\UI\HUD.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\x86\SDL2.dll">
       <Link>x86\SDL2.dll</Link>
@@ -189,7 +194,6 @@
     <Folder Include="Content\Audio\Music\" />
     <Folder Include="Content\Audio\SFX\" />
     <Folder Include="Content\Shaders\ShaderTextures\" />
-    <Folder Include="Content\UI\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Shaders\Outline.fx">

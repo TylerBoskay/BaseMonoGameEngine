@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace BaseMonoGameEngine
 {
@@ -11,6 +13,11 @@ namespace BaseMonoGameEngine
     /// </summary>
     public class GameScene : IUpdateable, ICleanup
     {
+        /// <summary>
+        /// The list of Render Layers in the scene
+        /// </summary>
+        private readonly List<RenderLayer> RenderLayers = new List<RenderLayer>();
+
         /// <summary>
         /// The objects in the scene.
         /// </summary>
@@ -23,12 +30,15 @@ namespace BaseMonoGameEngine
 
         public GameScene()
         {
-
+            //Add a default render layer
+            RenderLayers.Add(new RenderLayer(0, new RenderLayer.RenderingSettings(RenderingManager.Instance.spriteBatch,
+                SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, true)));
         }
 
         public void CleanUp()
         {
             RemoveAllSceneObjects();
+            RenderLayers.Clear();
         }
 
         /// <summary>
@@ -86,6 +96,25 @@ namespace BaseMonoGameEngine
         }
 
         /// <summary>
+        /// Adds a RenderLayer to the scene and sorts all RenderLayers in the scene by their LayerOrder.
+        /// </summary>
+        /// <param name="renderLayer">The RenderLayer to add.</param>
+        public void AddRenderLayer(RenderLayer renderLayer)
+        {
+            RenderLayers.Add(renderLayer);
+            RenderLayers.Sort(RenderLayerSorter);
+        }
+
+        /// <summary>
+        /// Gets all RenderLayers in the scene in a new list.
+        /// </summary>
+        /// <returns>A new list of RenderLayers.</returns>
+        public List<RenderLayer> GetRenderLayersInScene()
+        {
+            return new List<RenderLayer>(RenderLayers);
+        }
+
+        /// <summary>
         /// Gets all the active visible renderers in the game scene.
         /// Renderers on SceneObjects that are disabled, as well as disabled and null renderers, are not included in this list.
         /// Renderers not visible at all by the camera are excluded as well.
@@ -110,6 +139,21 @@ namespace BaseMonoGameEngine
             }
 
             return renderers;
+        }
+
+        private int RenderLayerSorter(RenderLayer layer1, RenderLayer layer2)
+        {
+            if (layer1 == null)
+                return 1;
+            if (layer2 == null)
+                return -1;
+
+            if (layer1.LayerOrder < layer2.LayerOrder)
+                return -1;
+            if (layer1.LayerOrder > layer2.LayerOrder)
+                return 1;
+
+            return 0;
         }
     }
 }
