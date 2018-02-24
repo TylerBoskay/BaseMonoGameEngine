@@ -56,6 +56,7 @@ namespace BaseMonoGameEngine
             currentScene.AddSceneObject(player1);
             currentScene.AddSceneObject(new TestEnemy());
             currentScene.AddSceneObject(new TestEnemy2());
+            currentScene.AddSceneObject(new TestRotateObj(player1));
 
             base.Initialize();
         }

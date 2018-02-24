@@ -23,6 +23,15 @@ namespace BaseMonoGameEngine
         public double Radius;
 
         /// <summary>
+        /// The diameter of the Circle.
+        /// </summary>
+        public double Diameter
+        {
+            get => Radius * 2d;
+            set => Radius = value / 2d;
+        }
+
+        /// <summary>
         /// Tells if the Circle is empty.
         /// </summary>
         public bool IsEmpty => (Center == Vector2.Zero && Radius == 0f);

@@ -72,6 +72,7 @@
     <Compile Include="Classes\Gameplay\PlayerStateMachines\PlayerWalkState.cs" />
     <Compile Include="Classes\Gameplay\TestEnemy.cs" />
     <Compile Include="Classes\Gameplay\TestEnemy2.cs" />
+    <Compile Include="Classes\Gameplay\TestRotateObj.cs" />
     <Compile Include="Classes\Global\ContentGlobals.cs" />
     <Compile Include="Classes\Global\CrashHandler.cs" />
     <Compile Include="Classes\Global\Debug.cs" />
