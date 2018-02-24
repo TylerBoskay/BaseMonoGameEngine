@@ -67,6 +67,11 @@ namespace TDMonoGameEngine
         /// </summary>
         private readonly List<Effect> PostProcessingEffects = new List<Effect>();
 
+        /// <summary>
+        /// The list of layered RenderTargets. These are rendered, in order, to the MainRenderTarget, which is then drawn to the backbuffer.
+        /// </summary>
+        private readonly List<RenderTarget2D> LayerRenderTargets = new List<RenderTarget2D>();
+
         private RenderingManager()
         {
             
@@ -75,6 +80,12 @@ namespace TDMonoGameEngine
         public void CleanUp()
         {
             RemoveAllPostProcessingEffects();
+            for (int i = 0; i < LayerRenderTargets.Count; i++)
+            {
+                LayerRenderTargets[i].Dispose();
+            }
+
+            LayerRenderTargets.Clear();
         }
 
         public void Initialize(GraphicsDeviceManager graphicsDeviceMngr)
@@ -147,10 +158,20 @@ namespace TDMonoGameEngine
             {
                 RenderLayer layer = renderLayers[i];
 
+                //If the layer is disabled, don't render it
+                if (layer.Enabled == false)
+                    continue;
+
                 List<Renderer> renderersInLayer = allRenderers.FindAll((renderer) => renderer.Order == layer.LayerOrder);
 
                 //Render the layer
                 layer.Render(renderersInLayer);
+
+                //Add the RenderTarget for this layer
+                if (LayerRenderTargets.Contains(layer.RendTarget) == false)
+                {
+                    LayerRenderTargets.Add(layer.RendTarget);
+                }
             }
         }
 
@@ -169,12 +190,36 @@ namespace TDMonoGameEngine
 
         public void StartDraw()
         {
-            graphicsDevice.SetRenderTarget(MainRenderTarget);
+            //Start with no RenderTarget and clear the screen
+            graphicsDevice.SetRenderTarget(null);
             graphicsDevice.Clear(Color.CornflowerBlue);
         }
 
         public void EndDraw()
         {
+            //Set to the main RenderTarget and clear the screen
+            graphicsDevice.SetRenderTarget(MainRenderTarget);
+            graphicsDevice.Clear(Color.CornflowerBlue);
+
+            //Go through all RenderTargets in all layers and draw their contents, in order, to the main RenderTarget
+            for (int i = 0; i < LayerRenderTargets.Count; i++)
+            {
+                RenderTarget2D layerTarget = LayerRenderTargets[i];
+                StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, null, null);
+
+                CurrentBatch.Draw(layerTarget, new Rectangle(0, 0, layerTarget.Width, layerTarget.Height), null, Color.White);
+
+                EndCurrentBatch();
+            }
+
+            //Clear layered targets, then prepare for post-processing effects
+            LayerRenderTargets.Clear();
+
+            //NOTE: Problems with current post-processing:
+            //The RenderTarget renders itself to itself, so data is lost
+            //This is what causes it to act weird
+            //We'd need to switch between two RenderTargets to get reliable post-processing
+
             //If there are no post-processing effects, don't draw any
             if (PostProcessingCount <= 0)
             {
@@ -182,7 +227,7 @@ namespace TDMonoGameEngine
                 graphicsDevice.SetRenderTarget(null);
                 graphicsDevice.Clear(Color.CornflowerBlue);
 
-                StartBatch(spriteBatch, SpriteSortMode.Texture, null, null, null, null, null, null);
+                StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, null, null);
 
                 CurrentBatch.Draw(MainRenderTarget, new Rectangle(0, 0, MainRenderTarget.Width, MainRenderTarget.Height), null, Color.White);
 
@@ -201,7 +246,7 @@ namespace TDMonoGameEngine
                         graphicsDevice.Clear(Color.CornflowerBlue);
                     }
                     
-                    StartBatch(spriteBatch, SpriteSortMode.Texture, null, null, null, null, PostProcessingEffects[i], null);
+                    StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, PostProcessingEffects[i], null);
 
                     CurrentBatch.Draw(MainRenderTarget, new Rectangle(0, 0, MainRenderTarget.Width, MainRenderTarget.Height), null, Color.White);
 

@@ -38,6 +38,12 @@ namespace TDMonoGameEngine
         public void CleanUp()
         {
             RemoveAllSceneObjects();
+
+            for (int i = 0; i < RenderLayers.Count; i++)
+            {
+                RenderLayers[i].CleanUp();
+            }
+
             RenderLayers.Clear();
         }
 
@@ -113,6 +119,44 @@ namespace TDMonoGameEngine
         {
             return new List<RenderLayer>(RenderLayers);
         }
+
+        //public void AddRenderLayerEffect(int layerOrder, Effect layerEffect)
+        //{
+        //    if (layerEffect == null) return;
+        //
+        //    RenderLayer layer = null;
+        //
+        //    for (int i = 0; i < RenderLayers.Count; i++)
+        //    {
+        //        if (RenderLayers[i].LayerOrder == layerOrder)
+        //        {
+        //            layer = RenderLayers[i];
+        //            break;
+        //        }
+        //    }
+        //
+        //    if (layer != null)
+        //        layer.AddLayerEffect(layerEffect);
+        //}
+        //
+        //public void RemoveRenderLayerEffect(int layerOrder, Effect layerEffect)
+        //{
+        //    if (layerEffect == null) return;
+        //
+        //    RenderLayer layer = null;
+        //
+        //    for (int i = 0; i < RenderLayers.Count; i++)
+        //    {
+        //        if (RenderLayers[i].LayerOrder == layerOrder)
+        //        {
+        //            layer = RenderLayers[i];
+        //            break;
+        //        }
+        //    }
+        //
+        //    if (layer != null)
+        //        layer.RemoveLayerEffect(layerEffect);
+        //}
 
         /// <summary>
         /// Gets all the active visible renderers in the game scene.

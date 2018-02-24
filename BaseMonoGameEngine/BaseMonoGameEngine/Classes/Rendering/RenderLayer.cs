@@ -11,8 +11,14 @@ namespace TDMonoGameEngine
     /// <summary>
     /// A render layer of the scene. All objects in it are rendered with certain settings.
     /// </summary>
-    public sealed class RenderLayer
+    public sealed class RenderLayer : IEnableable, ICleanup
     {
+        /// <summary>
+        /// The RenderTarget of the layer.
+        /// All layers render to their own RenderTarget.
+        /// </summary>
+        public RenderTarget2D RendTarget { get; private set; } = null;
+
         /// <summary>
         /// The order of the layer. Higher orders are rendered after.
         /// Layers with the same order are rendered in an arbitrary order in relation to each other.
@@ -24,11 +30,38 @@ namespace TDMonoGameEngine
         /// </summary>
         public RenderingSettings RenderSettings = default(RenderingSettings);
 
+        /// <summary>
+        /// Whether the layer is enabled or not. Disabled layers are not rendered.
+        /// </summary>
+        public bool Enabled { get; set; } = true;
+
+        //private readonly List<Effect> LayerEffects = new List<Effect>();
+
         public RenderLayer(int layerOrder, RenderingSettings renderSettings)
         {
+            RendTarget = new RenderTarget2D(RenderingManager.Instance.graphicsDevice, RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight);
+
             LayerOrder = layerOrder;
             RenderSettings = renderSettings;
         }
+
+        public void CleanUp()
+        {
+            //LayerEffects.Clear();
+            RendTarget.Dispose();
+        }
+
+        //public void AddLayerEffect(Effect layerEffect)
+        //{
+        //    if (layerEffect == null) return;
+        //
+        //    LayerEffects.Add(layerEffect);
+        //}
+        //
+        //public void RemoveLayerEffect(Effect layerEffect)
+        //{
+        //    LayerEffects.Remove(layerEffect);
+        //}
 
         /// <summary>
         /// Renders the RenderLayer with a set of Renderers.
@@ -39,6 +72,10 @@ namespace TDMonoGameEngine
             //Return if there's nothing to render
             if (renderers == null || renderers.Count == 0)
                 return;
+
+            //Draw to this layer's RenderTarget and initially fill it with transparency
+            RenderingManager.Instance.graphicsDevice.SetRenderTarget(RendTarget);
+            RenderingManager.Instance.graphicsDevice.Clear(Color.Transparent);
 
             List<RenderBatch> renderBatches = new List<RenderBatch>();
 
@@ -84,6 +121,25 @@ namespace TDMonoGameEngine
             }
 
             renderBatches.Clear();
+            renderBatches = null;
+
+            //Unset the RenderTarget
+            RenderingManager.Instance.graphicsDevice.SetRenderTarget(null);
+
+            //NOTE: Problems with current post-processing:
+            //The RenderTarget renders itself to itself, so data is lost
+            //This is what causes it to act weird
+            //We'd need to switch between two RenderTargets to get reliable post-processing
+
+            //for (int i = 0; i < LayerEffects.Count; i++)
+            //{
+            //    //Add the layer post-processing effects to this layer
+            //    RenderingManager.Instance.StartBatch(RenderSettings.spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, LayerEffects[i], null);
+            //
+            //    RenderingManager.Instance.CurrentBatch.Draw(RTarget, new Rectangle(0, 0, RTarget.Width, RTarget.Height), null, Color.White);
+            //
+            //    RenderingManager.Instance.EndCurrentBatch();
+            //}
         }
 
         /// <summary>
