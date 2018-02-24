@@ -51,11 +51,6 @@ namespace TDMonoGameEngine
             Camera2D.Instance.SetBounds(new Rectangle(0, 0, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y));
 
             currentScene = new GameScene();
-            //currentScene.AddRenderLayer(new RenderLayer(1, new RenderLayer.RenderingSettings(RenderingManager.Instance.spriteBatch,
-            //    SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, true)));
-
-            //currentScene.AddRenderLayerEffect(0, AssetManager.Instance.LoadAsset<Effect>($"{ContentGlobals.ShaderRoot}AlphaHalved"));
-            //RenderingManager.Instance.AddPostProcessingEffect(AssetManager.Instance.LoadAsset<Effect>($"{ContentGlobals.ShaderRoot}AlphaHalved"));
 
             Player player1 = new Player();
             currentScene.AddSceneObject(player1);

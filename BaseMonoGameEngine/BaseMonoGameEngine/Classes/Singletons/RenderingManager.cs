@@ -61,6 +61,7 @@ namespace TDMonoGameEngine
         public int PostProcessingCount => PostProcessingEffects.Count;
 
         private RenderTarget2D MainRenderTarget = null;
+        private RenderTarget2D PPRenderTarget = null;
 
         /// <summary>
         /// A list of post-processing shaders to apply. They'll be applied in order.
@@ -86,6 +87,9 @@ namespace TDMonoGameEngine
             }
 
             LayerRenderTargets.Clear();
+
+            MainRenderTarget.Dispose();
+            PPRenderTarget.Dispose();
         }
 
         public void Initialize(GraphicsDeviceManager graphicsDeviceMngr)
@@ -94,6 +98,7 @@ namespace TDMonoGameEngine
             spriteBatch = new SpriteBatch(graphicsDevice);
 
             MainRenderTarget = new RenderTarget2D(graphicsDevice, RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight);
+            PPRenderTarget = new RenderTarget2D(graphicsDevice, RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight);
         }
 
         /// <summary>
@@ -215,11 +220,6 @@ namespace TDMonoGameEngine
             //Clear layered targets, then prepare for post-processing effects
             LayerRenderTargets.Clear();
 
-            //NOTE: Problems with current post-processing:
-            //The RenderTarget renders itself to itself, so data is lost
-            //This is what causes it to act weird
-            //We'd need to switch between two RenderTargets to get reliable post-processing
-
             //If there are no post-processing effects, don't draw any
             if (PostProcessingCount <= 0)
             {
@@ -236,6 +236,10 @@ namespace TDMonoGameEngine
             //Draw all post-processing effects if there are any
             else
             {
+                //Handle rendering multiple post-processing effects with two RenderTargets
+                RenderTarget2D renderToTarget = PPRenderTarget;
+                RenderTarget2D renderTarget = MainRenderTarget;
+
                 for (int i = 0; i < PostProcessingCount; i++)
                 {
                     //Keep rendering to the RenderTarget until the last effect
@@ -245,12 +249,22 @@ namespace TDMonoGameEngine
                         graphicsDevice.SetRenderTarget(null);
                         graphicsDevice.Clear(Color.CornflowerBlue);
                     }
-                    
+                    //Swap to the RenderTarget, which will obtain updated data from the other one
+                    else
+                    {
+                        graphicsDevice.SetRenderTarget(renderToTarget);
+                        graphicsDevice.Clear(Color.CornflowerBlue);
+                    }
+
+                    //Draw the RenderTarget with the shader
                     StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, PostProcessingEffects[i], null);
 
-                    CurrentBatch.Draw(MainRenderTarget, new Rectangle(0, 0, MainRenderTarget.Width, MainRenderTarget.Height), null, Color.White);
+                    CurrentBatch.Draw(renderTarget, new Rectangle(0, 0, MainRenderTarget.Width, MainRenderTarget.Height), null, Color.White);
 
                     EndCurrentBatch();
+
+                    //Swap RenderTargets; the one that was rendered to has the updated data
+                    UtilityGlobals.Swap(ref renderToTarget, ref renderTarget);
                 }
             }
 

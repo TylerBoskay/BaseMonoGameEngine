@@ -19,6 +19,9 @@ namespace TDMonoGameEngine
         /// </summary>
         public RenderTarget2D RendTarget { get; private set; } = null;
 
+        private RenderTarget2D RTarget = null;
+        private RenderTarget2D PPRTarget = null;
+
         /// <summary>
         /// The order of the layer. Higher orders are rendered after.
         /// Layers with the same order are rendered in an arbitrary order in relation to each other.
@@ -35,11 +38,13 @@ namespace TDMonoGameEngine
         /// </summary>
         public bool Enabled { get; set; } = true;
 
-        //private readonly List<Effect> LayerEffects = new List<Effect>();
+        private readonly List<Effect> LayerEffects = new List<Effect>();
 
         public RenderLayer(int layerOrder, RenderingSettings renderSettings)
         {
-            RendTarget = new RenderTarget2D(RenderingManager.Instance.graphicsDevice, RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight);
+            RTarget = new RenderTarget2D(RenderingManager.Instance.graphicsDevice, RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight);
+            PPRTarget = new RenderTarget2D(RenderingManager.Instance.graphicsDevice, RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight);
+            RendTarget = RTarget;
 
             LayerOrder = layerOrder;
             RenderSettings = renderSettings;
@@ -47,21 +52,23 @@ namespace TDMonoGameEngine
 
         public void CleanUp()
         {
-            //LayerEffects.Clear();
-            RendTarget.Dispose();
+            LayerEffects.Clear();
+
+            RTarget.Dispose();
+            PPRTarget.Dispose();
         }
 
-        //public void AddLayerEffect(Effect layerEffect)
-        //{
-        //    if (layerEffect == null) return;
-        //
-        //    LayerEffects.Add(layerEffect);
-        //}
-        //
-        //public void RemoveLayerEffect(Effect layerEffect)
-        //{
-        //    LayerEffects.Remove(layerEffect);
-        //}
+        public void AddLayerEffect(Effect layerEffect)
+        {
+            if (layerEffect == null) return;
+        
+            LayerEffects.Add(layerEffect);
+        }
+        
+        public void RemoveLayerEffect(Effect layerEffect)
+        {
+            LayerEffects.Remove(layerEffect);
+        }
 
         /// <summary>
         /// Renders the RenderLayer with a set of Renderers.
@@ -72,6 +79,9 @@ namespace TDMonoGameEngine
             //Return if there's nothing to render
             if (renderers == null || renderers.Count == 0)
                 return;
+
+            //Set target reference
+            RendTarget = RTarget;
 
             //Draw to this layer's RenderTarget and initially fill it with transparency
             RenderingManager.Instance.graphicsDevice.SetRenderTarget(RendTarget);
@@ -123,23 +133,31 @@ namespace TDMonoGameEngine
             renderBatches.Clear();
             renderBatches = null;
 
+            //Handle rendering multiple post-processing effects with two RenderTargets
+            RenderTarget2D renderToTarget = PPRTarget;
+            RenderTarget2D renderTarget = RTarget;
+
+            for (int i = 0; i < LayerEffects.Count; i++)
+            {
+                RenderingManager.Instance.graphicsDevice.SetRenderTarget(renderToTarget);
+                RenderingManager.Instance.graphicsDevice.Clear(Color.Transparent);
+
+                //Add the layer post-processing effects to this layer
+                RenderingManager.Instance.StartBatch(RenderSettings.spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, LayerEffects[i], null);
+            
+                RenderingManager.Instance.CurrentBatch.Draw(renderTarget, new Rectangle(0, 0, RTarget.Width, RTarget.Height), null, Color.White);
+            
+                RenderingManager.Instance.EndCurrentBatch();
+
+                //Swap RenderTargets; the one that was rendered to has the updated data
+                UtilityGlobals.Swap(ref renderToTarget, ref renderTarget);
+            }
+
             //Unset the RenderTarget
             RenderingManager.Instance.graphicsDevice.SetRenderTarget(null);
 
-            //NOTE: Problems with current post-processing:
-            //The RenderTarget renders itself to itself, so data is lost
-            //This is what causes it to act weird
-            //We'd need to switch between two RenderTargets to get reliable post-processing
-
-            //for (int i = 0; i < LayerEffects.Count; i++)
-            //{
-            //    //Add the layer post-processing effects to this layer
-            //    RenderingManager.Instance.StartBatch(RenderSettings.spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, LayerEffects[i], null);
-            //
-            //    RenderingManager.Instance.CurrentBatch.Draw(RTarget, new Rectangle(0, 0, RTarget.Width, RTarget.Height), null, Color.White);
-            //
-            //    RenderingManager.Instance.EndCurrentBatch();
-            //}
+            if (LayerEffects.Count > 0)
+                RendTarget = renderTarget;
         }
 
         /// <summary>
