@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BaseMonoGameEngine
+namespace TDMonoGameEngine
 {
     /// <summary>
     /// The base state machine for the player.

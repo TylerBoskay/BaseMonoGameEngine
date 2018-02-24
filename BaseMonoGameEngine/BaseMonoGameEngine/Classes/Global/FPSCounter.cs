@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace BaseMonoGameEngine
+namespace TDMonoGameEngine
 {
     /// <summary>
     /// FPS Counter that displays the FPS

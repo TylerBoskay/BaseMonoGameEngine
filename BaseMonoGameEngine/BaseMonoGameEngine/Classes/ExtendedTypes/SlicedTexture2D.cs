@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace BaseMonoGameEngine
+namespace TDMonoGameEngine
 {
     /// <summary>
     /// Represents a Texture2D sliced into several regions.

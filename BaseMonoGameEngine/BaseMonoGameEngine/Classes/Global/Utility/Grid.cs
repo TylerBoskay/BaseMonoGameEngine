@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace BaseMonoGameEngine
+namespace TDMonoGameEngine
 {
     /// <summary>
     /// A grid holding <see cref="PosUIElement"/>s.

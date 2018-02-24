@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
-namespace BaseMonoGameEngine
+namespace TDMonoGameEngine
 {
     /// <summary>
     /// An interface for any type of object that can be scaled.

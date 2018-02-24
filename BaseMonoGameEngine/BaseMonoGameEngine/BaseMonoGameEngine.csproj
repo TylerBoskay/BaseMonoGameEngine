@@ -9,8 +9,8 @@
     <ProjectGuid>{A97F2D31-4B42-41AB-AF1D-A972C779B23C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BaseMonoGameEngine</RootNamespace>
-    <AssemblyName>BaseMonoGameEngine</AssemblyName>
+    <RootNamespace>TDMonoGameEngine</RootNamespace>
+    <AssemblyName>TDMonoGameEngine</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>DesktopGL</MonoGamePlatform>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>

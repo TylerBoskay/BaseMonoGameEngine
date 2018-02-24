@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace BaseMonoGameEngine
+namespace TDMonoGameEngine
 {
     /// <summary>
     /// A 9-sliced Texture2D. It produces a set of source rectangles that slice the Texture2D into 9 slices, which can be used for rendering.

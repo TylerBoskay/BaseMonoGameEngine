@@ -1,2 +1,2 @@
-# BaseMonoGameEngine
-A base MonoGame engine with useful wrappers and utilities.
+# TDMonoGameEngine
+A MonoGame engine with flexible core fuctionality and useful wrappers and utilities.
