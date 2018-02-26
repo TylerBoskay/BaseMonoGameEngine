@@ -77,21 +77,31 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
-        /// Tells if this Circle intersects an Axis-Aligned Rectangle.
+        /// Tells if this Circle intersects an Axis-Aligned float Rectangle.
         /// </summary>
-        /// <param name="rect">The Rectangle.</param>
-        /// <returns>true if it intersects the Rectangle, otherwise false.</returns>
-        public bool Intersects(in Rectangle rect)
+        /// <param name="rectF">The RectangleF.</param>
+        /// <returns>true if it intersects the RectangleF, otherwise false.</returns>
+        public bool Intersects(in RectangleF rectF)
         {
             //This currently checks for AABB
             //For non-AABB check if:
             //Either the circle's centre lies inside the rectangle, or
             //One of the edges of the rectangle has a point in the circle.
 
-            double distSquared = UtilityGlobals.SquaredDistanceToPointFromRectangle(rect.TopLeft(), rect.BottomRight(), Center);
+            double distSquared = UtilityGlobals.SquaredDistanceToPointFromRectangle(rectF.TopLeft, rectF.BottomRight, Center);
             double radiusSquared = Radius * Radius;
 
             return (distSquared <= radiusSquared);
+        }
+
+        /// <summary>
+        /// Tells if this Circle intersects an Axis-Aligned Rectangle.
+        /// </summary>
+        /// <param name="rect">The Rectangle.</param>
+        /// <returns>true if it intersects the Rectangle, otherwise false.</returns>
+        public bool Intersects(in Rectangle rect)
+        {
+            return Intersects((RectangleF)rect);
         }
 
         /// <summary>

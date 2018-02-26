@@ -385,7 +385,7 @@ namespace TDMonoGameEngine
         /// <param name="layer">The layer of the line.</param>
         /// <param name="thickness">The thickness of the line.</param>
         /// <param name="uiBatch">Whether to draw with the UI batch or not.</param>
-        public static void DebugDrawLine(Vector2 start, Vector2 end, Color color, float layer, int thickness, bool uiBatch)
+        public static void DebugDrawLine(in Vector2 start, in Vector2 end, in Color color, in float layer, in int thickness, in bool uiBatch)
         {
             if (DebugEnabled == false) return;
 
@@ -409,7 +409,7 @@ namespace TDMonoGameEngine
         /// <param name="color">The color of the rectangle.</param>
         /// <param name="layer">The layer of the rectangle.</param>
         /// <param name="uiBatch">Whether to draw with the UI batch or not.</param>
-        public static void DebugDrawRect(Rectangle rect, Color color, float layer, bool uiBatch)
+        public static void DebugDrawRect(in Rectangle rect, in Color color, in float layer, in bool uiBatch)
         {
             if (DebugEnabled == false) return;
 
@@ -420,6 +420,23 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
+        /// Draws a float rectangle.
+        /// </summary>
+        /// <param name="rect">The RectangleF to draw.</param>
+        /// <param name="color">The color of the rectangle.</param>
+        /// <param name="layer">The layer of the rectangle.</param>
+        /// <param name="uiBatch">Whether to draw with the UI batch or not.</param>
+        public static void DebugDrawRect(in RectangleF rect, in Color color, in float layer, in bool uiBatch)
+        {
+            if (DebugEnabled == false) return;
+
+            Texture2D box = AssetManager.Instance.LoadRawTexture2D($"{ContentGlobals.SpriteRoot}Box.png");
+
+            SpriteBatch batch = (uiBatch == false) ? DebugSpriteBatch : DebugUIBatch;
+            batch?.Draw(box, rect.TopLeft, null, color, 0f, Vector2.Zero, rect.Size, SpriteEffects.None, layer);
+        }
+
+        /// <summary>
         /// Draws a hollow rectangle.
         /// </summary>
         /// <param name="rect">The Rectangle to draw.</param>
@@ -427,7 +444,7 @@ namespace TDMonoGameEngine
         /// <param name="layer">The layer of the hollow rectangle.</param>
         /// <param name="thickness">The thickness of the hollow rectangle.</param>
         /// <param name="uiBatch">Whether to draw with the UI batch or not.</param>
-        public static void DebugDrawHollowRect(Rectangle rect, Color color, float layer, int thickness, bool uiBatch)
+        public static void DebugDrawHollowRect(in Rectangle rect, in Color color, in float layer, in int thickness, in bool uiBatch)
         {
             if (DebugEnabled == false) return;
 
@@ -449,6 +466,37 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
+        /// Draws a hollow float rectangle.
+        /// </summary>
+        /// <param name="rect">The RectangleF to draw.</param>
+        /// <param name="color">The color of the hollow rectangle.</param>
+        /// <param name="layer">The layer of the hollow rectangle.</param>
+        /// <param name="thickness">The thickness of the hollow rectangle.</param>
+        /// <param name="uiBatch">Whether to draw with the UI batch or not.</param>
+        public static void DebugDrawHollowRect(in RectangleF rect, in Color color, in float layer, in int thickness, in bool uiBatch)
+        {
+            if (DebugEnabled == false) return;
+
+            RectangleF[] rects = new RectangleF[4]
+            {
+                new RectangleF(rect.X, rect.Y, rect.Width, thickness),
+                new RectangleF(rect.Right - thickness, rect.Y, thickness, rect.Height),
+                new RectangleF(rect.X, rect.Y, thickness, rect.Height),
+                new RectangleF(rect.X, rect.Bottom - thickness, rect.Width, thickness)
+            };
+
+            Texture2D box = AssetManager.Instance.LoadRawTexture2D($"{ContentGlobals.SpriteRoot}Box.png");
+
+            for (int i = 0; i < rects.Length; i++)
+            {
+                RectangleF rectf = rects[i];
+
+                SpriteBatch batch = (uiBatch == false) ? DebugSpriteBatch : DebugUIBatch;
+                batch?.Draw(box, rectf.TopLeft, null, color, 0f, Vector2.Zero, rectf.Size, SpriteEffects.None, layer);
+            }
+        }
+
+        /// <summary>
         /// Draws a circle.
         /// </summary>
         /// <param name="circle">The circle to draw.</param>
@@ -458,7 +506,7 @@ namespace TDMonoGameEngine
         /// <remarks>Brute force algorithm obtained from here: https://stackoverflow.com/a/1237519 
         /// This seems to gives a more full looking circle than Bresenham's algorithm.
         /// </remarks>
-        public static void DebugDrawCircle(Circle circle, Color color, float layer, bool uiBatch)
+        public static void DebugDrawCircle(in Circle circle, in Color color, in float layer, in bool uiBatch)
         {
             Texture2D box = AssetManager.Instance.LoadRawTexture2D($"{ContentGlobals.SpriteRoot}Box.png");
             float radius = (float)circle.Radius;
@@ -492,7 +540,7 @@ namespace TDMonoGameEngine
         /// <remarks>Brute force algorithm obtained from here: https://stackoverflow.com/a/1237519 
         /// This seems to gives a more full looking circle than Bresenham's algorithm.
         /// </remarks>
-        public static void DebugDrawHollowCircle(Circle circle, Color color, float layer, bool uiBatch)
+        public static void DebugDrawHollowCircle(in Circle circle, in Color color, in float layer, in bool uiBatch)
         {
             Texture2D box = AssetManager.Instance.LoadRawTexture2D($"{ContentGlobals.SpriteRoot}Box.png");
             float radius = (float)circle.Radius;
