@@ -51,12 +51,15 @@ namespace TDMonoGameEngine
             Camera2D.Instance.SetBounds(new Rectangle(0, 0, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y));
 
             currentScene = new GameScene();
+            currentScene.AddRenderLayer(new RenderLayer(1, new RenderLayer.RenderingSettings(RenderingManager.Instance.spriteBatch,
+                SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, false)));
 
             Player player1 = new Player();
             currentScene.AddSceneObject(player1);
             currentScene.AddSceneObject(new TestEnemy());
             currentScene.AddSceneObject(new TestEnemy2());
             currentScene.AddSceneObject(new TestRotateObj(player1));
+            currentScene.AddSceneObject(new TestGameHUD(player1, 1));
 
             base.Initialize();
         }

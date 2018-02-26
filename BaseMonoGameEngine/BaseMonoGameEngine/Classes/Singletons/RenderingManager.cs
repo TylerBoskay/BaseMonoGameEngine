@@ -180,8 +180,8 @@ namespace TDMonoGameEngine
             }
         }
 
-        public void StartBatch(SpriteBatch sb, SpriteSortMode spriteSortMode, BlendState blendState, SamplerState samplerState,
-            DepthStencilState depthStencilState, RasterizerState rasterizerState, Effect shader, Matrix? transformMatrix)
+        public void StartBatch(in SpriteBatch sb, in SpriteSortMode spriteSortMode, in BlendState blendState, in SamplerState samplerState,
+            in DepthStencilState depthStencilState, in RasterizerState rasterizerState, in Effect shader, in Matrix? transformMatrix)
         {
             CurrentBatch = sb;
             CurrentBatch.Begin(spriteSortMode, blendState, samplerState, depthStencilState, rasterizerState, shader, transformMatrix);
@@ -272,14 +272,14 @@ namespace TDMonoGameEngine
             RenderingMetrics = graphicsDevice.Metrics;
         }
 
-        public void DrawSprite(Texture2D tex, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin,
-            Vector2 scale, SpriteEffects spriteEffects, float depth)
+        public void DrawSprite(in Texture2D tex, in Vector2 position, in Rectangle? sourceRect, in Color color, in float rotation,
+            in Vector2 origin, in Vector2 scale, in SpriteEffects spriteEffects, in float depth)
         {
             CurrentBatch.Draw(tex, position, sourceRect, color, rotation, origin, scale, spriteEffects, depth);
         }
 
-        public void DrawSprite(Texture2D tex, Rectangle destRectangle, Rectangle? sourceRect, Color color, float rotation, Vector2 origin,
-            SpriteEffects spriteEffects, float depth)
+        public void DrawSprite(in Texture2D tex, in Rectangle destRectangle, in Rectangle? sourceRect, in Color color, in float rotation,
+            in Vector2 origin, in SpriteEffects spriteEffects, in float depth)
         {
             CurrentBatch.Draw(tex, destRectangle, sourceRect, color, rotation, origin, spriteEffects, depth);
         }

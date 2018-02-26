@@ -14,6 +14,9 @@ namespace TDMonoGameEngine
     /// </summary>
     public class Player : SceneObject
     {
+        public int Health = 31;
+        public int MaxHealth = 38;
+
         public Vector2 Speed = new Vector2(2f, 2f);
 
         public AnimManager AnimationManager { get; private set; } = null;
@@ -89,10 +92,12 @@ namespace TDMonoGameEngine
         {
             if (Input.GetButtonDown(0, InputActions.A) == true)
             {
+                Health = UtilityGlobals.Clamp(Health + 1, 0, MaxHealth);
                 spriteRenderer.TintColor = Color.White;
             }
             else if (Input.GetButtonDown(0, InputActions.B) == true)
             {
+                Health = UtilityGlobals.Clamp(Health - 1, 0, MaxHealth);
                 spriteRenderer.TintColor = Color.Red;
             }
             else if (Input.GetButtonDown(0, InputActions.X) == true)

@@ -20,7 +20,8 @@ float4 Grayscale(VertexShaderOutput input) : COLOR
 {
 	float4 color = tex2D(s0, input.TextureCoordinates);
 
-	color.gb = color.r;
+	//Set the RGB to the average of the RGB components
+	color.rgb = (color.r + color.g + color.b) / 3.0f;
 
 	return color;
 }

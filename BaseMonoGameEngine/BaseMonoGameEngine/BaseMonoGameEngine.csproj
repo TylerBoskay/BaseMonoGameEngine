@@ -66,6 +66,7 @@
     <Compile Include="Classes\ExtendedTypes\CroppedTexture2D.cs" />
     <Compile Include="Classes\ExtendedTypes\NineSlicedTexture2D.cs" />
     <Compile Include="Classes\ExtendedTypes\SlicedTexture2D.cs" />
+    <Compile Include="Classes\Gameplay\TestGameHUD.cs" />
     <Compile Include="Classes\Gameplay\Player.cs" />
     <Compile Include="Classes\Gameplay\PlayerStateMachines\PlayerIdleState.cs" />
     <Compile Include="Classes\Gameplay\PlayerStateMachines\PlayerStateMachine.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="Classes\Interfaces\ITransformable.cs" />
     <Compile Include="Classes\Interfaces\IUpdateable.cs" />
     <Compile Include="Classes\Rendering\NineSlicedSprite.cs" />
+    <Compile Include="Classes\Rendering\Renderers\HUDRenderer.cs" />
     <Compile Include="Classes\Rendering\Renderers\PokeyRenderer.cs" />
     <Compile Include="Classes\Rendering\Renderers\SlicedSpriteRenderer.cs" />
     <Compile Include="Classes\Rendering\Renderers\Renderer.cs" />
