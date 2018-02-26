@@ -65,8 +65,8 @@ namespace TDMonoGameEngine
 
         public void CleanUp()
         {
-            //Unload all content
-            Content.Unload();
+            //Dispose the content, which also unloads it
+            Content.Dispose();
             Content = null;
 
             //Dispose each raw texture

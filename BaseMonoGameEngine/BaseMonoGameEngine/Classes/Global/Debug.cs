@@ -608,6 +608,10 @@ namespace TDMonoGameEngine
             debugUIBatch.DrawString(font, "Pixel shaders: " + metrics.PixelShaderCount, renderBasePos + new Vector2(0, 120), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
             debugUIBatch.DrawString(font, "Vertex shaders: " + metrics.VertexShaderCount, renderBasePos + new Vector2(0, 140), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
 
+            //Memory Info
+            Vector2 memBasePos = new Vector2(0, 200);
+            debugUIBatch.DrawString(font, "Managed Memory: " + Math.Round((GC.GetTotalMemory(false) / 1024f) / 1024f, 2) + " MB", memBasePos, Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+
             //Camera info
             Vector2 cameraBasePos = new Vector2(0, 390);
             DebugUIBatch?.DrawString(font, "Camera:", cameraBasePos, Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);

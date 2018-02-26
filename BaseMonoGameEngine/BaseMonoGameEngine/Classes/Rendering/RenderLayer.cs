@@ -38,7 +38,15 @@ namespace TDMonoGameEngine
         /// </summary>
         public bool Enabled { get; set; } = true;
 
+        /// <summary>
+        /// The post-processing layer effects being applied to this layer.
+        /// </summary>
         private readonly List<Effect> LayerEffects = new List<Effect>();
+
+        /// <summary>
+        /// The current list of RenderBatches.
+        /// </summary>
+        private readonly List<RenderBatch> RenderBatches = new List<RenderBatch>();
 
         public RenderLayer(int layerOrder, RenderingSettings renderSettings)
         {
@@ -52,12 +60,20 @@ namespace TDMonoGameEngine
 
         public void CleanUp()
         {
+            //Clear all current batches
+            RenderBatches.Clear();
+
+            //Clear all current layer effects
             LayerEffects.Clear();
 
             RTarget.Dispose();
             PPRTarget.Dispose();
         }
 
+        /// <summary>
+        /// Adds a post-processing effect for this layer.
+        /// </summary>
+        /// <param name="layerEffect">The Effect to add.</param>
         public void AddLayerEffect(Effect layerEffect)
         {
             if (layerEffect == null) return;
@@ -65,6 +81,10 @@ namespace TDMonoGameEngine
             LayerEffects.Add(layerEffect);
         }
         
+        /// <summary>
+        /// Removes a post-processing effect from this layer.
+        /// </summary>
+        /// <param name="layerEffect">The Effect to remove.</param>
         public void RemoveLayerEffect(Effect layerEffect)
         {
             LayerEffects.Remove(layerEffect);
@@ -87,21 +107,19 @@ namespace TDMonoGameEngine
             RenderingManager.Instance.graphicsDevice.SetRenderTarget(RendTarget);
             RenderingManager.Instance.graphicsDevice.Clear(Color.Transparent);
 
-            List<RenderBatch> renderBatches = new List<RenderBatch>();
-
             //Go through all the Renderers and put them into batches
             for (int i = 0; i < renderers.Count; i++)
             {
                 Renderer renderer = renderers[i];
 
                 //Find the batch using the Renderer's shader
-                RenderBatch batch = renderBatches.Find((rBatch) => rBatch.AppliedEffect == renderer.Shader);
+                RenderBatch batch = RenderBatches.Find((rBatch) => rBatch.AppliedEffect == renderer.Shader);
 
                 //If no such batch exists, add a new one
                 if (batch == null)
                 {
                     batch = new RenderBatch(renderer.Shader);
-                    renderBatches.Add(batch);
+                    RenderBatches.Add(batch);
                 }
 
                 //Add this Renderer to the batch
@@ -109,9 +127,9 @@ namespace TDMonoGameEngine
             }
 
             //Render the batches
-            for (int i = 0; i < renderBatches.Count; i++)
+            for (int i = 0; i < RenderBatches.Count; i++)
             {
-                RenderBatch batch = renderBatches[i];
+                RenderBatch batch = RenderBatches[i];
 
                 Matrix? matrix = null;
                 if (RenderSettings.UseCameraMatrix == true) matrix = Camera2D.Instance.TransformMatrix;
@@ -130,8 +148,8 @@ namespace TDMonoGameEngine
                 RenderingManager.Instance.EndCurrentBatch();
             }
 
-            renderBatches.Clear();
-            renderBatches = null;
+            //Clear the batches
+            RenderBatches.Clear();
 
             //Handle rendering multiple post-processing effects with two RenderTargets
             RenderTarget2D renderToTarget = PPRTarget;
@@ -156,6 +174,7 @@ namespace TDMonoGameEngine
             //Unset the RenderTarget
             RenderingManager.Instance.graphicsDevice.SetRenderTarget(null);
 
+            //Update the RenderTarget to the one with the most updated data
             if (LayerEffects.Count > 0)
                 RendTarget = renderTarget;
         }
