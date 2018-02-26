@@ -394,6 +394,48 @@ namespace TDMonoGameEngine
             return new Rectangle((int)position.X, (int)position.Y, (int)scale.X, (int)scale.Y);
         }
 
+        /// <summary>
+        /// Returns the squared distance to a point.
+        /// </summary>
+        /// <param name="rectTopLeft">The top-left point of the Rectangle.</param>
+        /// <param name="rectBottomRight">The bottom-right point of the Rectangle.</param>
+        /// <param name="point">The point to get the distance to.</param>
+        /// <returns>A double containing the squared distance to the point.</returns>
+        public static double SquaredDistanceToPointFromRectangle(Vector2 rectTopLeft, Vector2 rectBottomRight, Vector2 point)
+        {
+            double squaredDistance = 0d;
+
+            //X-axis - See whether we get the distance from the left or right point of the rectangle
+            if (point.X < rectTopLeft.X)
+            {
+                float distance = rectTopLeft.X - point.X;
+
+                squaredDistance += (distance * distance);
+            }
+            else if (point.X > rectBottomRight.X)
+            {
+                float distance = rectBottomRight.X - point.X;
+
+                squaredDistance += (distance * distance);
+            }
+
+            //Y-axis - See whether we get the distance from the top or bottom point of the rectangle
+            if (point.Y < rectTopLeft.Y)
+            {
+                float distance = rectTopLeft.Y - point.Y;
+
+                squaredDistance += (distance * distance);
+            }
+            else if (point.Y > rectBottomRight.Y)
+            {
+                float distance = rectBottomRight.Y - point.Y;
+
+                squaredDistance += (distance * distance);
+            }
+
+            return squaredDistance;
+        }
+
         #region Line Intersection
 
         /// <summary>

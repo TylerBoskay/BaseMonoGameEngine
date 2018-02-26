@@ -68,7 +68,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="other">The Circle to test intersection with.</param>
         /// <returns>true if the sum of the radii squared is less than or equal to the distance between the circles squared.</returns>
-        public bool Intersects(Circle other)
+        public bool Intersects(in Circle other)
         {
             double radiusSquared = Math.Pow(Radius + other.Radius, 2);
             double distance = Vector2.DistanceSquared(Center, other.Center);
@@ -77,11 +77,29 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
+        /// Tells if this Circle intersects an Axis-Aligned Rectangle.
+        /// </summary>
+        /// <param name="rect">The Rectangle.</param>
+        /// <returns>true if it intersects the Rectangle, otherwise false.</returns>
+        public bool Intersects(in Rectangle rect)
+        {
+            //This currently checks for AABB
+            //For non-AABB check if:
+            //Either the circle's centre lies inside the rectangle, or
+            //One of the edges of the rectangle has a point in the circle.
+
+            double distSquared = UtilityGlobals.SquaredDistanceToPointFromRectangle(rect.TopLeft(), rect.BottomRight(), Center);
+            double radiusSquared = Radius * Radius;
+
+            return (distSquared <= radiusSquared);
+        }
+
+        /// <summary>
         /// Tells if the Circle contains a Vector2.
         /// </summary>
         /// <param name="value">The Vector2 to test.</param>
         /// <returns>true if <paramref name="value"/> is contained in the Circle, otherwise false.</returns>
-        public bool Contains(Vector2 value)
+        public bool Contains(in Vector2 value)
         {
             return (Intersects(new Circle(value, 0d)));
         }
@@ -91,7 +109,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="value">The Point to test.</param>
         /// <returns>true if <paramref name="value"/> is contained in the Circle, otherwise false.</returns>
-        public bool Contains(Point value)
+        public bool Contains(in Point value)
         {
             return Contains(new Vector2(value.X, value.Y));
         }

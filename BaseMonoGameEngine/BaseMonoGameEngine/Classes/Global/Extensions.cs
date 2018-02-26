@@ -120,6 +120,42 @@ namespace TDMonoGameEngine
         #region Rectangle Extensions
 
         /// <summary>
+        /// Gets the top-left point of the Rectangle.
+        /// </summary>
+        /// <param name="rectangle">The Rectangle.</param>
+        /// <returns>A Vector2 containing the top-left point of the rectangle.</returns>
+        public static Vector2 TopLeft(this Rectangle rectangle) => new Vector2(rectangle.Left, rectangle.Top);
+
+        /// <summary>
+        /// Gets the top-right point of the Rectangle.
+        /// </summary>
+        /// <param name="rectangle">The Rectangle.</param>
+        /// <returns>A Vector2 containing the top-right point of the rectangle.</returns>
+        public static Vector2 TopRight(this Rectangle rectangle) => new Vector2(rectangle.Right, rectangle.Top);
+
+        /// <summary>
+        /// Gets the bottom-left point of the Rectangle.
+        /// </summary>
+        /// <param name="rectangle">The Rectangle.</param>
+        /// <returns>A Vector2 containing the bottom-left point of the rectangle.</returns>
+        public static Vector2 BottomLeft(this Rectangle rectangle) => new Vector2(rectangle.Left, rectangle.Bottom);
+
+        /// <summary>
+        /// Gets the bottom-right point of the Rectangle.
+        /// </summary>
+        /// <param name="rectangle">The Rectangle.</param>
+        /// <returns>A Vector2 containing the bottom-right point of the rectangle.</returns>
+        public static Vector2 BottomRight(this Rectangle rectangle) => new Vector2(rectangle.Right, rectangle.Bottom);
+
+        /// <summary>
+        /// Tells if the Rectangle intersects a Circle.
+        /// </summary>
+        /// <param name="rectangle">The Rectangle.</param>
+        /// <param name="circle">The Circle to test intersection with.</param>
+        /// <returns>true if the Rectangle intersects the Circle, otherwise false.</returns>
+        public static bool Intersects(this Rectangle rectangle, in Circle circle) => circle.Intersects(rectangle);
+
+        /// <summary>
         /// Gets the origin of a Rectangle
         /// </summary>
         /// <param name="rectangle">The Rectangle to get the origin for</param>
