@@ -64,7 +64,7 @@ namespace TDMonoGameEngine
             RenderBatches.Clear();
 
             //Clear all current layer effects
-            LayerEffects.Clear();
+            RemoveAllLayerEffects();
 
             RTarget.Dispose();
             PPRTarget.Dispose();
@@ -88,6 +88,14 @@ namespace TDMonoGameEngine
         public void RemoveLayerEffect(Effect layerEffect)
         {
             LayerEffects.Remove(layerEffect);
+        }
+
+        /// <summary>
+        /// Removes all post-processing effects from a layer.
+        /// </summary>
+        public void RemoveAllLayerEffects()
+        {
+            LayerEffects.Clear();
         }
 
         /// <summary>

@@ -18,7 +18,7 @@ namespace TDMonoGameEngine
 
             PokeyRenderer pokeyRender = new PokeyRenderer(transform, null);
 
-            Sprite pokeyBody = new Sprite(tex, new Rectangle(97, 38, 32, 23));
+            Sprite pokeyBody = new Sprite(tex, new Rectangle(96, 37, 34, 25));
 
             pokeyRender.SpritesToRender.Add(new Sprite(tex, new Rectangle(96, 65, 32, 30)));
             pokeyRender.SpritesToRender.Add(pokeyBody);

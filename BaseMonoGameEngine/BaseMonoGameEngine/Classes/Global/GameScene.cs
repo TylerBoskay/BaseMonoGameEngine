@@ -171,6 +171,28 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
+        /// Removes all layer effects from a particular RenderLayer.
+        /// </summary>
+        /// <param name="layerOrder">The layer order to remove all effects from.</param>
+        public void RemoveAllRenderLayerEffects(int layerOrder)
+        {
+            RenderLayer layer = null;
+
+            //Find the layer
+            for (int i = 0; i < RenderLayers.Count; i++)
+            {
+                if (RenderLayers[i].LayerOrder == layerOrder)
+                {
+                    layer = RenderLayers[i];
+                    break;
+                }
+            }
+
+            if (layer != null)
+                layer.RemoveAllLayerEffects();
+        }
+
+        /// <summary>
         /// Gets all the active visible renderers in the game scene.
         /// Renderers on SceneObjects that are disabled, as well as disabled and null renderers, are not included in this list.
         /// Renderers not visible at all by the camera are excluded as well.

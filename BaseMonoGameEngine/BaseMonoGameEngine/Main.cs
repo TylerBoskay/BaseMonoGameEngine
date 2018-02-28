@@ -84,6 +84,9 @@ namespace TDMonoGameEngine
             RenderingManager.Instance.CleanUp();
             currentScene?.CleanUp();
 
+            if (EventManager.HasInstance == true)
+                EventManager.Instance.CleanUp();
+
             Debug.DebugCleanup();
         }
 
@@ -119,6 +122,9 @@ namespace TDMonoGameEngine
         /// <param name="gameTime">Provides a snapshot of timing values</param>
         private void MainUpdate(GameTime gameTime)
         {
+            if (EventManager.HasInstance == true)
+                EventManager.Instance.Update();
+
             currentScene?.Update();
         }
 
