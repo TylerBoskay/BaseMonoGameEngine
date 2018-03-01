@@ -61,7 +61,7 @@ namespace TDMonoGameEngine
 
             ElapsedFrameTime = 0d;
 
-            SpriteToChange.SourceRect = CurFrame.DrawRegion;
+            UpdateSpriteInfo(CurFrame);
         }
 
         public void Update()
@@ -83,7 +83,13 @@ namespace TDMonoGameEngine
 
             ElapsedFrameTime = 0;
 
-            SpriteToChange.SourceRect = CurFrame.DrawRegion;
+            UpdateSpriteInfo(CurFrame);
+        }
+
+        private void UpdateSpriteInfo(in AnimationFrame frame)
+        {
+            SpriteToChange.SourceRect = frame.DrawRegion;
+            SpriteToChange.Pivot = frame.Pivot;
         }
     }
 }

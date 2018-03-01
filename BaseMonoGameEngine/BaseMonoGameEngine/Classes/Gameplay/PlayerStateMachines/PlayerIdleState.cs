@@ -22,19 +22,19 @@ namespace TDMonoGameEngine
             if (StopSpeed == Vector2.Zero)
             {
                 PlayerRef.spriteRenderer.FlipData = SpriteEffects.None;
-                PlayerRef.AnimationManager.PlayAnimation("StandD");
+                PlayerRef.AnimationManager.PlayAnimation(AnimationGlobals.PlayerAnimations.StandDown);
                 return;
             }
 
             PlayerRef.spriteRenderer.FlipData = SpriteEffects.None;
             if (StopSpeed.X != 0)
             {
-                PlayerRef.AnimationManager.PlayAnimation("StandL");
+                PlayerRef.AnimationManager.PlayAnimation(AnimationGlobals.PlayerAnimations.StandLeft);
                 if (StopSpeed.X > 0)
                     PlayerRef.spriteRenderer.FlipData = SpriteEffects.FlipHorizontally;
             }
-            else if (StopSpeed.Y < 0) PlayerRef.AnimationManager.PlayAnimation("StandU");
-            else if (StopSpeed.Y > 0) PlayerRef.AnimationManager.PlayAnimation("StandD");
+            else if (StopSpeed.Y < 0) PlayerRef.AnimationManager.PlayAnimation(AnimationGlobals.PlayerAnimations.StandUp);
+            else if (StopSpeed.Y > 0) PlayerRef.AnimationManager.PlayAnimation(AnimationGlobals.PlayerAnimations.StandDown);
         }
 
         public override void Exit()
@@ -59,6 +59,12 @@ namespace TDMonoGameEngine
                 PlayerRef.transform.Position += moveAmt;
 
                 PlayerRef.ChangeState(new PlayerWalkState(PlayerRef, moveAmt));
+                return;
+            }
+
+            if (Input.GetButtonDown(0, InputActions.B) == true)
+            {
+                PlayerRef.ChangeState(new PlayerAttackState(PlayerRef, StopSpeed));
             }
         }
     }

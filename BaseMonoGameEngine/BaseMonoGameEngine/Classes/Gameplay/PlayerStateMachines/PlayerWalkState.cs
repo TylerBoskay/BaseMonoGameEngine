@@ -25,7 +25,6 @@ namespace TDMonoGameEngine
         public override void Enter()
         {
             UpdateDirection(MoveSpeed);
-            MoveDir = Vector2.Zero;
             SetAnimForDir();
         }
 
@@ -71,18 +70,18 @@ namespace TDMonoGameEngine
 
             if (CurDir.Y > 0)
             {
-                PlayerRef.AnimationManager.PlayAnimationIfDiff("WalkD");
+                PlayerRef.AnimationManager.PlayAnimationIfDiff(AnimationGlobals.PlayerAnimations.WalkDown);
             }
             else if (CurDir.Y < 0)
             {
-                PlayerRef.AnimationManager.PlayAnimationIfDiff("WalkU");
+                PlayerRef.AnimationManager.PlayAnimationIfDiff(AnimationGlobals.PlayerAnimations.WalkUp);
             }
             else if (CurDir.X != 0)
             {
-                PlayerRef.AnimationManager.PlayAnimationIfDiff("WalkL");
+                PlayerRef.AnimationManager.PlayAnimationIfDiff(AnimationGlobals.PlayerAnimations.WalkLeft);
             }
 
-            if (MoveDir.X < 0 && PlayerRef.AnimationManager.CurrentAnim.Key == "WalkL")
+            if (MoveDir.X < 0 && PlayerRef.AnimationManager.CurrentAnim.Key == AnimationGlobals.PlayerAnimations.WalkLeft)
                 PlayerRef.spriteRenderer.FlipData = SpriteEffects.FlipHorizontally;
         }
 
@@ -107,6 +106,11 @@ namespace TDMonoGameEngine
             }
 
             PrevSpeed = MoveSpeed;
+
+            if (Input.GetButtonDown(0, InputActions.B) == true)
+            {
+                PlayerRef.ChangeState(new PlayerAttackState(PlayerRef, CurDir));
+            }
         }
     }
 }

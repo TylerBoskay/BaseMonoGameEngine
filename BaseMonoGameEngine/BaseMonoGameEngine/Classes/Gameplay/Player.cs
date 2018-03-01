@@ -37,30 +37,53 @@ namespace TDMonoGameEngine
             renderer = spriteRenderer;
 
             AnimationManager = new AnimManager(spriteRenderer.SpriteToRender);
-            AnimationManager.AddAnimation("StandD", new SimpleAnimation(null, SimpleAnimation.AnimTypes.Normal,
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.StandDown, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Normal,
                 new AnimationFrame(new Rectangle(211, 375, 23, 36), 1000d)));
-            AnimationManager.AddAnimation("StandU", new SimpleAnimation(null, SimpleAnimation.AnimTypes.Normal,
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.StandUp, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Normal,
                 new AnimationFrame(new Rectangle(238, 374, 22, 37), 1000d)));
-            AnimationManager.AddAnimation("StandL", new SimpleAnimation(null, SimpleAnimation.AnimTypes.Normal,
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.StandLeft, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Normal,
                 new AnimationFrame(new Rectangle(266, 373, 18, 38), 1000d)));
 
-            AnimationManager.AddAnimation("WalkD", new SimpleAnimation(null, SimpleAnimation.AnimTypes.Looping,
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.WalkDown, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Looping,
                 new AnimationFrame(new Rectangle(16, 45, 21, 38), 110d),
                 new AnimationFrame(new Rectangle(41, 43, 23, 40), 110d),
                 new AnimationFrame(new Rectangle(68, 45, 20, 38), 110d),
                 new AnimationFrame(new Rectangle(92, 43, 23, 40), 110d)));
-            AnimationManager.AddAnimation("WalkU", new SimpleAnimation(null, SimpleAnimation.AnimTypes.Looping,
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.WalkUp, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Looping,
                 new AnimationFrame(new Rectangle(18, 137, 22, 37), 110d),
                 new AnimationFrame(new Rectangle(44, 135, 21, 39), 110d),
                 new AnimationFrame(new Rectangle(69, 137, 22, 37), 110d),
                 new AnimationFrame(new Rectangle(94, 135, 21, 39), 110d)));
-            AnimationManager.AddAnimation("WalkL", new SimpleAnimation(null, SimpleAnimation.AnimTypes.Looping,
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.WalkLeft, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Looping,
                 new AnimationFrame(new Rectangle(20, 89, 19, 40), 110d),
                 new AnimationFrame(new Rectangle(47, 91, 18, 38), 110d),
                 new AnimationFrame(new Rectangle(71, 89, 18, 40), 110d),
                 new AnimationFrame(new Rectangle(95, 92, 18, 37), 110d)));
 
-            ChangeState(new PlayerIdleState(this, Vector2.Zero));
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.AttackDown, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Normal,
+                new AnimationFrame(new Rectangle(33, 710, 19, 35), 50d, new Vector2(.5f, .5f)),
+                new AnimationFrame(new Rectangle(59, 710, 21, 35), 50d, new Vector2(.5f, .4f)),
+                new AnimationFrame(new Rectangle(87, 710, 21, 40), 50d, new Vector2(.5f, .3f)),
+                new AnimationFrame(new Rectangle(115, 710, 21, 43), 50d, new Vector2(.5f, .2f)),
+                new AnimationFrame(new Rectangle(142, 711, 20, 44), 50d, new Vector2(.5f, .2f)),
+                new AnimationFrame(new Rectangle(171, 710, 23, 35), 50d, new Vector2(.5f, .35f))));
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.AttackUp, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Normal,
+                new AnimationFrame(new Rectangle(27, 606, 22, 36), 50d, new Vector2(.5f, .5f)),
+                new AnimationFrame(new Rectangle(57, 606, 22, 36), 50d, new Vector2(.5f, .6f)),
+                new AnimationFrame(new Rectangle(88, 598, 22, 44), 50d, new Vector2(.5f, .7f)),
+                new AnimationFrame(new Rectangle(118, 594, 22, 48), 50d, new Vector2(.5f, .8f)),
+                new AnimationFrame(new Rectangle(150, 594, 20, 48), 50d, new Vector2(.5f, .8f)),
+                new AnimationFrame(new Rectangle(178, 606, 22, 36), 50d, new Vector2(.5f, .65f))));
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.AttackLeft, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Normal,
+                new AnimationFrame(new Rectangle(32, 657, 16, 38), 50d, new Vector2(.5f, .5f)),
+                new AnimationFrame(new Rectangle(58, 656, 23, 39), 50d, new Vector2(.6f, .5f)),
+                new AnimationFrame(new Rectangle(85, 656, 39, 39), 50d, new Vector2(.7f, .5f)),
+                new AnimationFrame(new Rectangle(131, 655, 39, 40), 50d, new Vector2(.8f, .5f)),
+                new AnimationFrame(new Rectangle(178, 656, 39, 39), 50d, new Vector2(.8f, .5f)),
+                new AnimationFrame(new Rectangle(226, 656, 39, 39), 50d, new Vector2(.8f, .5f)),
+                new AnimationFrame(new Rectangle(58, 656, 23, 39), 50d, new Vector2(.65f, .5f))));
+
+            ChangeState(new PlayerIdleState(this, new Vector2(0, 1)));
         }
 
         public override void CleanUp()
@@ -70,7 +93,7 @@ namespace TDMonoGameEngine
 
         public override void Update()
         {
-            ChangeColor();
+            //ChangeColor();
 
             CurStateMachine.Update();
 

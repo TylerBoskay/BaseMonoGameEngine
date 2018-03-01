@@ -42,7 +42,7 @@ namespace TDMonoGameEngine
             {
                 AnimationManager.PlayAnimation("Idle");
             }
-            else if (Input.GetButton(0, InputActions.B))
+            else if (Input.GetButton(0, InputActions.X))
             {
                 AnimationManager.PlayAnimation("Roll");
             }

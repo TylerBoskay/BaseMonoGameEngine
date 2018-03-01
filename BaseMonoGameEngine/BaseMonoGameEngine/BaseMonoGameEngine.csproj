@@ -66,6 +66,7 @@
     <Compile Include="Classes\ExtendedTypes\CroppedTexture2D.cs" />
     <Compile Include="Classes\ExtendedTypes\NineSlicedTexture2D.cs" />
     <Compile Include="Classes\ExtendedTypes\SlicedTexture2D.cs" />
+    <Compile Include="Classes\Gameplay\PlayerStateMachines\PlayerAttackState.cs" />
     <Compile Include="Classes\Gameplay\TestGameHUD.cs" />
     <Compile Include="Classes\Gameplay\Player.cs" />
     <Compile Include="Classes\Gameplay\PlayerStateMachines\PlayerIdleState.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Classes\Gameplay\TestEnemy.cs" />
     <Compile Include="Classes\Gameplay\TestEnemy2.cs" />
     <Compile Include="Classes\Gameplay\TestRotateObj.cs" />
+    <Compile Include="Classes\Global\AnimationGlobals.cs" />
     <Compile Include="Classes\Global\ContentGlobals.cs" />
     <Compile Include="Classes\Global\CrashHandler.cs" />
     <Compile Include="Classes\Global\Debug.cs" />
@@ -143,6 +145,9 @@
     <EmbeddedResource Include="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Audio\SFX\Attack.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\UI\HUD.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -200,7 +205,6 @@
   <ItemGroup>
     <Folder Include="Classes\Events\" />
     <Folder Include="Content\Audio\Music\" />
-    <Folder Include="Content\Audio\SFX\" />
     <Folder Include="Content\Shaders\ShaderTextures\" />
   </ItemGroup>
   <ItemGroup>
