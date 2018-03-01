@@ -202,6 +202,9 @@ namespace TDMonoGameEngine
         {
             List<Renderer> renderers = new List<Renderer>();
 
+            //Cache visible area
+            Rectangle visibleArea = Camera2D.Instance.VisibleArea;
+
             for (int i = 0; i < SceneObjects.Count; i++)
             {
                 SceneObject sceneObj = SceneObjects[i];
@@ -209,7 +212,7 @@ namespace TDMonoGameEngine
 
                 if (sceneObj.renderer != null && sceneObj.renderer.Enabled == true)
                 {
-                    if (Camera2D.Instance.IsInCameraView(sceneObj.renderer.Bounds) == true)
+                    if (Camera2D.Instance.IsInCameraView(visibleArea, sceneObj.renderer.Bounds) == true)
                     {
                         renderers.Add(sceneObj.renderer);
                     }

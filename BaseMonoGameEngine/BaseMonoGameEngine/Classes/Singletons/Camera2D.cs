@@ -71,7 +71,7 @@ namespace TDMonoGameEngine
             SetZoom(scale);
         }
 
-        public void SetBounds(Rectangle bounds)
+        public void SetBounds(in Rectangle bounds)
         {
             ScreenBounds = bounds;
         }
@@ -81,9 +81,20 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="bounds">A Rectangle representing the bounding region to check is in the Camera's view.</param>
         /// <returns>true if the bounds is in the Camera's view, otherwise false.</returns>
-        public bool IsInCameraView(Rectangle bounds)
+        public bool IsInCameraView(in Rectangle bounds)
         {
             return VisibleArea.Intersects(bounds);
+        }
+
+        /// <summary>
+        /// Tells if bounds are in a visible area's view.
+        /// </summary>
+        /// <param name="visibleArea">The visible region of the screen.</param>
+        /// <param name="bounds">A Rectangle representing the bounding region to check is in the view.</param>
+        /// <returns>true if the bounds is in the view, otherwise false.</returns>
+        public bool IsInCameraView(in Rectangle visibleArea, in Rectangle bounds)
+        {
+            return visibleArea.Intersects(bounds);
         }
 
         /// <summary>
@@ -91,7 +102,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="point">The point in screen space.</param>
         /// <returns>A Vector2 of the point in world space.</returns>
-        public Vector2 ScreenToWorldSpace(Vector2 point)
+        public Vector2 ScreenToWorldSpace(in Vector2 point)
         {
             Matrix invertedMatrix = Matrix.Invert(TransformMatrix);
             return Vector2.Transform(point, invertedMatrix);
@@ -102,7 +113,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="point">The point in world space.</param>
         /// <returns>A Vector2 of the point in screen space.</returns>
-        public Vector2 WorldToScreenSpace(Vector2 point)
+        public Vector2 WorldToScreenSpace(in Vector2 point)
         {
             return Vector2.Transform(point, TransformMatrix);
         }
@@ -111,7 +122,7 @@ namespace TDMonoGameEngine
         /// Makes the camera look at a point in world space.
         /// </summary>
         /// <param name="point">The point to look at.</param>
-        public void LookAt(Vector2 point)
+        public void LookAt(in Vector2 point)
         {
             Position = point;
         }
@@ -174,11 +185,13 @@ namespace TDMonoGameEngine
             {
                 Vector2 screenSize = new Vector2(ScreenBounds.Width, ScreenBounds.Height);
 
+                Matrix invertedMatrix = Matrix.Invert(TransformMatrix);
+
                 //Transform the camera corners and get their location in world space
-                Vector2 topLeft = ScreenToWorldSpace(Vector2.Zero);
-                Vector2 topRight = ScreenToWorldSpace(new Vector2(screenSize.X, 0));
-                Vector2 bottomLeft = ScreenToWorldSpace(new Vector2(0, screenSize.Y));
-                Vector2 bottomRight = ScreenToWorldSpace(screenSize);
+                Vector2 topLeft = Vector2.Transform(Vector2.Zero, invertedMatrix);
+                Vector2 topRight = Vector2.Transform(new Vector2(screenSize.X, 0), invertedMatrix);
+                Vector2 bottomLeft = Vector2.Transform(new Vector2(0, screenSize.Y), invertedMatrix);
+                Vector2 bottomRight = Vector2.Transform(screenSize, invertedMatrix);
 
                 //Min and max the corners to get the rectangle around the viewable area
                 Vector2 min = new Vector2(

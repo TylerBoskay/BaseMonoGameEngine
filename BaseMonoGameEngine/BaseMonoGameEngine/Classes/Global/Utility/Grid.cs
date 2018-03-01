@@ -15,7 +15,7 @@ using Microsoft.Xna.Framework.Input;
 namespace TDMonoGameEngine
 {
     /// <summary>
-    /// A grid holding <see cref="PosUIElement"/>s.
+    /// A grid holding elements.
     /// <para>By default the grid repositions the elements when it is modified in some way (Ex. Rows, Columns, CellSize).
     /// To change this behavior, set <see cref="AutomaticReposition"/> to false.
     /// In this case, the grid will need to be manually repositioned with <see cref="RepositionGridElements"/> after changes have been made.</para>
@@ -132,6 +132,12 @@ namespace TDMonoGameEngine
                 }
             }
         }
+
+        /// <summary>
+        /// Tells whether to constrain the grid by column or row.
+        /// <para>A value of true constrains by column and false constrains by row.</para>
+        /// </summary>
+        public bool ConstrainByColumn = true;
 
         /// <summary>
         /// The max number of elements that can be in the grid based on its size.
@@ -313,7 +319,11 @@ namespace TDMonoGameEngine
             }
 
             //Return the row times the total number of Columns and offset by the supplied column
+            //Do vice versa if constraining by row
             int index = (row * Columns) + column;
+            if (ConstrainByColumn == false)
+                index = (column * Rows) + row;
+
             return index;
         }
 
@@ -325,18 +335,31 @@ namespace TDMonoGameEngine
         /// <param name="row">An out integer that will be the zero-based row number. -1 if the grid has 0 or fewer Columns.</param>
         public void GetColumnRowFromIndex(int index, out int column, out int row)
         {
-            if (Columns <= 0)
+            //Set initial default values
+            column = -1;
+            row = -1;
+
+            if (Columns <= 0 && ConstrainByColumn == true)
             {
                 Debug.LogWarning($"Max grid columns is {Columns} which is less than or equal to 0!");
+                return;
+            }
 
-                column = -1;
-                row = -1;
+            if (Rows <= 0 && ConstrainByColumn == false)
+            {
+                Debug.LogWarning($"Max grid rows is {Rows} which is less than or equal to 0!");
                 return;
             }
 
             //Perform Modulo to obtain the column number and division to obtain the row number
             column = index % Columns;
             row = index / Columns;
+
+            if (ConstrainByColumn == false)
+            {
+                column = index / Rows;
+                row = index % Rows;
+            }
         }
 
         /// <summary>

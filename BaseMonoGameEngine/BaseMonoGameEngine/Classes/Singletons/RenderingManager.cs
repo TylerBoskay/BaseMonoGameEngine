@@ -157,7 +157,7 @@ namespace TDMonoGameEngine
             //Get all renderers and render layers in the scene
             List<Renderer> allRenderers = scene.GetActiveVisibleRenderersInScene();
             List<RenderLayer> renderLayers = scene.GetRenderLayersInScene();
-            
+
             //Go through all render layers, find all Renderers that match the layer order, and render the layer with those Renderers
             for (int i = 0; i < renderLayers.Count; i++)
             {
@@ -167,7 +167,17 @@ namespace TDMonoGameEngine
                 if (layer.Enabled == false)
                     continue;
 
-                List<Renderer> renderersInLayer = allRenderers.FindAll((renderer) => renderer.Order == layer.LayerOrder);
+                List<Renderer> renderersInLayer = new List<Renderer>();
+
+                for (int j = allRenderers.Count - 1; j >= 0; j--)
+                {
+                    Renderer rend = allRenderers[j];
+                    if (rend.Order == layer.LayerOrder)
+                    {
+                        renderersInLayer.Add(rend);
+                        allRenderers.RemoveAt(j);
+                    }
+                }
 
                 //Render the layer
                 layer.Render(renderersInLayer);
