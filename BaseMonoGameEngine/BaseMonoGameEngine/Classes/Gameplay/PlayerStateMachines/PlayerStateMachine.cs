@@ -28,6 +28,8 @@ namespace TDMonoGameEngine
         /// </summary>
         public abstract void Exit();
 
+        public abstract void HandleInput();
+
         /// <summary>
         /// Updates the state.
         /// </summary>

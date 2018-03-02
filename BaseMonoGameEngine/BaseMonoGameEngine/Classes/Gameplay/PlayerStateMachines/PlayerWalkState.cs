@@ -8,15 +8,16 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TDMonoGameEngine
 {
-    public class PlayerWalkState : PlayerStateMachine
+    public class PlayerWalkState : PlayerIdleState
     {
-        private Vector2 MoveSpeed = Vector2.Zero;
         private Vector2 PrevSpeed = Vector2.Zero;
 
         private Vector2 CurDir = Vector2.Zero;
         private Vector2 MoveDir = Vector2.Zero;
 
-        public PlayerWalkState(Player playerRef, Vector2 startSpeed) : base(playerRef)
+        protected override ref readonly Vector2 GetAttackVec => ref CurDir;
+
+        public PlayerWalkState(Player playerRef, Vector2 startSpeed) : base(playerRef, startSpeed)
         {
             MoveSpeed = startSpeed;
             PrevSpeed = MoveSpeed;
@@ -33,9 +34,26 @@ namespace TDMonoGameEngine
             
         }
 
+        public override void HandleInput()
+        {
+            PrevSpeed = MoveSpeed;
+            base.HandleInput();
+        }
+
+        protected override void CheckChange()
+        {
+            if (MoveSpeed == Vector2.Zero)
+            {
+                PlayerRef.ChangeState(new PlayerIdleState(PlayerRef, PrevSpeed));
+            }
+        }
+
         public override void Update()
         {
-            HandleMove();
+            UpdateDirection(MoveSpeed);
+            SetAnimForDir();
+
+            base.Update();
         }
 
         private void UpdateDirection(Vector2 moveAmt)

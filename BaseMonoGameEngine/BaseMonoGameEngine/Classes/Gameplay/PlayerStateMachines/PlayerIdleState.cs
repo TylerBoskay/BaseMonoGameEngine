@@ -11,6 +11,9 @@ namespace TDMonoGameEngine
     public class PlayerIdleState : PlayerStateMachine
     {
         private Vector2 StopSpeed = Vector2.Zero;
+        protected Vector2 MoveSpeed = Vector2.Zero;
+
+        protected virtual ref readonly Vector2 GetAttackVec => ref StopSpeed;
 
         public PlayerIdleState(Player playerRef, Vector2 stopSpeed) : base(playerRef)
         {
@@ -42,23 +45,53 @@ namespace TDMonoGameEngine
             
         }
 
+        public override void HandleInput()
+        {
+            MoveSpeed = Vector2.Zero;
+
+            MoveSpeed.X = Input.GetAxis(0, InputActions.Horizontal) * PlayerRef.Speed.X;
+            MoveSpeed.Y = Input.GetAxis(0, InputActions.Vertical) * PlayerRef.Speed.Y;
+
+            if (Input.GetButtonDown(0, InputActions.B) == true)
+            {
+                PlayerRef.ChangeState(new PlayerAttackState(PlayerRef, GetAttackVec));
+            }
+        }
+
+        protected void UpdatePos()
+        {
+            if (MoveSpeed != Vector2.Zero)
+            {
+                PlayerRef.transform.Position += MoveSpeed;
+            }
+        }
+
+        protected virtual void CheckChange()
+        {
+            if (MoveSpeed != Vector2.Zero)
+            {
+                PlayerRef.ChangeState(new PlayerWalkState(PlayerRef, MoveSpeed));
+            }
+        }
+
         public override void Update()
         {
-            HandleMove();
+            UpdatePos();
+            CheckChange();
         }
 
         private void HandleMove()
         {
-            Vector2 moveAmt = Vector2.Zero;
+            MoveSpeed = Vector2.Zero;
 
-            moveAmt.X = Input.GetAxis(0, InputActions.Horizontal) * PlayerRef.Speed.X;
-            moveAmt.Y = Input.GetAxis(0, InputActions.Vertical) * PlayerRef.Speed.Y;
+            MoveSpeed.X = Input.GetAxis(0, InputActions.Horizontal) * PlayerRef.Speed.X;
+            MoveSpeed.Y = Input.GetAxis(0, InputActions.Vertical) * PlayerRef.Speed.Y;
 
-            if (moveAmt != Vector2.Zero)
+            if (MoveSpeed != Vector2.Zero)
             {
-                PlayerRef.transform.Position += moveAmt;
+                PlayerRef.transform.Position += MoveSpeed;
 
-                PlayerRef.ChangeState(new PlayerWalkState(PlayerRef, moveAmt));
+                PlayerRef.ChangeState(new PlayerWalkState(PlayerRef, MoveSpeed));
                 return;
             }
 

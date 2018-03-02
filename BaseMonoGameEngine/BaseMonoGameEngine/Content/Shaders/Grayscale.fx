@@ -22,6 +22,7 @@ float4 Grayscale(VertexShaderOutput input) : COLOR
 
 	//Set the RGB to the average of the RGB components
 	color.rgb = (color.r + color.g + color.b) / 3.0f;
+	color = color * input.Color;
 
 	return color;
 }

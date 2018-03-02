@@ -44,6 +44,11 @@ namespace TDMonoGameEngine
             
         }
 
+        public override void HandleInput()
+        {
+            
+        }
+
         public override void Update()
         {
             if (PlayerRef.AnimationManager.CurrentAnim.CurFrameIndex == PlayerRef.AnimationManager.CurrentAnim.MaxFrameIndex)

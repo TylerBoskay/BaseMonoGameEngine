@@ -95,6 +95,7 @@ namespace TDMonoGameEngine
         {
             //ChangeColor();
 
+            CurStateMachine.HandleInput();
             CurStateMachine.Update();
 
             AnimationManager.CurrentAnim?.Update();
@@ -115,22 +116,35 @@ namespace TDMonoGameEngine
         {
             if (Input.GetButtonDown(0, InputActions.A) == true)
             {
-                Health = UtilityGlobals.Clamp(Health + 1, 0, MaxHealth);
                 spriteRenderer.TintColor = Color.White;
-            }
-            else if (Input.GetButtonDown(0, InputActions.B) == true)
-            {
-                Health = UtilityGlobals.Clamp(Health - 1, 0, MaxHealth);
-                spriteRenderer.TintColor = Color.Red;
-            }
-            else if (Input.GetButtonDown(0, InputActions.X) == true)
-            {
-                spriteRenderer.TintColor = Color.GreenYellow;
             }
             else if (Input.GetButtonDown(0, InputActions.Y) == true)
             {
-                spriteRenderer.TintColor = Color.Blue;
+                spriteRenderer.TintColor = Color.White * .5f;
             }
+            else if (Input.GetButtonDown(0, InputActions.X) == true)
+            {
+                spriteRenderer.TintColor = Color.Blue * (spriteRenderer.TintColor.A / 255f);
+            }
+
+            //if (Input.GetButtonDown(0, InputActions.A) == true)
+            //{
+            //    Health = UtilityGlobals.Clamp(Health + 1, 0, MaxHealth);
+            //    spriteRenderer.TintColor = Color.White;
+            //}
+            //else if (Input.GetButtonDown(0, InputActions.B) == true)
+            //{
+            //    Health = UtilityGlobals.Clamp(Health - 1, 0, MaxHealth);
+            //    spriteRenderer.TintColor = Color.Red;
+            //}
+            //else if (Input.GetButtonDown(0, InputActions.X) == true)
+            //{
+            //    spriteRenderer.TintColor = Color.GreenYellow;
+            //}
+            //else if (Input.GetButtonDown(0, InputActions.Y) == true)
+            //{
+            //    spriteRenderer.TintColor = Color.Blue;
+            //}
         }
     }
 }
