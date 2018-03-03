@@ -10,14 +10,21 @@ namespace TDMonoGameEngine
 {
     public class PlayerIdleState : PlayerStateMachine
     {
+        private const double MAX_CHARGE = 3500d;
+        private const double CHARGE_COLOR_RATE = 1000d;
+        private const double FULL_CHARGE_COLOR_RATE = 110d;
+
         private Vector2 StopSpeed = Vector2.Zero;
         protected Vector2 MoveSpeed = Vector2.Zero;
 
         protected virtual ref readonly Vector2 GetAttackVec => ref StopSpeed;
 
-        public PlayerIdleState(Player playerRef, Vector2 stopSpeed) : base(playerRef)
+        protected double ChargeTime = 0d;
+
+        public PlayerIdleState(Player playerRef, Vector2 stopSpeed, double chargeTime) : base(playerRef)
         {
             StopSpeed = stopSpeed;
+            ChargeTime = chargeTime;
         }
 
         public override void Enter()
@@ -70,7 +77,7 @@ namespace TDMonoGameEngine
         {
             if (MoveSpeed != Vector2.Zero)
             {
-                PlayerRef.ChangeState(new PlayerWalkState(PlayerRef, MoveSpeed));
+                PlayerRef.ChangeState(new PlayerWalkState(PlayerRef, MoveSpeed, ChargeTime));
             }
         }
 
@@ -78,26 +85,27 @@ namespace TDMonoGameEngine
         {
             UpdatePos();
             CheckChange();
-        }
 
-        private void HandleMove()
-        {
-            MoveSpeed = Vector2.Zero;
-
-            MoveSpeed.X = Input.GetAxis(0, InputActions.Horizontal) * PlayerRef.Speed.X;
-            MoveSpeed.Y = Input.GetAxis(0, InputActions.Vertical) * PlayerRef.Speed.Y;
-
-            if (MoveSpeed != Vector2.Zero)
+            if (Input.GetButton(0, InputActions.B) == true)
             {
-                PlayerRef.transform.Position += MoveSpeed;
+                ChargeTime += Time.ElapsedMilliseconds;
+                double chargeRate = CHARGE_COLOR_RATE;
+                if (ChargeTime > MAX_CHARGE)
+                    chargeRate = FULL_CHARGE_COLOR_RATE;
 
-                PlayerRef.ChangeState(new PlayerWalkState(PlayerRef, MoveSpeed));
-                return;
+                float time = UtilityGlobals.PingPong(ChargeTime, (float)chargeRate);
+                PlayerRef.spriteRenderer.TintColor = Color.Lerp(Color.White, Color.GreenYellow, time / (float)chargeRate);
             }
-
-            if (Input.GetButtonDown(0, InputActions.B) == true)
+            else
             {
-                PlayerRef.ChangeState(new PlayerAttackState(PlayerRef, StopSpeed));
+                //Do special move
+                if (ChargeTime > MAX_CHARGE)
+                {
+                    PlayerRef.ChangeState(new PlayerDashState(PlayerRef, GetAttackVec));
+                }
+
+                ChargeTime = 0d;
+                PlayerRef.spriteRenderer.TintColor = Color.White;
             }
         }
     }

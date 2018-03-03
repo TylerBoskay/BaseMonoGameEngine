@@ -17,7 +17,7 @@ namespace TDMonoGameEngine
 
         protected override ref readonly Vector2 GetAttackVec => ref CurDir;
 
-        public PlayerWalkState(Player playerRef, Vector2 startSpeed) : base(playerRef, startSpeed)
+        public PlayerWalkState(Player playerRef, Vector2 startSpeed, double chargeTime) : base(playerRef, startSpeed, chargeTime)
         {
             MoveSpeed = startSpeed;
             PrevSpeed = MoveSpeed;
@@ -44,7 +44,7 @@ namespace TDMonoGameEngine
         {
             if (MoveSpeed == Vector2.Zero)
             {
-                PlayerRef.ChangeState(new PlayerIdleState(PlayerRef, PrevSpeed));
+                PlayerRef.ChangeState(new PlayerIdleState(PlayerRef, PrevSpeed, ChargeTime));
             }
         }
 
@@ -101,34 +101,6 @@ namespace TDMonoGameEngine
 
             if (MoveDir.X < 0 && PlayerRef.AnimationManager.CurrentAnim.Key == AnimationGlobals.PlayerAnimations.WalkLeft)
                 PlayerRef.spriteRenderer.FlipData = SpriteEffects.FlipHorizontally;
-        }
-
-        private void HandleMove()
-        {
-            MoveSpeed = Vector2.Zero;
-
-            MoveSpeed.X = Input.GetAxis(0, InputActions.Horizontal) * PlayerRef.Speed.X;
-            MoveSpeed.Y = Input.GetAxis(0, InputActions.Vertical) * PlayerRef.Speed.Y;
-
-            UpdateDirection(MoveSpeed);
-            SetAnimForDir();
-
-            if (MoveSpeed == Vector2.Zero)
-            {
-                PlayerRef.ChangeState(new PlayerIdleState(PlayerRef, PrevSpeed));
-                return;
-            }
-            else
-            {
-                PlayerRef.transform.Position += MoveSpeed;
-            }
-
-            PrevSpeed = MoveSpeed;
-
-            if (Input.GetButtonDown(0, InputActions.B) == true)
-            {
-                PlayerRef.ChangeState(new PlayerAttackState(PlayerRef, CurDir));
-            }
         }
     }
 }

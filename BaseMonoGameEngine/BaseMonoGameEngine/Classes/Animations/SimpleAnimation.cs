@@ -33,6 +33,7 @@ namespace TDMonoGameEngine
         public ref AnimationFrame CurFrame => ref AnimFrames[CurFrameIndex];
 
         public AnimTypes AnimType = AnimTypes.Normal;
+        public int Loops { get; private set; } = 0;
 
         private double ElapsedFrameTime = 0d;
 
@@ -56,6 +57,9 @@ namespace TDMonoGameEngine
             }
             else
             {
+                if ((CurFrameIndex + 1) > MaxFrameIndex)
+                    Loops++;
+
                 CurFrameIndex = UtilityGlobals.Wrap(CurFrameIndex + 1, 0, MaxFrameIndex);
             }
 
@@ -82,6 +86,7 @@ namespace TDMonoGameEngine
             CurFrameIndex = 0;
 
             ElapsedFrameTime = 0;
+            Loops = 0;
 
             UpdateSpriteInfo(CurFrame);
         }

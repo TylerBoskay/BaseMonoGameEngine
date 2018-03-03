@@ -83,7 +83,30 @@ namespace TDMonoGameEngine
                 new AnimationFrame(new Rectangle(226, 656, 39, 39), 50d, new Vector2(.8f, .5f)),
                 new AnimationFrame(new Rectangle(58, 656, 23, 39), 50d, new Vector2(.65f, .5f))));
 
-            ChangeState(new PlayerIdleState(this, new Vector2(0, 1)));
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.DashDownStart, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Normal,
+                new AnimationFrame(new Rectangle(19, 379, 19, 36), 200d)));
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.DashUpStart, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Normal,
+                new AnimationFrame(new Rectangle(19, 303, 20, 38), 200d)));
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.DashLeftStart, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Normal,
+                new AnimationFrame(new Rectangle(17, 228, 20, 36), 200d)));
+
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.DashDown, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Looping,
+                new AnimationFrame(new Rectangle(46, 375, 24, 40), 50d),
+                new AnimationFrame(new Rectangle(78, 375, 24, 40), 50d),
+                new AnimationFrame(new Rectangle(111, 375, 24, 40), 50d),
+                new AnimationFrame(new Rectangle(144, 375, 24, 40), 50d)));
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.DashUp, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Looping,
+                new AnimationFrame(new Rectangle(49, 299, 24, 42), 50d),
+                new AnimationFrame(new Rectangle(83, 300, 24, 41), 50d),
+                new AnimationFrame(new Rectangle(114, 299, 24, 42), 50d),
+                new AnimationFrame(new Rectangle(146, 300, 24, 41), 50d)));
+            AnimationManager.AddAnimation(AnimationGlobals.PlayerAnimations.DashLeft, new SimpleAnimation(null, SimpleAnimation.AnimTypes.Looping,
+                new AnimationFrame(new Rectangle(51, 223, 23, 41), 50d),
+                new AnimationFrame(new Rectangle(84, 224, 23, 40), 50d),
+                new AnimationFrame(new Rectangle(117, 223, 24, 41), 50d),
+                new AnimationFrame(new Rectangle(149, 224, 23, 40), 50d)));
+
+            ChangeState(new PlayerIdleState(this, new Vector2(0, 1), 0d));
         }
 
         public override void CleanUp()

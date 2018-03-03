@@ -53,7 +53,7 @@ namespace TDMonoGameEngine
         {
             if (PlayerRef.AnimationManager.CurrentAnim.CurFrameIndex == PlayerRef.AnimationManager.CurrentAnim.MaxFrameIndex)
             {
-                PlayerRef.ChangeState(new PlayerIdleState(PlayerRef, Direction));
+                PlayerRef.ChangeState(new PlayerIdleState(PlayerRef, Direction, 0d));
             }
         }
     }

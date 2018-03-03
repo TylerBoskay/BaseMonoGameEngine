@@ -21,6 +21,14 @@ namespace TDMonoGameEngine
             public const string AttackUp = "AttackUp";
             public const string AttackDown = "AttackDown";
             public const string AttackLeft = "AttackLeft";
+
+            public const string DashUpStart = "DashUpStart";
+            public const string DashDownStart = "DashDownStart";
+            public const string DashLeftStart = "DashLeftStart";
+
+            public const string DashUp = "DashUp";
+            public const string DashDown = "DashDown";
+            public const string DashLeft = "DashLeft";
         }
     }
 }
