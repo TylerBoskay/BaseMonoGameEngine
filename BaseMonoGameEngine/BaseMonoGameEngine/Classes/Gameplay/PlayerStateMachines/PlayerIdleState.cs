@@ -104,8 +104,11 @@ namespace TDMonoGameEngine
                     PlayerRef.ChangeState(new PlayerDashState(PlayerRef, GetAttackVec));
                 }
 
-                ChargeTime = 0d;
-                PlayerRef.spriteRenderer.TintColor = Color.White;
+                if (ChargeTime > 0d)
+                {
+                    ChargeTime = 0d;
+                    PlayerRef.spriteRenderer.TintColor = Color.White;
+                }
             }
         }
     }

@@ -124,7 +124,7 @@ namespace TDMonoGameEngine
         /// Tells whether this RectangleF intersects with another RectangleF.
         /// </summary>
         /// <param name="value">The RectangleF to test intersection with.</param>
-        /// <returns>ture if this RectangleF intersects with the other, otherwise false.</returns>
+        /// <returns>true if this RectangleF intersects with the other, otherwise false.</returns>
         public bool Intersects(in RectangleF value)
         {
             return (value.Left < Right && Left < value.Right && value.Top < Bottom && Top < value.Bottom);

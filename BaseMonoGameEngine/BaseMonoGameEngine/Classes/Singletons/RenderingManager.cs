@@ -60,6 +60,11 @@ namespace TDMonoGameEngine
         /// </summary>
         public int PostProcessingCount => PostProcessingEffects.Count;
 
+        /// <summary>
+        /// The RenderTarget with the final image data at the end of rendering.
+        /// </summary>
+        public RenderTarget2D FinalRenderTarget { get; private set; } = null;
+
         private RenderTarget2D MainRenderTarget = null;
         private RenderTarget2D PPRenderTarget = null;
 
@@ -72,6 +77,13 @@ namespace TDMonoGameEngine
         /// The list of layered RenderTargets. These are rendered, in order, to the MainRenderTarget, which is then drawn to the backbuffer.
         /// </summary>
         private readonly List<RenderTarget2D> LayerRenderTargets = new List<RenderTarget2D>();
+
+        private Color clearColor = Color.CornflowerBlue;
+
+        /// <summary>
+        /// The color to clear the screen with.
+        /// </summary>
+        public ref readonly Color ClearColor => ref clearColor;
 
         private RenderingManager()
         {
@@ -99,6 +111,8 @@ namespace TDMonoGameEngine
 
             MainRenderTarget = new RenderTarget2D(graphicsDevice, RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight);
             PPRenderTarget = new RenderTarget2D(graphicsDevice, RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight);
+
+            FinalRenderTarget = MainRenderTarget;
         }
 
         /// <summary>
@@ -179,13 +193,17 @@ namespace TDMonoGameEngine
                     }
                 }
 
-                //Render the layer
-                layer.Render(renderersInLayer);
-
-                //Add the RenderTarget for this layer
-                if (LayerRenderTargets.Contains(layer.RendTarget) == false)
+                //Only render and add this layer's RenderTarget if there's something to render
+                if (renderersInLayer.Count != 0)
                 {
-                    LayerRenderTargets.Add(layer.RendTarget);
+                    //Render the layer
+                    layer.Render(renderersInLayer);
+
+                    //Add the RenderTarget for this layer
+                    if (LayerRenderTargets.Contains(layer.RendTarget) == false)
+                    {
+                        LayerRenderTargets.Add(layer.RendTarget);
+                    }
                 }
             }
         }
@@ -205,78 +223,62 @@ namespace TDMonoGameEngine
 
         public void StartDraw()
         {
-            //Start with no RenderTarget and clear the screen
+            //Start with no RenderTarget
             graphicsDevice.SetRenderTarget(null);
-            graphicsDevice.Clear(Color.CornflowerBlue);
         }
 
         public void EndDraw()
         {
             //Set to the main RenderTarget and clear the screen
             graphicsDevice.SetRenderTarget(MainRenderTarget);
-            graphicsDevice.Clear(Color.CornflowerBlue);
+            graphicsDevice.Clear(ClearColor);
 
             //Go through all RenderTargets in all layers and draw their contents, in order, to the main RenderTarget
             for (int i = 0; i < LayerRenderTargets.Count; i++)
             {
                 RenderTarget2D layerTarget = LayerRenderTargets[i];
                 StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, null, null);
-
+            
                 CurrentBatch.Draw(layerTarget, new Rectangle(0, 0, layerTarget.Width, layerTarget.Height), null, Color.White);
-
+            
                 EndCurrentBatch();
             }
-
+            
             //Clear layered targets, then prepare for post-processing effects
             LayerRenderTargets.Clear();
 
-            //If there are no post-processing effects, don't draw any
-            if (PostProcessingCount <= 0)
+            //Handle rendering multiple post-processing effects with two RenderTargets
+            RenderTarget2D renderToTarget = PPRenderTarget;
+            RenderTarget2D renderTarget = MainRenderTarget;
+
+            //Draw all post-processing effects
+            for (int i = 0; i < PostProcessingCount; i++)
             {
-                //Render directly to the backbuffer
-                graphicsDevice.SetRenderTarget(null);
-                graphicsDevice.Clear(Color.CornflowerBlue);
+                //Swap to the RenderTarget, which will obtain updated data from the other one
+                graphicsDevice.SetRenderTarget(renderToTarget);
+                graphicsDevice.Clear(ClearColor);
 
-                StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, null, null);
+                //Draw the RenderTarget with the shader
+                StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, PostProcessingEffects[i], null);
 
-                CurrentBatch.Draw(MainRenderTarget, new Rectangle(0, 0, MainRenderTarget.Width, MainRenderTarget.Height), null, Color.White);
+                CurrentBatch.Draw(renderTarget, new Rectangle(0, 0, MainRenderTarget.Width, MainRenderTarget.Height), null, Color.White);
 
                 EndCurrentBatch();
+
+                //Swap RenderTargets; the one that was just rendered to has the updated image data
+                UtilityGlobals.Swap(ref renderToTarget, ref renderTarget);
             }
-            //Draw all post-processing effects if there are any
-            else
-            {
-                //Handle rendering multiple post-processing effects with two RenderTargets
-                RenderTarget2D renderToTarget = PPRenderTarget;
-                RenderTarget2D renderTarget = MainRenderTarget;
 
-                for (int i = 0; i < PostProcessingCount; i++)
-                {
-                    //Keep rendering to the RenderTarget until the last effect
-                    //The last effect will be rendered to the backbuffer
-                    if (i == (PostProcessingCount - 1))
-                    {
-                        graphicsDevice.SetRenderTarget(null);
-                        graphicsDevice.Clear(Color.CornflowerBlue);
-                    }
-                    //Swap to the RenderTarget, which will obtain updated data from the other one
-                    else
-                    {
-                        graphicsDevice.SetRenderTarget(renderToTarget);
-                        graphicsDevice.Clear(Color.CornflowerBlue);
-                    }
+            //Set the final RenderTarget to the one with the final image data
+            FinalRenderTarget = renderTarget;
 
-                    //Draw the RenderTarget with the shader
-                    StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, PostProcessingEffects[i], null);
+            //Perform a final draw to the backbuffer using the final RenderTarget
+            graphicsDevice.SetRenderTarget(null);
+            graphicsDevice.Clear(ClearColor);
 
-                    CurrentBatch.Draw(renderTarget, new Rectangle(0, 0, MainRenderTarget.Width, MainRenderTarget.Height), null, Color.White);
-
-                    EndCurrentBatch();
-
-                    //Swap RenderTargets; the one that was rendered to has the updated data
-                    UtilityGlobals.Swap(ref renderToTarget, ref renderTarget);
-                }
-            }
+            StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, null, null);
+            CurrentBatch.Draw(FinalRenderTarget, new Rectangle(0, 0, FinalRenderTarget.Width, FinalRenderTarget.Height), null, Color.White);
+            EndCurrentBatch();
 
             //Get rendering metrics
             RenderingMetrics = graphicsDevice.Metrics;

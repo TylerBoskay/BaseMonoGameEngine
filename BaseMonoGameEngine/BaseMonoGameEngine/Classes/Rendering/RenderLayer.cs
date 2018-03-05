@@ -179,12 +179,8 @@ namespace TDMonoGameEngine
                 UtilityGlobals.Swap(ref renderToTarget, ref renderTarget);
             }
 
-            //Unset the RenderTarget
-            RenderingManager.Instance.graphicsDevice.SetRenderTarget(null);
-
             //Update the RenderTarget to the one with the most updated data
-            if (LayerEffects.Count > 0)
-                RendTarget = renderTarget;
+            RendTarget = renderTarget;
         }
 
         /// <summary>
