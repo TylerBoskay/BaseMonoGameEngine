@@ -35,6 +35,13 @@ namespace TDMonoGameEngine
 
         #endregion
 
+        #region Event Fields
+
+        public delegate void ScreenResized(Vector2 newSize);
+        public event ScreenResized ScreenResizedEvent = null;
+
+        #endregion
+
         /// <summary>
         /// Rendering metrics. This data is obtained after all rendering is complete for the frame.
         /// </summary>
@@ -42,6 +49,8 @@ namespace TDMonoGameEngine
 
         public GraphicsDeviceManager graphicsDeviceManager { get; private set; } = null;
         public GraphicsDevice graphicsDevice => graphicsDeviceManager?.GraphicsDevice;
+
+        private GameWindow gameWindow { get; set; } = null;
 
         public SpriteBatch spriteBatch { get; private set; } = null;
 
@@ -53,7 +62,10 @@ namespace TDMonoGameEngine
         /// <summary>
         /// The dimensions of the back buffer.
         /// </summary>
-        public Vector2 BackBufferDimensions => new Vector2(graphicsDevice.PresentationParameters.BackBufferWidth, graphicsDevice.PresentationParameters.BackBufferHeight);
+        public Vector2 BackBufferDimensions
+        {
+            get => new Vector2(graphicsDevice.PresentationParameters.BackBufferWidth, graphicsDevice.PresentationParameters.BackBufferHeight);
+        }
 
         /// <summary>
         /// The number of post-processing shaders in effect.
@@ -85,6 +97,11 @@ namespace TDMonoGameEngine
         /// </summary>
         public ref readonly Color ClearColor => ref clearColor;
 
+        /// <summary>
+        /// Whether rendering has started or not.
+        /// </summary>
+        public bool StartedRendering { get; private set; } = false;
+
         private RenderingManager()
         {
             
@@ -93,26 +110,62 @@ namespace TDMonoGameEngine
         public void CleanUp()
         {
             RemoveAllPostProcessingEffects();
-            for (int i = 0; i < LayerRenderTargets.Count; i++)
-            {
-                LayerRenderTargets[i].Dispose();
-            }
-
+            
             LayerRenderTargets.Clear();
 
             MainRenderTarget.Dispose();
             PPRenderTarget.Dispose();
+
+            StartedRendering = false;
+
+            ScreenResizedEvent = null;
+
+            gameWindow.ClientSizeChanged -= GameWindowSizeChanged;
         }
 
-        public void Initialize(GraphicsDeviceManager graphicsDeviceMngr)
+        public void Initialize(GraphicsDeviceManager graphicsDeviceMngr, GameWindow gameWdw, Vector2 screenSize)
         {
             graphicsDeviceManager = graphicsDeviceMngr;
+            gameWindow = gameWdw;
             spriteBatch = new SpriteBatch(graphicsDevice);
 
-            MainRenderTarget = new RenderTarget2D(graphicsDevice, RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight);
-            PPRenderTarget = new RenderTarget2D(graphicsDevice, RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight);
+            ResizeWindow(screenSize);
+
+            StartedRendering = false;
+
+            gameWindow.ClientSizeChanged -= GameWindowSizeChanged;
+            gameWindow.ClientSizeChanged += GameWindowSizeChanged;
+        }
+
+        private void GameWindowSizeChanged(object sender, EventArgs e)
+        {
+            GameWindow window = gameWindow;
+
+            if (window != null)
+            {
+                ResizeWindow(new Vector2(window.ClientBounds.Width, window.ClientBounds.Height));
+            }
+        }
+
+        /// <summary>
+        /// Resizes the window.
+        /// </summary>
+        /// <param name="newSize"></param>
+        public void ResizeWindow(Vector2 newSize)
+        {
+            graphicsDeviceManager.PreferredBackBufferWidth = (int)newSize.X;
+            graphicsDeviceManager.PreferredBackBufferHeight = (int)newSize.Y;
+
+            graphicsDeviceManager.ApplyChanges();
+
+            FinalRenderTarget = null;
+
+            RenderingGlobals.ResizeRenderTarget(ref MainRenderTarget, newSize);
+            RenderingGlobals.ResizeRenderTarget(ref PPRenderTarget, newSize);
 
             FinalRenderTarget = MainRenderTarget;
+
+            ScreenResizedEvent?.Invoke(newSize);
         }
 
         /// <summary>
@@ -225,6 +278,8 @@ namespace TDMonoGameEngine
         {
             //Start with no RenderTarget
             graphicsDevice.SetRenderTarget(null);
+
+            StartedRendering = true;
         }
 
         public void EndDraw()
@@ -261,7 +316,7 @@ namespace TDMonoGameEngine
                 //Draw the RenderTarget with the shader
                 StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, PostProcessingEffects[i], null);
 
-                CurrentBatch.Draw(renderTarget, new Rectangle(0, 0, MainRenderTarget.Width, MainRenderTarget.Height), null, Color.White);
+                CurrentBatch.Draw(renderTarget, new Rectangle(0, 0, renderTarget.Width, renderTarget.Height), null, Color.White);
 
                 EndCurrentBatch();
 
@@ -282,6 +337,8 @@ namespace TDMonoGameEngine
 
             //Get rendering metrics
             RenderingMetrics = graphicsDevice.Metrics;
+
+            StartedRendering = false;
         }
 
         public void DrawSprite(in Texture2D tex, in Vector2 position, in Rectangle? sourceRect, in Color color, in float rotation,

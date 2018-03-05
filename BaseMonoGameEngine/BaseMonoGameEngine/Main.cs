@@ -27,10 +27,12 @@ namespace TDMonoGameEngine
             graphics = new GraphicsDeviceManager(this);
 
             crashHandler = new CrashHandler();
-
+            
             //false for variable timestep, true for fixed
             Time.FixedTimeStep = true;
             Time.VSyncEnabled = true;
+
+            Window.AllowUserResizing = false;
         }
 
         /// <summary>
@@ -47,7 +49,7 @@ namespace TDMonoGameEngine
             graphics.PreferMultiSampling = true;
 
             AssetManager.Instance.Initialize(Content);
-            RenderingManager.Instance.Initialize(graphics);
+            RenderingManager.Instance.Initialize(graphics, GameWindow, new Vector2(RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight));
             Camera2D.Instance.SetBounds(new Rectangle(0, 0, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y));
 
             currentScene = new GameScene();
@@ -58,7 +60,6 @@ namespace TDMonoGameEngine
             currentScene.AddSceneObject(player1);
             currentScene.AddSceneObject(new TestEnemy());
             currentScene.AddSceneObject(new TestEnemy2());
-            currentScene.AddSceneObject(new TestRotateObj(player1));
             currentScene.AddSceneObject(new TestGameHUD(player1, 1));
 
             base.Initialize();
@@ -81,8 +82,9 @@ namespace TDMonoGameEngine
         {
             AssetManager.Instance.CleanUp();
             SoundManager.Instance.CleanUp();
-            RenderingManager.Instance.CleanUp();
+            Camera2D.Instance.CleanUp();
             currentScene?.CleanUp();
+            RenderingManager.Instance.CleanUp();
 
             if (EventManager.HasInstance == true)
                 EventManager.Instance.CleanUp();

@@ -11,7 +11,7 @@ namespace TDMonoGameEngine
     /// The game camera.
     /// <para>This is a Singleton for easy access.</para>
     /// </summary>
-    public class Camera2D
+    public class Camera2D : ICleanup
     {
         #region Singleton Fields
 
@@ -62,6 +62,19 @@ namespace TDMonoGameEngine
         private Camera2D()
         {
             SetTransform(new Vector2(0f, 0f), 0f, 1f);
+
+            RenderingManager.Instance.ScreenResizedEvent -= WindowSizeChanged;
+            RenderingManager.Instance.ScreenResizedEvent += WindowSizeChanged;
+        }
+
+        public void CleanUp()
+        {
+            RenderingManager.Instance.ScreenResizedEvent -= WindowSizeChanged;
+        }
+
+        private void WindowSizeChanged(Vector2 newSize)
+        {
+            SetBounds(new Rectangle(0, 0, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y));
         }
 
         public void SetTransform(Vector2 position, float rotation, float scale)
@@ -172,7 +185,7 @@ namespace TDMonoGameEngine
                 return Matrix.CreateTranslation(new Vector3(-Position.X, -Position.Y, 0f)) *
                             Matrix.CreateRotationZ(Rotation) *
                             Matrix.CreateScale(Scale, Scale, 1) *
-                            Matrix.CreateTranslation(ScreenBounds.Width * TranslationConstant, ScreenBounds.Height * TranslationConstant, 0f);
+                            Matrix.CreateTranslation(RenderingGlobals.WindowWidth * TranslationConstant, RenderingGlobals.WindowHeight * TranslationConstant, 0f);
             }
         }
 

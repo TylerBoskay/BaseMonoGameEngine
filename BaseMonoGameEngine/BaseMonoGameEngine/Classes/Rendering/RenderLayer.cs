@@ -50,12 +50,25 @@ namespace TDMonoGameEngine
 
         public RenderLayer(int layerOrder, RenderingSettings renderSettings)
         {
-            RTarget = new RenderTarget2D(RenderingManager.Instance.graphicsDevice, RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight);
-            PPRTarget = new RenderTarget2D(RenderingManager.Instance.graphicsDevice, RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight);
+            RTarget = new RenderTarget2D(RenderingManager.Instance.graphicsDevice, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y);
+            PPRTarget = new RenderTarget2D(RenderingManager.Instance.graphicsDevice, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y);
             RendTarget = RTarget;
 
             LayerOrder = layerOrder;
             RenderSettings = renderSettings;
+
+            RenderingManager.Instance.ScreenResizedEvent -= ScreenResized;
+            RenderingManager.Instance.ScreenResizedEvent += ScreenResized;
+        }
+
+        private void ScreenResized(Vector2 newSize)
+        {
+            RendTarget = null;
+
+            RenderingGlobals.ResizeRenderTarget(ref RTarget, newSize);
+            RenderingGlobals.ResizeRenderTarget(ref PPRTarget, newSize);
+
+            RendTarget = RTarget;
         }
 
         public void CleanUp()
@@ -68,6 +81,8 @@ namespace TDMonoGameEngine
 
             RTarget.Dispose();
             PPRTarget.Dispose();
+
+            RenderingManager.Instance.ScreenResizedEvent -= ScreenResized;
         }
 
         /// <summary>
