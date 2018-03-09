@@ -217,7 +217,7 @@ namespace TDMonoGameEngine
             //Don't bother if the scene is null
             if (scene == null)
             {
-                Debug.LogError("Attempting to render with a null scene!");
+                Debug.LogError("Attempting to render a null scene!");
                 return;
             }
 

@@ -19,8 +19,6 @@ namespace TDMonoGameEngine
         /// The game window.
         /// </summary>
         public GameWindow GameWindow => Window;
-        
-        private GameScene currentScene = null;
 
         public Main()
         {
@@ -52,16 +50,18 @@ namespace TDMonoGameEngine
             RenderingManager.Instance.Initialize(graphics, GameWindow, new Vector2(RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight));
             Camera2D.Instance.SetBounds(new Rectangle(0, 0, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y));
 
-            currentScene = new GameScene();
-            currentScene.AddRenderLayer(new RenderLayer(1, new RenderLayer.RenderingSettings(RenderingManager.Instance.spriteBatch,
+            GameScene scene = new GameScene();
+            SceneManager.Instance.LoadScene(scene);
+
+            scene.AddRenderLayer(new RenderLayer(1, new RenderLayer.RenderingSettings(RenderingManager.Instance.spriteBatch,
                 SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, false)));
 
             Player player1 = new Player();
-            currentScene.AddSceneObject(player1);
-            currentScene.AddSceneObject(new TestEnemy());
-            currentScene.AddSceneObject(new TestEnemy2());
-            currentScene.AddSceneObject(new TestGameHUD(player1, 1));
-            currentScene.AddSceneObject(new AfterImages(player1.spriteRenderer, player1.AnimationManager, 3, 8, .25f,
+            scene.AddSceneObject(player1);
+            scene.AddSceneObject(new TestEnemy());
+            scene.AddSceneObject(new TestEnemy2());
+            scene.AddSceneObject(new TestGameHUD(player1, 1));
+            scene.AddSceneObject(new AfterImages(player1.spriteRenderer, player1.AnimationManager, 3, 8, .25f,
                 AfterImages.AfterImageAlphaSetting.FadeOff, AfterImages.AfterImageAnimSetting.Current));
 
             base.Initialize();
@@ -85,7 +85,7 @@ namespace TDMonoGameEngine
             AssetManager.Instance.CleanUp();
             SoundManager.Instance.CleanUp();
             Camera2D.Instance.CleanUp();
-            currentScene?.CleanUp();
+            SceneManager.Instance.CleanUp();
             RenderingManager.Instance.CleanUp();
 
             if (EventManager.HasInstance == true)
@@ -129,7 +129,7 @@ namespace TDMonoGameEngine
             if (EventManager.HasInstance == true)
                 EventManager.Instance.Update();
 
-            currentScene?.Update();
+            SceneManager.Instance.ActiveScene.Update();
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace TDMonoGameEngine
         {
             PreDraw();
 
-            RenderingManager.Instance.PerformRendering(currentScene);
+            RenderingManager.Instance.PerformRendering(SceneManager.Instance.ActiveScene);
             Debug.DebugDraw();
 
             base.Draw(gameTime);
