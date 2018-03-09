@@ -61,6 +61,8 @@ namespace TDMonoGameEngine
             currentScene.AddSceneObject(new TestEnemy());
             currentScene.AddSceneObject(new TestEnemy2());
             currentScene.AddSceneObject(new TestGameHUD(player1, 1));
+            currentScene.AddSceneObject(new AfterImages(player1.spriteRenderer, player1.AnimationManager, 3, 8, .25f,
+                AfterImages.AfterImageAlphaSetting.FadeOff, AfterImages.AfterImageAnimSetting.Current));
 
             base.Initialize();
         }

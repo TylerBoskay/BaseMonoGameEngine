@@ -63,6 +63,7 @@ namespace TDMonoGameEngine
 
         public void AddSceneObject(SceneObject sceneObject)
         {
+            sceneObject.OnAddedToScene(this);
             SceneObjects.Add(sceneObject);
         }
 
@@ -74,6 +75,7 @@ namespace TDMonoGameEngine
                 sceneObject.CleanUp();
             }
 
+            sceneObject.OnRemovedFromScene(this);
             SceneObjects.Remove(sceneObject);
         }
 
@@ -212,10 +214,10 @@ namespace TDMonoGameEngine
 
                 if (sceneObj.renderer != null && sceneObj.renderer.Enabled == true)
                 {
-                    if (Camera2D.Instance.IsInCameraView(visibleArea, sceneObj.renderer.Bounds) == true)
-                    {
+                    //if (Camera2D.Instance.IsInCameraView(visibleArea, sceneObj.renderer.Bounds) == true)
+                    //{
                         renderers.Add(sceneObj.renderer);
-                    }
+                    //}
                 }
             }
 

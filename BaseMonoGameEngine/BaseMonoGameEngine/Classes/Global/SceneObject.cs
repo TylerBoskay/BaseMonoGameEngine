@@ -12,6 +12,11 @@ namespace TDMonoGameEngine
     public abstract class SceneObject : INameable, ITransformable, IUpdateable, IRenderable, IEnableable, ICleanup
     {
         /// <summary>
+        /// The GameScene the SceneObject belongs to.
+        /// </summary>
+        public GameScene Scene { get; private set; } = null;
+
+        /// <summary>
         /// The name of the SceneObject.
         /// </summary>
         public string Name { get; set; } = "SceneObject";
@@ -45,6 +50,16 @@ namespace TDMonoGameEngine
         public virtual void Update()
         {
 
+        }
+
+        public void OnAddedToScene(GameScene scene)
+        {
+            Scene = scene;
+        }
+
+        public void OnRemovedFromScene(GameScene scene)
+        {
+            Scene = null;
         }
     }
 }
