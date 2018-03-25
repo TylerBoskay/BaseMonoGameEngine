@@ -338,7 +338,12 @@ namespace TDMonoGameEngine
 
         public static T[] GetEnumValues<T>()
         {
-            return (T[])Enum.GetValues(typeof(T));
+            return EnumUtility.GetValues<T>.EnumValues;
+        }
+
+        public static string[] GetEnumNames<T>()
+        {
+            return EnumUtility.GetNames<T>.EnumNames;
         }
 
         /// <summary>
