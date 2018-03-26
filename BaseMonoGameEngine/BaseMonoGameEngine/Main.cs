@@ -48,10 +48,13 @@ namespace TDMonoGameEngine
 
             AssetManager.Instance.Initialize(Content);
             RenderingManager.Instance.Initialize(graphics, GameWindow, new Vector2(RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight));
-            Camera2D.Instance.SetBounds(new Rectangle(0, 0, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y));
+
+            Camera2D camera = new Camera2D();
+            camera.SetBounds(new Rectangle(0, 0, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y));
 
             GameScene scene = new GameScene();
             SceneManager.Instance.LoadScene(scene);
+            SceneManager.Instance.ActiveScene.SetCamera(camera);
 
             scene.AddRenderLayer(new RenderLayer(1, new RenderLayer.RenderingSettings(RenderingManager.Instance.spriteBatch,
                 SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, false)));
@@ -84,7 +87,6 @@ namespace TDMonoGameEngine
         {
             AssetManager.Instance.CleanUp();
             SoundManager.Instance.CleanUp();
-            Camera2D.Instance.CleanUp();
             SceneManager.Instance.CleanUp();
             RenderingManager.Instance.CleanUp();
 

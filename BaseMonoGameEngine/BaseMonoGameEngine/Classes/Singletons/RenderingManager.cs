@@ -250,7 +250,7 @@ namespace TDMonoGameEngine
                 if (renderersInLayer.Count != 0)
                 {
                     //Render the layer
-                    layer.Render(renderersInLayer);
+                    layer.Render(renderersInLayer, scene.Camera);
 
                     //Add the RenderTarget for this layer
                     if (LayerRenderTargets.Contains(layer.RendTarget) == false)

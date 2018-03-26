@@ -14,6 +14,11 @@ namespace TDMonoGameEngine
     public class GameScene : IUpdateable, ICleanup
     {
         /// <summary>
+        /// The camera for the scene.
+        /// </summary>
+        public Camera2D Camera { get; private set; } = null;
+
+        /// <summary>
         /// The list of Render Layers in the scene
         /// </summary>
         private readonly List<RenderLayer> RenderLayers = new List<RenderLayer>();
@@ -35,6 +40,15 @@ namespace TDMonoGameEngine
                 SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, true)));
         }
 
+        /// <summary>
+        /// Sets the Camera2D for the GameScene.
+        /// </summary>
+        /// <param name="camera">The new Camera for the scene.</param>
+        public void SetCamera(Camera2D camera)
+        {
+            Camera = camera;
+        }
+
         public void CleanUp()
         {
             RemoveAllSceneObjects();
@@ -45,6 +59,7 @@ namespace TDMonoGameEngine
             }
 
             RenderLayers.Clear();
+            Camera?.CleanUp();
         }
 
         /// <summary>
@@ -205,7 +220,7 @@ namespace TDMonoGameEngine
             List<Renderer> renderers = new List<Renderer>();
 
             //Cache visible area
-            Rectangle visibleArea = Camera2D.Instance.VisibleArea;
+            Rectangle visibleArea = Camera != null ? Camera.VisibleArea : Rectangle.Empty;
 
             for (int i = 0; i < SceneObjects.Count; i++)
             {

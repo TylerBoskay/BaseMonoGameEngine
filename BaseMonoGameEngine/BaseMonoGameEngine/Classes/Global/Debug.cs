@@ -247,12 +247,18 @@ namespace TDMonoGameEngine
             //Camera controls
             if (KeyboardInput.GetKey(Keys.LeftShift, DebugKeyboard))
             {
+                Camera2D camera = null;
+                if (SceneManager.HasInstance == true && SceneManager.Instance.ActiveScene != null)
+                {
+                    camera = SceneManager.Instance.ActiveScene.Camera;
+                }
+
                 if (KeyboardInput.GetKeyDown(Keys.Space, DebugKeyboard))
                 {
                     //Reset camera coordinates
-                    Camera2D.Instance.SetTranslation(Vector2.Zero);
-                    Camera2D.Instance.SetRotation(0f);
-                    Camera2D.Instance.SetZoom(1f);
+                    camera?.SetTranslation(Vector2.Zero);
+                    camera?.SetRotation(0f);
+                    camera?.SetZoom(1f);
                 }
                 else
                 {
@@ -274,9 +280,9 @@ namespace TDMonoGameEngine
                     if (KeyboardInput.GetKey(Keys.OemMinus, DebugKeyboard)) zoom -= .1f;
                     if (KeyboardInput.GetKey(Keys.OemPlus, DebugKeyboard)) zoom += .1f;
 
-                    if (translation != Vector2.Zero) Camera2D.Instance.Translate(translation);
-                    if (rotation != 0f) Camera2D.Instance.Rotate(rotation);
-                    if (zoom != 0f) Camera2D.Instance.Zoom(zoom);
+                    if (translation != Vector2.Zero) camera?.Translate(translation);
+                    if (rotation != 0f) camera?.Rotate(rotation);
+                    if (zoom != 0f) camera?.Zoom(zoom);
                 }
             }
 
@@ -569,7 +575,7 @@ namespace TDMonoGameEngine
 
         public static void DebugStartDraw()
         {
-            DebugSpriteBatch?.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, Camera2D.Instance.TransformMatrix);
+            DebugSpriteBatch?.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, SceneManager.Instance.ActiveScene.Camera?.TransformMatrix);
             DebugUIBatch?.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, null, null, null, null, null);
         }
 
@@ -615,9 +621,9 @@ namespace TDMonoGameEngine
             //Camera info
             Vector2 cameraBasePos = new Vector2(0, 390);
             DebugUIBatch?.DrawString(font, "Camera:", cameraBasePos, Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
-            DebugUIBatch?.DrawString(font, $"Pos: {Camera2D.Instance.Position}", cameraBasePos + new Vector2(0, 20), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
-            DebugUIBatch?.DrawString(font, $"Rot: {Camera2D.Instance.Rotation}", cameraBasePos + new Vector2(0, 40), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
-            DebugUIBatch?.DrawString(font, $"Zoom: {Camera2D.Instance.Scale}", cameraBasePos + new Vector2(0, 60), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+            DebugUIBatch?.DrawString(font, $"Pos: {SceneManager.Instance.ActiveScene.Camera.Position}", cameraBasePos + new Vector2(0, 20), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+            DebugUIBatch?.DrawString(font, $"Rot: {SceneManager.Instance.ActiveScene.Camera.Rotation}", cameraBasePos + new Vector2(0, 40), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+            DebugUIBatch?.DrawString(font, $"Zoom: {SceneManager.Instance.ActiveScene.Camera.Scale}", cameraBasePos + new Vector2(0, 60), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
         }
 
         #region Classes

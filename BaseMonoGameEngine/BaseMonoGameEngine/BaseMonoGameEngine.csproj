@@ -128,7 +128,7 @@
     <Compile Include="Classes\Rendering\SlicedSprite.cs" />
     <Compile Include="Classes\Rendering\Sprite.cs" />
     <Compile Include="Classes\Singletons\AssetManager.cs" />
-    <Compile Include="Classes\Singletons\Camera2D.cs" />
+    <Compile Include="Classes\Global\Camera2D.cs" />
     <Compile Include="Classes\Singletons\EventManager.cs" />
     <Compile Include="Classes\Singletons\RenderingManager.cs" />
     <Compile Include="Classes\Singletons\SoundManager.cs" />

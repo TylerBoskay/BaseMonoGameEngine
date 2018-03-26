@@ -117,12 +117,12 @@ namespace TDMonoGameEngine
         /// Renders the RenderLayer with a set of Renderers.
         /// </summary>
         /// <param name="renderers">An IList of Renderers to render.</param>
-        public void Render(in IList<Renderer> renderers)
+        /// /// <param name="camera">The Camera for the scene.</param>
+        public void Render(in IList<Renderer> renderers, in Camera2D camera)
         {
             //Return if there's nothing to render
             if (renderers == null || renderers.Count == 0)
                 return;
-
             //Set target reference
             RendTarget = RTarget;
 
@@ -155,7 +155,7 @@ namespace TDMonoGameEngine
                 RenderBatch batch = RenderBatches[i];
 
                 Matrix? matrix = null;
-                if (RenderSettings.UseCameraMatrix == true) matrix = Camera2D.Instance.TransformMatrix;
+                if (RenderSettings.UseCameraMatrix == true) matrix = camera?.TransformMatrix;
 
                 //Start the batch
                 RenderingManager.Instance.StartBatch(RenderSettings.spriteBatch, RenderSettings.spriteSortMode, RenderSettings.blendState,

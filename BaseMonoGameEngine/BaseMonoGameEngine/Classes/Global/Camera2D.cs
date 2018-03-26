@@ -9,31 +9,9 @@ namespace TDMonoGameEngine
 {
     /// <summary>
     /// The game camera.
-    /// <para>This is a Singleton for easy access.</para>
     /// </summary>
     public class Camera2D : ICleanup
     {
-        #region Singleton Fields
-
-        public static Camera2D Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new Camera2D();
-                }
-
-                return instance;
-            }
-        }
-
-        public static bool HasInstance => (instance != null);
-
-        private static Camera2D instance = null;
-
-        #endregion
-
         /// <summary>
         /// The constant for translating the camera to the center of the screen
         /// </summary>
@@ -59,7 +37,7 @@ namespace TDMonoGameEngine
         /// </summary>
         public Rectangle ScreenBounds { get; private set; } = Rectangle.Empty;
 
-        private Camera2D()
+        public Camera2D()
         {
             SetTransform(new Vector2(0f, 0f), 0f, 1f);
 
