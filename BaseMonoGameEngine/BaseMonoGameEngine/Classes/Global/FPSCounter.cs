@@ -34,6 +34,8 @@ namespace TDMonoGameEngine
         /// </summary>
         private static int Frames = 0;
 
+        private static string FPSText = string.Empty;
+
         public static void Update()
         {
             PrevUpdateVal += Time.ElapsedMilliseconds;
@@ -51,6 +53,8 @@ namespace TDMonoGameEngine
                     FPSValue = (Frames / UpdateInterval) * Time.MsPerS;
                 }
 
+                FPSText = $"{FPSValue.ToString()} FPS  Updates: {Updates}  Draws: {Frames}";
+
                 Updates = 0;
                 Frames = 0;
                 PrevUpdateVal = 0d;
@@ -64,8 +68,10 @@ namespace TDMonoGameEngine
         {
             SpriteFont font = AssetManager.Instance.LoadAsset<SpriteFont>($"{ContentGlobals.FontRoot}Font");
 
-            string fpsText = FPSValue == 0 ? "Infinity" : FPSValue.ToString();
-            Debug.DebugUIBatch?.DrawString(font, fpsText, Vector2.Zero, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .5f);
+            if (FPSText != string.Empty)
+            {
+                Debug.DebugUIBatch?.DrawString(font, FPSText, Vector2.Zero, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .5f);
+            }
             if (Time.RunningSlowly == true)
             {
                 Debug.DebugUIBatch?.DrawString(font, "RUNNING SLOW!", new Vector2(0f, 20f), Color.Red, 0f, Vector2.Zero, 1f, SpriteEffects.None, .5f);
