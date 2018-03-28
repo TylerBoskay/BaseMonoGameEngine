@@ -30,7 +30,7 @@ namespace TDMonoGameEngine
         public int MaxFrameIndex => (AnimFrames.Length - 1);
         public int CurFrameIndex { get; protected set; } = 0;
 
-        public ref AnimationFrame CurFrame => ref AnimFrames[CurFrameIndex];
+        public ref readonly AnimationFrame CurFrame => ref AnimFrames[CurFrameIndex];
 
         public AnimTypes AnimType = AnimTypes.Normal;
         public int Loops { get; private set; } = 0;

@@ -84,12 +84,13 @@
     <Compile Include="Classes\Global\Extensions.cs" />
     <Compile Include="Classes\Global\FPSCounter.cs" />
     <Compile Include="Classes\Global\GameScene.cs" />
-    <Compile Include="Classes\Global\GeneralGlobals.cs" />
+    <Compile Include="Classes\Global\RandomGlobals.cs" />
     <Compile Include="Classes\Global\Input\Input.cs" />
     <Compile Include="Classes\Global\Input\InputHandler.cs" />
     <Compile Include="Classes\Global\SceneManager.cs" />
     <Compile Include="Classes\Global\Utility\EnumUtility.cs" />
     <Compile Include="Classes\Global\Utility\GCWatcher.cs" />
+    <Compile Include="Classes\Global\Utility\LineIntersection.cs" />
     <Compile Include="Classes\Global\Utility\RectangleF.cs" />
     <Compile Include="Classes\Interfaces\IEvent.cs" />
     <Compile Include="Classes\Interfaces\IEventHandler.cs" />

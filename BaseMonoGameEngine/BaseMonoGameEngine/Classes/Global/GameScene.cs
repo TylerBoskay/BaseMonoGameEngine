@@ -229,7 +229,7 @@ namespace TDMonoGameEngine
 
                 if (sceneObj.renderer != null && sceneObj.renderer.Enabled == true)
                 {
-                    //if (Camera2D.Instance.IsInCameraView(visibleArea, sceneObj.renderer.Bounds) == true)
+                    //if (Camera?.IsInCameraView(visibleArea, sceneObj.renderer.Bounds) == true)
                     //{
                         renderers.Add(sceneObj.renderer);
                     //}

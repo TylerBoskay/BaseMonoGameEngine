@@ -32,9 +32,9 @@ namespace TDMonoGameEngine
         /// <param name="other">The Line to test intersection with.</param>
         /// <remarks>Code obtained from here: http://gamedev.stackexchange.com/a/26022 </remarks>
         /// <returns>true if this Line intersects the other, otherwise false.</returns>
-        public bool Intersects(Line other)
+        public bool Intersects(in Line other)
         {
-            return UtilityGlobals.LineIntersection.Intersects(this, other);
+            return LineIntersection.Intersects(this, other);
         }
 
         /// <summary>
