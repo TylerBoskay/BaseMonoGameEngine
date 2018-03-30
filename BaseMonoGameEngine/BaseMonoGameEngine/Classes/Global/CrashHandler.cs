@@ -15,9 +15,9 @@ namespace TDMonoGameEngine
     {
         public CrashHandler()
         {
-            //If debug is enabled and a debugger is not present, handle the crash
+            //If a debugger is not present, handle the crash
             //If a debugger is present (Ex. IDE) then we can see the cause of the crash directly
-            if (Debug.DebugEnabled == true && Debug.DebuggerAttached == false)
+            if (Debug.DebuggerAttached == false)
             {
                 AppDomain.CurrentDomain.UnhandledException -= HandleCrash;
                 AppDomain.CurrentDomain.UnhandledException += HandleCrash;
@@ -43,6 +43,7 @@ namespace TDMonoGameEngine
                 //Dump the message, stack trace, and logs to a file
                 using (StreamWriter writer = File.CreateText(Debug.DebugGlobals.GetCrashLogPath()))
                 {
+                    writer.Write($"OS Version: {Debug.DebugGlobals.GetOSInfo()}\n\n");
                     writer.Write($"Message: {exc.Message}\n\nStack Trace:\n");
                     writer.Write($"{exc.StackTrace}\n\n");
                     writer.Write($"Log Dump:\n{Debug.LogDump.ToString()}");

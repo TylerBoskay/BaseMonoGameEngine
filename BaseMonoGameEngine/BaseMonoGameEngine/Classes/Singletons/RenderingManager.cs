@@ -115,6 +115,7 @@ namespace TDMonoGameEngine
 
             MainRenderTarget.Dispose();
             PPRenderTarget.Dispose();
+            spriteBatch.Dispose();
 
             StartedRendering = false;
 

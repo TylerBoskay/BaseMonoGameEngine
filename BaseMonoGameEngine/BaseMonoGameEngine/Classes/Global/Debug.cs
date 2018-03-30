@@ -619,11 +619,14 @@ namespace TDMonoGameEngine
             debugUIBatch.DrawString(font, "Managed Memory: " + Math.Round((GC.GetTotalMemory(false) / 1024f) / 1024f, 2) + " MB", memBasePos, Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
 
             //Camera info
-            Vector2 cameraBasePos = new Vector2(0, 390);
-            DebugUIBatch?.DrawString(font, "Camera:", cameraBasePos, Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
-            DebugUIBatch?.DrawString(font, $"Pos: {SceneManager.Instance.ActiveScene.Camera.Position}", cameraBasePos + new Vector2(0, 20), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
-            DebugUIBatch?.DrawString(font, $"Rot: {SceneManager.Instance.ActiveScene.Camera.Rotation}", cameraBasePos + new Vector2(0, 40), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
-            DebugUIBatch?.DrawString(font, $"Zoom: {SceneManager.Instance.ActiveScene.Camera.Scale}", cameraBasePos + new Vector2(0, 60), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+            if (SceneManager.HasInstance == true && SceneManager.Instance.ActiveScene != null && SceneManager.Instance.ActiveScene.Camera != null)
+            {
+                Vector2 cameraBasePos = new Vector2(0, 390);
+                DebugUIBatch?.DrawString(font, "Camera:", cameraBasePos, Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+                DebugUIBatch?.DrawString(font, $"Pos: {SceneManager.Instance.ActiveScene.Camera.Position}", cameraBasePos + new Vector2(0, 20), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+                DebugUIBatch?.DrawString(font, $"Rot: {SceneManager.Instance.ActiveScene.Camera.Rotation}", cameraBasePos + new Vector2(0, 40), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+                DebugUIBatch?.DrawString(font, $"Zoom: {SceneManager.Instance.ActiveScene.Camera.Scale}", cameraBasePos + new Vector2(0, 60), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+            }
         }
 
         #region Classes
@@ -647,12 +650,12 @@ namespace TDMonoGameEngine
             }
 
             /// <summary>
-            /// Returns a file friendly time stamp of the current time.
+            /// Returns a file friendly time stamp of the current local time.
             /// </summary>
-            /// <returns>A string representing current time.</returns>
+            /// <returns>A string representing current local time.</returns>
             public static string GetFileFriendlyTimeStamp()
             {
-                string time = DateTime.Now.ToUniversalTime().ToString();
+                string time = DateTime.Now.ToString();
                 time = time.Replace(':', '-');
                 time = time.Replace('/', '-');
 
@@ -683,6 +686,31 @@ namespace TDMonoGameEngine
                 System.Reflection.AssemblyName asm = assembly.GetName();
 
                 return asm.Version.Major + "." + asm.Version.Minor + "." + asm.Version.Build + "." + asm.Version.Revision;
+            }
+
+            /// <summary>
+            /// Gets the name, version, and word size of the operating system as a string.
+            /// </summary>
+            /// <returns>A string representing the OS name, version, and word size.</returns>
+            public static string GetOSInfo()
+            {
+                string osVersion = string.Empty;
+
+                //Getting the OS version can fail if the user is running an extremely uncommon or old OS and/or it can't retrieve the information
+                try
+                {
+                    osVersion = Environment.OSVersion.ToString();
+                }
+                catch (InvalidOperationException e)
+                {
+                    if (string.IsNullOrEmpty(osVersion) == true)
+                        osVersion = "N/A";
+                }
+
+                //Get word size
+                string osBit = Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit";
+
+                return $"{osVersion} {osBit}";
             }
         }
 
