@@ -700,6 +700,18 @@ namespace TDMonoGameEngine
                 try
                 {
                     osVersion = Environment.OSVersion.ToString();
+
+                    //Check for a Linux OS and get more detailed info
+                    if (osVersion.ToLower().StartsWith("unix") == true)
+                    {
+                        string detailedLinux = GetDetailedLinuxOSInfo();
+
+                        //If we got the info, set the OS string to the detailed version
+                        if (string.IsNullOrEmpty(detailedLinux) == false)
+                        {
+                            osVersion = detailedLinux;
+                        }
+                    }
                 }
                 catch (InvalidOperationException)
                 {
@@ -711,6 +723,44 @@ namespace TDMonoGameEngine
                 string osBit = Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit";
 
                 return $"{osVersion} {osBit}";
+            }
+
+            /// <summary>
+            /// Retrieves more detailed information about a Linux OS by reading from its lsb-release file.
+            /// </summary>
+            /// <returns>A string representing the Linux ID and Release number. If the file isn't found or accessible, then null.</returns>
+            private static string GetDetailedLinuxOSInfo()
+            {
+                //Try to find the OS info in the "/etc/lsb-release" file
+                //"/" is the root
+                const string lsbRelease = "/etc/lsb-release";
+
+                //Check if the file exists and we have permission to access it
+                if (File.Exists(lsbRelease) == true)
+                {
+                    try
+                    {
+                        //Get all the text in the file
+                        string releaseText = File.ReadAllText(lsbRelease);
+
+                        //The DISTRIB_DESCRIPTION is the only thing we need, as it includes both the ID and Release number
+                        const string findString = "DISTRIB_DESCRIPTION=\"";
+
+                        //Find the location of the description in the file
+                        int index = releaseText.IndexOf(findString) + findString.Length;
+
+                        //The OS description will be here
+                        //The description is in quotation marks, so exclude the last character
+                        string osDescription = releaseText.Substring(index, releaseText.Length - index - 2);
+                        return osDescription;
+                    }
+                    catch (Exception)
+                    {
+                        //If we ran into an error, there's nothing we can really do, so exit
+                    }
+                }
+
+                return null;
             }
         }
 

@@ -29,7 +29,7 @@ namespace TDMonoGameEngine
             //false for variable timestep, true for fixed
             Time.FixedTimeStep = true;
             Time.VSyncEnabled = true;
-
+            
             Window.AllowUserResizing = false;
         }
 

@@ -46,7 +46,12 @@ namespace TDMonoGameEngine
                     writer.Write($"OS Version: {Debug.DebugGlobals.GetOSInfo()}\n\n");
                     writer.Write($"Message: {exc.Message}\n\nStack Trace:\n");
                     writer.Write($"{exc.StackTrace}\n\n");
-                    writer.Write($"Log Dump:\n{Debug.LogDump.ToString()}");
+
+                    //Don't write the log dump unless there are logs
+                    if (Debug.LogDump.Length > 0)
+                    {
+                        writer.Write($"Log Dump:\n{Debug.LogDump.ToString()}");
+                    }
 
                     writer.Flush();
                 }
