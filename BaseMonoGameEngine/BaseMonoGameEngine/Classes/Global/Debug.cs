@@ -701,7 +701,7 @@ namespace TDMonoGameEngine
                 {
                     osVersion = Environment.OSVersion.ToString();
                 }
-                catch (InvalidOperationException e)
+                catch (InvalidOperationException)
                 {
                     if (string.IsNullOrEmpty(osVersion) == true)
                         osVersion = "N/A";

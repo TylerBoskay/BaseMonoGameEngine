@@ -13,7 +13,7 @@ namespace TDMonoGameEngine
         [STAThread]
         internal static void Main()
         {
-            using (Main game = new Main())
+            using (Engine game = new Engine())
                 game.Run();
         }
     }

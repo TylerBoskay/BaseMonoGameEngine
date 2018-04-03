@@ -84,6 +84,7 @@
     <Compile Include="Classes\Global\Extensions.cs" />
     <Compile Include="Classes\Global\FPSCounter.cs" />
     <Compile Include="Classes\Global\GameScene.cs" />
+    <Compile Include="Classes\Global\Input\MouseInput.cs" />
     <Compile Include="Classes\Global\RandomGlobals.cs" />
     <Compile Include="Classes\Global\Input\Input.cs" />
     <Compile Include="Classes\Global\Input\InputHandler.cs" />
@@ -133,7 +134,7 @@
     <Compile Include="Classes\Singletons\EventManager.cs" />
     <Compile Include="Classes\Singletons\RenderingManager.cs" />
     <Compile Include="Classes\Singletons\SoundManager.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="Engine.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

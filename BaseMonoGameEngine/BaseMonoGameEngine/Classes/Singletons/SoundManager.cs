@@ -268,6 +268,14 @@ namespace TDMonoGameEngine
                     }
 
                     Duration = newSound.Duration;
+
+                    //Clean up the existing instance
+                    if (SoundInstance != null)
+                    {
+                        SoundInstance.Dispose();
+                        SoundInstance = null;
+                    }
+
                     SoundInstance = newSound.CreateInstance();
                 }
             }

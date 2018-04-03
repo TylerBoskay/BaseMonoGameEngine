@@ -8,9 +8,9 @@ using Microsoft.Xna.Framework.Input;
 namespace TDMonoGameEngine
 {
     /// <summary>
-    /// This is the main type for your game.
+    /// The entry point to the engine.
     /// </summary>
-    public class Main : Game
+    public class Engine : Game
     {
         private GraphicsDeviceManager graphics;
         private CrashHandler crashHandler = null;
@@ -20,7 +20,7 @@ namespace TDMonoGameEngine
         /// </summary>
         public GameWindow GameWindow => Window;
 
-        public Main()
+        public Engine()
         {
             graphics = new GraphicsDeviceManager(this);
 
@@ -133,7 +133,7 @@ namespace TDMonoGameEngine
 
             SceneManager.Instance.ActiveScene.Update();
         }
-
+        
         /// <summary>
         /// Any update logic that should occur immediately after the main Update loop
         /// </summary>
@@ -144,7 +144,11 @@ namespace TDMonoGameEngine
 
             //Frame advance debugging for input
             if (Debug.DebugPaused == false || Debug.AdvanceNextFrame == true)
+            {
+                MouseInput.UpdateMouseState();
+                KeyboardInput.UpdateKeyboardState();
                 Input.UpdateInput();
+            }
 
             base.Update(gameTime);
 
