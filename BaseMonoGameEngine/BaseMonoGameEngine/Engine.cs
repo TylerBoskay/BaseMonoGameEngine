@@ -31,6 +31,20 @@ namespace TDMonoGameEngine
             Time.VSyncEnabled = true;
             
             Window.AllowUserResizing = false;
+
+            //MonoGame sets x32 MSAA by default if enabled
+            //If enabled and we want a lower value, set the value in the PreparingDeviceSettings event
+            graphics.PreferMultiSampling = false;
+            graphics.SynchronizeWithVerticalRetrace = Time.VSyncEnabled;
+
+            graphics.PreparingDeviceSettings -= OnPreparingDeviceSettings;
+            graphics.PreparingDeviceSettings += OnPreparingDeviceSettings;
+        }
+
+        private void OnPreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
+        {
+            //Prepare any graphics device settings here
+            //Note that OpenGL does not provide a way to set the adapter; the driver is responsible for that
         }
 
         /// <summary>
@@ -42,9 +56,6 @@ namespace TDMonoGameEngine
         protected override void Initialize()
         {
             IsFixedTimeStep = Time.FixedTimeStep;
-            graphics.SynchronizeWithVerticalRetrace = Time.VSyncEnabled;
-
-            graphics.PreferMultiSampling = true;
 
             AssetManager.Instance.Initialize(Content);
             RenderingManager.Instance.Initialize(graphics, GameWindow, new Vector2(RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight));
@@ -85,6 +96,8 @@ namespace TDMonoGameEngine
         /// </summary>
         protected override void UnloadContent()
         {
+            graphics.PreparingDeviceSettings -= OnPreparingDeviceSettings;
+
             AssetManager.Instance.CleanUp();
             SoundManager.Instance.CleanUp();
             SceneManager.Instance.CleanUp();
