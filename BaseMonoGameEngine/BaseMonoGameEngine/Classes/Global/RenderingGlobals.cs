@@ -13,8 +13,8 @@ namespace TDMonoGameEngine
     /// </summary>
     public static class RenderingGlobals
     {
-        public const int WindowWidth = 800;
-        public const int WindowHeight = 480;
+        public const int BaseResolutionWidth = 800;
+        public const int BaseResolutionHeight = 480;
 
         /// <summary>
         /// Resizes a RenderTarget by disposing it and pointing it to a new RenderTarget instance with the desired size.

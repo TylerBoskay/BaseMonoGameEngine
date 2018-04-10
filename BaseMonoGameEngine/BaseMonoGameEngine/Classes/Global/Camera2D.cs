@@ -163,7 +163,7 @@ namespace TDMonoGameEngine
                 return Matrix.CreateTranslation(new Vector3(-Position.X, -Position.Y, 0f)) *
                             Matrix.CreateRotationZ(Rotation) *
                             Matrix.CreateScale(Scale, Scale, 1) *
-                            Matrix.CreateTranslation(RenderingGlobals.WindowWidth * TranslationConstant, RenderingGlobals.WindowHeight * TranslationConstant, 0f);
+                            Matrix.CreateTranslation(RenderingGlobals.BaseResolutionWidth * TranslationConstant, RenderingGlobals.BaseResolutionHeight * TranslationConstant, 0f);
             }
         }
 

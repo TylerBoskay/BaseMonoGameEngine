@@ -77,6 +77,11 @@ namespace TDMonoGameEngine
         /// </summary>
         public RenderTarget2D FinalRenderTarget { get; private set; } = null;
 
+        /// <summary>
+        /// Tells whether the game is full screen or not.
+        /// </summary>
+        public bool IsFullscreen => graphicsDeviceManager.IsFullScreen;
+
         private RenderTarget2D MainRenderTarget = null;
         private RenderTarget2D PPRenderTarget = null;
 
@@ -130,7 +135,16 @@ namespace TDMonoGameEngine
             gameWindow = gameWdw;
             spriteBatch = new SpriteBatch(graphicsDevice);
 
-            ResizeWindow(screenSize);
+            ResizeWindow(screenSize, true);
+
+            //Keep the render targets at base resolution
+            //They'll be upscaled or downscaled to the window size
+            Vector2 size = new Vector2(RenderingGlobals.BaseResolutionWidth, RenderingGlobals.BaseResolutionHeight);
+
+            RenderingGlobals.ResizeRenderTarget(ref MainRenderTarget, size);
+            RenderingGlobals.ResizeRenderTarget(ref PPRenderTarget, size);
+
+            FinalRenderTarget = MainRenderTarget;
 
             StartedRendering = false;
 
@@ -144,29 +158,38 @@ namespace TDMonoGameEngine
 
             if (window != null)
             {
-                ResizeWindow(new Vector2(window.ClientBounds.Width, window.ClientBounds.Height));
+                ResizeWindow(new Vector2(window.ClientBounds.Width, window.ClientBounds.Height), false);
             }
         }
 
         /// <summary>
-        /// Resizes the window.
+        /// Resizes the window. If this is called from <see cref="GameWindowSizeChanged(object, EventArgs)"/>, <paramref name="manualSet"/>
+        /// should be false.
         /// </summary>
-        /// <param name="newSize"></param>
-        public void ResizeWindow(Vector2 newSize)
+        /// <param name="newSize">The new size of the game window.</param>
+        /// <param name="manualSet">Whether this new size should be manually set.
+        /// This should be false if the game window is resized natively.</param>
+        public void ResizeWindow(Vector2 newSize, bool manualSet)
         {
-            graphicsDeviceManager.PreferredBackBufferWidth = (int)newSize.X;
-            graphicsDeviceManager.PreferredBackBufferHeight = (int)newSize.Y;
+            //We don't need to set the back buffer width and height since it's already set when resizing the window
+            //Only set this explicitly if we should do so manually
+            if (manualSet == true)
+            {
+                graphicsDeviceManager.PreferredBackBufferWidth = (int)newSize.X;
+                graphicsDeviceManager.PreferredBackBufferHeight = (int)newSize.Y;
 
-            graphicsDeviceManager.ApplyChanges();
-
-            FinalRenderTarget = null;
-
-            RenderingGlobals.ResizeRenderTarget(ref MainRenderTarget, newSize);
-            RenderingGlobals.ResizeRenderTarget(ref PPRenderTarget, newSize);
-
-            FinalRenderTarget = MainRenderTarget;
-
+                graphicsDeviceManager.ApplyChanges();
+            }
+            
             ScreenResizedEvent?.Invoke(newSize);
+        }
+
+        public void ToggleFullScreen(bool fullScreen)
+        {
+            //Internally, GraphicsDeviceManager sets IsFullScreen to !IsFullScreen in ToggleFullScreen
+            //Set the opposite value so it gets set to what we want
+            graphicsDeviceManager.IsFullScreen = !fullScreen;
+            graphicsDeviceManager.ToggleFullScreen();
         }
 
         /// <summary>
@@ -332,8 +355,11 @@ namespace TDMonoGameEngine
             graphicsDevice.SetRenderTarget(null);
             graphicsDevice.Clear(ClearColor);
 
-            StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, null, null);
-            CurrentBatch.Draw(FinalRenderTarget, new Rectangle(0, 0, FinalRenderTarget.Width, FinalRenderTarget.Height), null, Color.White);
+            //Everything was drawn at native resolution; scale to the window/screen size
+            Vector2 resScale = BackBufferDimensions / new Vector2(RenderingGlobals.BaseResolutionWidth, RenderingGlobals.BaseResolutionHeight);
+
+            StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.Opaque, null, null, null, null, null);
+            CurrentBatch.Draw(FinalRenderTarget, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, resScale, SpriteEffects.None, 0f);
             EndCurrentBatch();
 
             //Get rendering metrics

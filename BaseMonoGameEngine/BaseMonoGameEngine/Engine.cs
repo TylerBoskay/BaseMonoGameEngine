@@ -30,12 +30,16 @@ namespace TDMonoGameEngine
             Time.FixedTimeStep = true;
             Time.VSyncEnabled = true;
             
-            Window.AllowUserResizing = false;
+            Window.AllowUserResizing = true;
 
             //MonoGame sets x32 MSAA by default if enabled
             //If enabled and we want a lower value, set the value in the PreparingDeviceSettings event
             graphics.PreferMultiSampling = false;
             graphics.SynchronizeWithVerticalRetrace = Time.VSyncEnabled;
+
+            //Make switching to full screen fast but less efficient; we want to switch as fast as possible
+            //On top of that, this allows for borderless full screen on DesktopGL
+            graphics.HardwareModeSwitch = false;
 
             graphics.PreparingDeviceSettings -= OnPreparingDeviceSettings;
             graphics.PreparingDeviceSettings += OnPreparingDeviceSettings;
@@ -58,7 +62,7 @@ namespace TDMonoGameEngine
             IsFixedTimeStep = Time.FixedTimeStep;
 
             AssetManager.Instance.Initialize(Content);
-            RenderingManager.Instance.Initialize(graphics, GameWindow, new Vector2(RenderingGlobals.WindowWidth, RenderingGlobals.WindowHeight));
+            RenderingManager.Instance.Initialize(graphics, GameWindow, new Vector2(RenderingGlobals.BaseResolutionWidth, RenderingGlobals.BaseResolutionHeight));
 
             Camera2D camera = new Camera2D();
             camera.SetBounds(new Rectangle(0, 0, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y));

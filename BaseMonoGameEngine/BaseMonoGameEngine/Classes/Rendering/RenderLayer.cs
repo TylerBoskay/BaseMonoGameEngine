@@ -50,8 +50,11 @@ namespace TDMonoGameEngine
 
         public RenderLayer(int layerOrder, RenderingSettings renderSettings)
         {
-            RTarget = new RenderTarget2D(RenderingManager.Instance.graphicsDevice, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y);
-            PPRTarget = new RenderTarget2D(RenderingManager.Instance.graphicsDevice, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y);
+            //Keep the render targets at base resolution
+            Vector2 rtSize = new Vector2(RenderingGlobals.BaseResolutionWidth, RenderingGlobals.BaseResolutionHeight);
+
+            RTarget = new RenderTarget2D(RenderingManager.Instance.graphicsDevice, (int)rtSize.X, (int)rtSize.Y);
+            PPRTarget = new RenderTarget2D(RenderingManager.Instance.graphicsDevice, (int)rtSize.X, (int)rtSize.Y);
             RendTarget = RTarget;
 
             LayerOrder = layerOrder;
@@ -63,12 +66,7 @@ namespace TDMonoGameEngine
 
         private void ScreenResized(Vector2 newSize)
         {
-            RendTarget = null;
-
-            RenderingGlobals.ResizeRenderTarget(ref RTarget, newSize);
-            RenderingGlobals.ResizeRenderTarget(ref PPRTarget, newSize);
-
-            RendTarget = RTarget;
+            
         }
 
         public void CleanUp()
