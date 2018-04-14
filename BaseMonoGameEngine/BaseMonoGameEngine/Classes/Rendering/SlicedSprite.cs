@@ -8,6 +8,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TDMonoGameEngine
 {
+    /// <summary>
+    /// Represents a Sprite sliced into several regions.
+    /// </summary>
     public abstract class SlicedSprite : Sprite
     {
         /// <summary>
@@ -32,14 +35,14 @@ namespace TDMonoGameEngine
         /// <param name="rectangle">The Rectangle containing the position and scale of the texture.</param>
         /// <param name="index">The index of the rectangle to get the slices from. This goes from 0 to (Slices - 1).</param>
         /// <returns>A Rectangle corresponding to the region of the sliced texture.</returns>
-        public abstract Rectangle GetRectForIndex(Rectangle rectangle, int index);
+        public abstract Rectangle GetRectForIndex(in Rectangle rectangle, int index);
 
         /// <summary>
         /// Retrieves a set of Rectangles corresponding to the regions of the sliced texture.
         /// </summary>
         /// <param name="rectangle">The Rectangle containing the position and scale of the texture.</param>
         /// <returns>An array of Rectangles associated with the regions of the sliced texture.</returns>
-        public Rectangle[] CreateRegions(Rectangle rectangle)
+        public Rectangle[] CreateRegions(in Rectangle rectangle)
         {
             List<Rectangle> regions = new List<Rectangle>();
 

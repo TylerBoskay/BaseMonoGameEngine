@@ -63,9 +63,6 @@
     <Compile Include="Classes\Animations\AnimationFrame.cs" />
     <Compile Include="Classes\Animations\AnimManager.cs" />
     <Compile Include="Classes\Animations\SimpleAnimation.cs" />
-    <Compile Include="Classes\ExtendedTypes\CroppedTexture2D.cs" />
-    <Compile Include="Classes\ExtendedTypes\NineSlicedTexture2D.cs" />
-    <Compile Include="Classes\ExtendedTypes\SlicedTexture2D.cs" />
     <Compile Include="Classes\Gameplay\AfterImages.cs" />
     <Compile Include="Classes\Gameplay\PlayerStateMachines\PlayerAttackState.cs" />
     <Compile Include="Classes\Gameplay\PlayerStateMachines\PlayerDashState.cs" />

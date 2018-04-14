@@ -29,7 +29,10 @@ namespace TDMonoGameEngine
             ExponentialInOut,
             SineIn,
             SineOut,
-            SineInOut
+            SineInOut,
+            ElasticIn,
+            ElasticOut,
+            ElasticInOut
         }
 
         /// <summary>
@@ -121,6 +124,28 @@ namespace TDMonoGameEngine
             return (.5d * (1 - Math.Cos(time * Math.PI)));
         }
 
+        private static double EaseInElasticTime(double time)
+        {
+            return (Math.Sin(13 * (UtilityGlobals.HalfPI * time)) * Math.Pow(2, 10 * (time - 1)));
+        }
+
+        private static double EaseOutElasticTime(double time)
+        {
+            return (Math.Sin(-13 * (UtilityGlobals.HalfPI * (time + 1))) * Math.Pow(2, -10 * time)) + 1;
+        }
+
+        private static double EaseInOutElasticTime(double time)
+        {
+            if (time < 0.5d)
+            {
+                return 0.5d * (Math.Sin(13 * (UtilityGlobals.HalfPI * (2 * time))) * Math.Pow(2, 10 * ((2 * time) - 1)));
+            }
+            else
+            {
+                return 0.5f * (Math.Sin(-13 * UtilityGlobals.HalfPI * ((2 * time - 1) + 1)) * Math.Pow(2, -10 * (2 * time - 1)) + 2);
+            }
+        }
+
         #endregion
 
         /// <summary>
@@ -145,6 +170,9 @@ namespace TDMonoGameEngine
                 case InterpolationTypes.SineIn: return EaseInSineTime;
                 case InterpolationTypes.SineOut: return EaseOutSineTime;
                 case InterpolationTypes.SineInOut: return EaseInOutSineTime;
+                case InterpolationTypes.ElasticIn: return EaseInElasticTime;
+                case InterpolationTypes.ElasticOut: return EaseOutElasticTime;
+                case InterpolationTypes.ElasticInOut: return EaseInOutElasticTime;
                 default: return null;
             }
         }

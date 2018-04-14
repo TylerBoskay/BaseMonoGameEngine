@@ -8,6 +8,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TDMonoGameEngine
 {
+    /// <summary>
+    /// A 9-sliced Sprite. It produces a set of source rectangles that slice the Sprite into 9 slices, which can be used for rendering.
+    /// </summary>
     public class NineSlicedSprite : SlicedSprite
     {
         public int LeftLine = 0;
@@ -33,7 +36,7 @@ namespace TDMonoGameEngine
             Regions = CreateRegions(SourceRect.HasValue ? SourceRect.Value : Tex.Bounds);
         }
 
-        public override Rectangle GetRectForIndex(Rectangle rectangle, int index)
+        public override Rectangle GetRectForIndex(in Rectangle rectangle, int index)
         {
             int x = rectangle.X;
             int y = rectangle.Y;
