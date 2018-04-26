@@ -12,6 +12,27 @@ namespace TDMonoGameEngine
     /// </summary>
     public class Engine : Game
     {
+        //Delegate and event for losing window focus
+        public delegate void OnLostFocus();
+
+        /// <summary>
+        /// The event invoked when the window loses focus. This is invoked at the start of the update loop.
+        /// </summary>
+        public event OnLostFocus LostFocusEvent = null;
+
+        //Delegate and event for regaining window focus
+        public delegate void OnRegainedFocus();
+
+        /// <summary>
+        /// The event invoked when the window regains focus. This is invoked at the start of the update loop.
+        /// </summary>
+        public event OnRegainedFocus RegainedFocusEvent = null;
+
+        /// <summary>
+        /// Tells if the game window was focused at the start of the update loop.
+        /// </summary>
+        public bool WasFocused { get; private set; } = false;
+
         private GraphicsDeviceManager graphics;
         private CrashHandler crashHandler = null;
 
@@ -111,6 +132,10 @@ namespace TDMonoGameEngine
                 EventManager.Instance.CleanUp();
 
             Debug.DebugCleanup();
+            crashHandler.CleanUp();
+
+            LostFocusEvent = null;
+            RegainedFocusEvent = null;
         }
 
         /// <summary>
@@ -135,6 +160,23 @@ namespace TDMonoGameEngine
         /// <param name="gameTime">Provides a snapshot of timing values</param>
         private void PreUpdate(GameTime gameTime)
         {
+            //Tell if we change window focus state
+            bool focused = IsActive;
+
+            //Lost focus
+            if (focused == false && WasFocused == true)
+            {
+                LostFocusEvent?.Invoke();
+            }
+            //Regained focus
+            else if (focused == true && WasFocused == false)
+            {
+                RegainedFocusEvent?.Invoke();
+            }
+
+            //Set focus state
+            WasFocused = focused;
+
             Time.UpdateTime(gameTime);
             Debug.DebugUpdate();
         }

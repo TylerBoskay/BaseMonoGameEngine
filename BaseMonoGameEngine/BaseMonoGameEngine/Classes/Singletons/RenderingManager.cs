@@ -38,6 +38,10 @@ namespace TDMonoGameEngine
         #region Event Fields
 
         public delegate void ScreenResized(Vector2 newSize);
+
+        /// <summary>
+        /// The event invoked when the game window is resized.
+        /// </summary>
         public event ScreenResized ScreenResizedEvent = null;
 
         #endregion
