@@ -51,7 +51,7 @@ namespace TDMonoGameEngine
             instance = null;
         }
 
-        public void LoadScene(GameScene scene)
+        public void LoadScene(in GameScene scene)
         {
             ActiveScene?.CleanUp();
             ActiveScene = null;

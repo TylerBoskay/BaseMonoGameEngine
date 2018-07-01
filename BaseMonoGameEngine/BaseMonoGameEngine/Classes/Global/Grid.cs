@@ -211,7 +211,7 @@ namespace TDMonoGameEngine
         /// </summary>
         protected List<IPosition> GridElements = null;
 
-        public Grid(int columns, int rows, Vector2 cellSize)
+        public Grid(in int columns, in int rows, in Vector2 cellSize)
         {
             //Set the values directly instead of going through the properties
             //At this point there cannot be any elements in the grid, so bypass repositioning since it's unnecessary
@@ -226,7 +226,7 @@ namespace TDMonoGameEngine
         /// Adds an element to the grid.
         /// </summary>
         /// <param name="element">The element to add to the grid.</param>
-        public void AddGridElement(IPosition element)
+        public void AddGridElement(in IPosition element)
         {
             if (element == null)
             {
@@ -253,7 +253,7 @@ namespace TDMonoGameEngine
         /// Removes an element from the grid.
         /// </summary>
         /// <param name="element">The element to remove from the grid.</param>
-        public void RemoveGridElement(IPosition element)
+        public void RemoveGridElement(in IPosition element)
         {
             bool removed = GridElements.Remove(element);
             if (AutomaticReposition == true && removed == true)
@@ -266,7 +266,7 @@ namespace TDMonoGameEngine
         /// Removes an element from the grid.
         /// </summary>
         /// <param name="index">The index of the element to remove from the grid.</param>
-        public void RemoveGridElement(int index)
+        public void RemoveGridElement(in int index)
         {
             RemoveGridElement(GetGridElement(index));
         }
@@ -276,7 +276,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="column">The zero-based column number of the element.</param>
         /// <param name="row">The zero-based row number of the element.</param>
-        public void RemoveGridElement(int column, int row)
+        public void RemoveGridElement(in int column, in int row)
         {
             RemoveGridElement(GetGridElement(column, row));
         }
@@ -310,7 +310,7 @@ namespace TDMonoGameEngine
         /// <param name="column">The zero-based column of the grid.</param>
         /// <param name="row">The zero-based row of the grid.</param>
         /// <returns>-1 if the column or row is out of the grid's range, otherwise an index</returns>
-        public int GetIndex(int column, int row)
+        public int GetIndex(in int column, in int row)
         {
             if (column < 0 || column >= Columns || row < 0 || row >= Rows)
             {
@@ -333,7 +333,7 @@ namespace TDMonoGameEngine
         /// <param name="index">The index to retrieve the zero-based column and row numbers for.</param>
         /// <param name="column">An out integer that will be the zero-based column number. -1 if the grid has 0 or fewer Columns.</param>
         /// <param name="row">An out integer that will be the zero-based row number. -1 if the grid has 0 or fewer Columns.</param>
-        public void GetColumnRowFromIndex(int index, out int column, out int row)
+        public void GetColumnRowFromIndex(in int index, out int column, out int row)
         {
             //Set initial default values
             column = -1;
@@ -367,7 +367,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="index">The index to retrieve the element for.</param>
         /// <returns>null if the index is out of the grid's range, otherwise the element at the index.</returns>
-        public IPosition GetGridElement(int index)
+        public IPosition GetGridElement(in int index)
         {
             if (index < 0 || index >= GridElements.Count)
             {
@@ -384,7 +384,7 @@ namespace TDMonoGameEngine
         /// <param name="column">The zero-based column number.</param>
         /// <param name="row">The zero-based row number.</param>
         /// <returns>null if the column or index are out of the grid's range, otherwise the element at the index.</returns>
-        public IPosition GetGridElement(int column, int row)
+        public IPosition GetGridElement(in int column, in int row)
         {
             return GetGridElement(GetIndex(column, row));
         }
@@ -395,7 +395,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="index">The index of the grid element. This can be outside of the grid's range.</param>
         /// <returns>The relative position of the grid element.</returns>
-        protected Vector2 GetRelativePositionAtIndex(int index)
+        protected Vector2 GetRelativePositionAtIndex(in int index)
         {
             return GetRelativePositionAtIndex(index, GridPivots.UpperLeft);
         }
@@ -406,7 +406,7 @@ namespace TDMonoGameEngine
         /// <param name="index">The index of the grid element. This can be outside of the grid's range.</param>
         /// <param name="pivot">The pivot used to offset the elements in the grid.</param>
         /// <returns>The relative position of the grid element.</returns>
-        protected Vector2 GetRelativePositionAtIndex(int index, GridPivots pivot)
+        protected Vector2 GetRelativePositionAtIndex(in int index, in GridPivots pivot)
         {
             GetColumnRowFromIndex(index, out int xIndex, out int yIndex);
 
@@ -427,7 +427,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="index">The index of the grid element. This can be outside of the grid's range.</param>
         /// <returns>The position of the grid element.</returns>
-        public Vector2 GetPositionAtIndex(int index)
+        public Vector2 GetPositionAtIndex(in int index)
         {
             return GetPositionAtIndex(index, GridPivot, ElementPivot);
         }
@@ -439,7 +439,7 @@ namespace TDMonoGameEngine
         /// <param name="elementPivot">The pivot used to offset the elements in the grid.</param>
         /// <param name="gridPivot">The pivot used to offset the grid.</param>
         /// <returns>The position of the grid element with the designated element and grid pivots.</returns>
-        public Vector2 GetPositionAtIndex(int index, GridPivots gridPivot, GridPivots elementPivot)
+        public Vector2 GetPositionAtIndex(in int index, in GridPivots gridPivot, in GridPivots elementPivot)
         {
             //Add the grid's Position with the relative position of the element at the index
             //Then subtract from the pivot offset
@@ -454,7 +454,7 @@ namespace TDMonoGameEngine
         /// Changes the GridPivot of the grid.
         /// </summary>
         /// <param name="pivot">The GridPivot to change to.</param>
-        public void ChangeGridPivot(GridPivots pivot)
+        public void ChangeGridPivot(in GridPivots pivot)
         {
             GridPivots prevGridPivot = GridPivot;
             GridPivot = pivot;
@@ -469,7 +469,7 @@ namespace TDMonoGameEngine
         /// Changes the ElementPivot of the grid.
         /// </summary>
         /// <param name="pivot">The GridPivot to change to.</param>
-        public void ChangeElementPivot(GridPivots pivot)
+        public void ChangeElementPivot(in GridPivots pivot)
         {
             GridPivots prevElementPivot = ElementPivot;
             ElementPivot = pivot;
@@ -487,7 +487,7 @@ namespace TDMonoGameEngine
         /// <param name="right">The right padding.</param>
         /// <param name="top">The top padding.</param>
         /// <param name="bottom">The bottom padding.</param>
-        public void ChangeGridPadding(int left, int right, int top, int bottom)
+        public void ChangeGridPadding(in int left, in int right, in int top, in int bottom)
         {
             GridPadding.Left = left;
             GridPadding.Right = right;
@@ -507,7 +507,7 @@ namespace TDMonoGameEngine
         /// <param name="right">The right padding.</param>
         /// <param name="top">The top padding.</param>
         /// <param name="bottom">The bottom padding.</param>
-        public void ChangeGridPaddingRelative(int left, int right, int top, int bottom)
+        public void ChangeGridPaddingRelative(in int left, in int right, in int top, in int bottom)
         {
             ChangeGridPadding(GridPadding.Left + left, GridPadding.Right + right, GridPadding.Top + top, GridPadding.Bottom + bottom);
         }
@@ -517,7 +517,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="pivot">The pivot to get the grid offset for.</param>
         /// <returns>A Vector2 of the grid offset for the pivot.</returns>
-        protected Vector2 GetOffsetFromPivot(GridPivots pivot)
+        protected Vector2 GetOffsetFromPivot(in GridPivots pivot)
         {
             //Store these quick-access values, as this makes it more readable and easier to modify
             //The indices are converted to be zero-based
@@ -537,7 +537,7 @@ namespace TDMonoGameEngine
                 case GridPivots.BottomCenter: return new Vector2(colCenter, rowBottom);
                 case GridPivots.BottomRight: return new Vector2(colRight, rowBottom);
                 case GridPivots.UpperLeft:
-                default: return new Vector2(0f, 0f);
+                default: return Vector2.Zero;
             }
         }
 
@@ -546,7 +546,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="pivot">The pivot to get the grid elements offset for.</param>
         /// <returns>A Vector2 of the grid elements offset for the pivot.</returns>
-        protected Vector2 GetElementOffsetForPivot(GridPivots pivot)
+        protected Vector2 GetElementOffsetForPivot(in GridPivots pivot)
         {
             //Store these quick-access values, as this makes it more readable and easier to modify
             float xRight = CellSize.X;
@@ -565,7 +565,7 @@ namespace TDMonoGameEngine
                 case GridPivots.BottomCenter: return new Vector2(xMid, yBottom);
                 case GridPivots.BottomRight: return new Vector2(xRight, yBottom);
                 case GridPivots.UpperLeft:
-                default: return new Vector2(0f, 0f);
+                default: return Vector2.Zero;
             }
         }
 
@@ -576,7 +576,7 @@ namespace TDMonoGameEngine
         /// <param name="row">The zero-based row number.</param>
         /// <param name="pivot">The pivot to get the spacing for.</param>
         /// <returns>A Vector2 of the spacing of the grid element for the pivot.</returns>
-        protected Vector2 GetSpacingAtColumnRow(int column, int row, GridPivots pivot)
+        protected Vector2 GetSpacingAtColumnRow(in int column, in int row, in GridPivots pivot)
         {
             //Return on invalid input
             if (Columns <= 0 || Rows <= 0)
@@ -729,7 +729,7 @@ namespace TDMonoGameEngine
             /// </summary>
             public Vector2 TotalPadding => new Vector2(Right - Left, Bottom - Top);
 
-            public Padding(int left, int right, int top, int bottom)
+            public Padding(in int left, in int right, in int top, in int bottom)
             {
                 Left = left;
                 Right = right;

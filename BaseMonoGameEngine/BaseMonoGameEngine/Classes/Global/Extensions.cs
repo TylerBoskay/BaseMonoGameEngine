@@ -19,13 +19,13 @@ namespace TDMonoGameEngine
         #region Texture2D Extensions
         
         /// <summary>
-        /// Gets the origin of a Texture2D by ratio instead of specifying width and height
+        /// Gets the origin of a Texture2D by ratio instead of specifying width and height.
         /// </summary>
-        /// <param name="texture2D">The texture to get the origin for</param>
-        /// <param name="x">The X ratio of the origin, between 0 and 1</param>
-        /// <param name="y">The Y ratio of the origin, between 0 and 1</param>
-        /// <returns>A Vector2 with the origin</returns>
-        public static Vector2 GetOrigin(this Texture2D texture2D, float x, float y)
+        /// <param name="texture2D">The texture to get the origin for.</param>
+        /// <param name="x">The X ratio of the origin, between 0 and 1.</param>
+        /// <param name="y">The Y ratio of the origin, between 0 and 1.</param>
+        /// <returns>A Vector2 with the origin.</returns>
+        public static Vector2 GetOrigin(this Texture2D texture2D, in float x, in float y)
         {
             int xVal = (int)(texture2D.Width * UtilityGlobals.Clamp(x, 0f, 1f));
             int yVal = (int)(texture2D.Height * UtilityGlobals.Clamp(y, 0f, 1f));
@@ -34,10 +34,10 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
-        /// Gets the center origin of a Texture2D
+        /// Gets the center origin of a Texture2D.
         /// </summary>
-        /// <param name="texture2D">The texture to get the origin for</param>
-        /// <returns>A Vector2 with the center origin</returns>
+        /// <param name="texture2D">The texture to get the origin for.</param>
+        /// <returns>A Vector2 with the center origin.</returns>
         public static Vector2 GetCenterOrigin(this Texture2D texture2D)
         {
             return texture2D.GetOrigin(.5f, .5f);
@@ -49,7 +49,7 @@ namespace TDMonoGameEngine
         /// <param name="texture2D">The Texture2D to get the texture coordinates from.</param>
         /// <param name="sourceRect">The Rectangle to get the coordinates from.</param>
         /// <returns>A Vector2 with the Rectangle's X and Y values divided by the texture's width and height, respectively.</returns>
-        public static Vector2 GetTexCoordsAt(this Texture2D texture2D, Rectangle? sourceRect)
+        public static Vector2 GetTexCoordsAt(this Texture2D texture2D, in Rectangle? sourceRect)
         {
             Vector2 texCoords = Vector2.Zero;
 
@@ -68,7 +68,7 @@ namespace TDMonoGameEngine
         /// <param name="x">The X position on the texture.</param>
         /// <param name="y">The Y position on the texture.</param>
         /// <returns>A Vector2 with the X and Y values divided by the texture's width and height, respectively.</returns>
-        public static Vector2 GetTexCoordsAt(this Texture2D texture2D, int x, int y)
+        public static Vector2 GetTexCoordsAt(this Texture2D texture2D, in int x, in int y)
         {
             Vector2 texCoords = Vector2.Zero;
 
@@ -86,14 +86,14 @@ namespace TDMonoGameEngine
         #region SpriteFont Extensions
 
         /// <summary>
-        /// Gets the origin of a SpriteFont by ratio instead of specifying width and height
+        /// Gets the origin of a SpriteFont by ratio instead of specifying width and height.
         /// </summary>
-        /// <param name="spriteFont">The font to get the origin for</param>
-        /// <param name="text">The text to be displayed</param>
-        /// <param name="x">The X ratio of the origin, between 0 and 1</param>
-        /// <param name="y">The Y ratio of the origin, between 0 and 1</param>
-        /// <returns>A Vector2 with the origin</returns>
-        public static Vector2 GetOrigin(this SpriteFont spriteFont, string text, float x, float y)
+        /// <param name="spriteFont">The font to get the origin for.</param>
+        /// <param name="text">The text to be displayed.</param>
+        /// <param name="x">The X ratio of the origin, between 0 and 1.</param>
+        /// <param name="y">The Y ratio of the origin, between 0 and 1.</param>
+        /// <returns>A Vector2 with the origin.</returns>
+        public static Vector2 GetOrigin(this SpriteFont spriteFont, in string text, in float x, in float y)
         {
             if (string.IsNullOrEmpty(text) == true) return Vector2.Zero;
 
@@ -105,12 +105,12 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
-        /// Gets the center origin of a SpriteFont
+        /// Gets the center origin of a SpriteFont.
         /// </summary>
-        /// <param name="spriteFont">The font to get the origin for</param>
-        /// <param name="text">The text to be displayed</param>
-        /// <returns>A Vector2 with the center origin</returns>
-        public static Vector2 GetCenterOrigin(this SpriteFont spriteFont, string text)
+        /// <param name="spriteFont">The font to get the origin for.</param>
+        /// <param name="text">The text to be displayed.</param>
+        /// <returns>A Vector2 with the center origin.</returns>
+        public static Vector2 GetCenterOrigin(this SpriteFont spriteFont, in string text)
         {
             return spriteFont.GetOrigin(text, .5f, .5f);
         }
@@ -156,13 +156,13 @@ namespace TDMonoGameEngine
         public static bool Intersects(this Rectangle rectangle, in Circle circle) => circle.Intersects(rectangle);
 
         /// <summary>
-        /// Gets the origin of a Rectangle
+        /// Gets the origin of a Rectangle.
         /// </summary>
-        /// <param name="rectangle">The Rectangle to get the origin for</param>
-        /// <param name="x">The X ratio of the origin, from 0 to 1</param>
-        /// <param name="y">The Y ratio of the origin, from 0 to 1</param>
-        /// <returns>A Vector2 with the origin</returns>
-        public static Vector2 GetOrigin(this Rectangle rectangle, float x, float y)
+        /// <param name="rectangle">The Rectangle to get the origin for.</param>
+        /// <param name="x">The X ratio of the origin, from 0 to 1.</param>
+        /// <param name="y">The Y ratio of the origin, from 0 to 1.</param>
+        /// <returns>A Vector2 with the origin.</returns>
+        public static Vector2 GetOrigin(this Rectangle rectangle, in float x, in float y)
         {
             int xVal = (int)(rectangle.Width * UtilityGlobals.Clamp(x, 0f, 1f));
             int yVal = (int)(rectangle.Height * UtilityGlobals.Clamp(y, 0f, 1f));
@@ -171,10 +171,10 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
-        /// Gets the center origin of a Rectangle
+        /// Gets the center origin of a Rectangle.
         /// </summary>
-        /// <param name="rectangle">The Rectangle to get the origin for</param>
-        /// <returns>A Vector2 with the center origin</returns>
+        /// <param name="rectangle">The Rectangle to get the origin for.</param>
+        /// <returns>A Vector2 with the center origin.</returns>
         public static Vector2 GetCenterOrigin(this Rectangle rectangle)
         {
             return rectangle.GetOrigin(.5f, .5f);
@@ -190,7 +190,7 @@ namespace TDMonoGameEngine
         /// <param name="color">The Color.</param>
         /// <param name="scalar">The scalar value to divide the Color components by.</param>
         /// <returns>A Color which has the components of the original Color divided by the scalar amount and floored due to integer casting.</returns>
-        public static Color Divide(this Color color, float scalar)
+        public static Color Divide(this Color color, in float scalar)
         {
             return new Color((int)(color.R / scalar), (int)(color.G / scalar), (int)(color.B / scalar), (int)(color.A / scalar));
         }
@@ -201,7 +201,7 @@ namespace TDMonoGameEngine
         /// <param name="color">The Color.</param>
         /// <param name="scalar">The scalar value to multiply the Color components by.</param>
         /// <returns>A Color which has the components of the original Color multiplied by the scalar amount, using the ceiling of the results.</returns>
-        public static Color CeilingMult(this Color color, float scalar)
+        public static Color CeilingMult(this Color color, in float scalar)
         {
             return new Color((int)Math.Ceiling(color.R * scalar), (int)Math.Ceiling(color.G * scalar), (int)Math.Ceiling(color.B * scalar), (int)Math.Ceiling(color.A * scalar));
         }
@@ -211,20 +211,20 @@ namespace TDMonoGameEngine
         #region Vector2 Extensions
 
         /// <summary>
-        /// Halves the Vector2
+        /// Halves the Vector2.
         /// </summary>
-        /// <param name="vector2">The Vector2 to halve</param>
-        /// <returns>A Vector2 with the X and Y components halved</returns>
+        /// <param name="vector2">The Vector2 to halve.</param>
+        /// <returns>A Vector2 with the X and Y components halved.</returns>
         public static Vector2 Halve(this Vector2 vector2)
         {
             return vector2 / 2f;
         }
 
         /// <summary>
-        /// Halves the Vector2, truncating the X and Y components to the nearest integer
+        /// Halves the Vector2, truncating the X and Y components to the nearest integer.
         /// </summary>
-        /// <param name="vector2">The Vector2 to halve</param>
-        /// <returns>A Vector2 with the X and Y components halved as integer values</returns>
+        /// <param name="vector2">The Vector2 to halve.</param>
+        /// <returns>A Vector2 with the X and Y components halved as integer values.</returns>
         public static Vector2 HalveInt(this Vector2 vector2)
         {
             return new Vector2((int)(vector2.X / 2f), (int)(vector2.Y / 2f));
@@ -240,7 +240,7 @@ namespace TDMonoGameEngine
         /// <typeparam name="T">The type of elements in the List and IList.</typeparam>
         /// <param name="list">The <see cref="List{T}"/> to remove elements from.</param>
         /// <param name="elements">The elements to remove from the <see cref="List{T}"/>.</param>
-        public static void RemoveFromList<T>(this List<T> list, IList<T> elements)
+        public static void RemoveFromList<T>(this List<T> list, in IList<T> elements)
         {
             for (int i = 0; i < elements.Count; i++)
             {
@@ -260,7 +260,7 @@ namespace TDMonoGameEngine
         /// <typeparam name="U">The type of the value.</typeparam>
         /// <param name="dictCopiedTo">The Dictionary to copy values to.</param>
         /// <param name="dictCopiedFrom">The Dictionary to copy from.</param>
-        public static void CopyDictionaryData<T, U>(this Dictionary<T, U> dictCopiedTo, Dictionary<T, U> dictCopiedFrom)
+        public static void CopyDictionaryData<T, U>(this Dictionary<T, U> dictCopiedTo, in Dictionary<T, U> dictCopiedFrom)
         {
             //Don't do anything if null, since there's nothing to copy from
             if (dictCopiedFrom == null) return;
@@ -313,7 +313,7 @@ namespace TDMonoGameEngine
         /// <param name="endIndex">The index to end at. This must be greater than <paramref name="startIndex"/>.</param>
         /// <returns>A new string containing all characters in the StringBuilder ranging from <paramref name="startIndex"/> to <paramref name="endIndex"/>.
         /// If the indices are out of range or <paramref name="endIndex"/> is less than or equal to <paramref name="startIndex"/>, an empty string.</returns>
-        public static string Range(this StringBuilder stringBuilder, int startIndex, int endIndex)
+        public static string Range(this StringBuilder stringBuilder, in int startIndex, in int endIndex)
         {
             //Return a null string if out of bounds or invalid input
             if (startIndex < 0 || startIndex >= stringBuilder.Length || endIndex <= startIndex || endIndex >= stringBuilder.Length)
@@ -336,6 +336,22 @@ namespace TDMonoGameEngine
 
             //Return a new string
             return new string(charArray);
+        }
+
+        #endregion
+
+        #region Random Extensions
+
+        /// <summary>
+        /// Returns a random floating-point number that is greater than or equal to <paramref name="minValue"/> and less than <paramref name="maxValue"/>.
+        /// </summary>
+        /// <param name="random">The Random instance.</param>
+        /// <param name="minValue">The inclusive lower bound of the random number returned.</param>
+        /// <param name="maxValue">The exclusive upper bound of the random number returned. This must be greater than or equal to <paramref name="minValue"/>.</param>
+        /// <returns></returns>
+        public static double NextDouble(this Random random, in double minValue, in double maxValue)
+        {
+            return random.NextDouble() * (maxValue - minValue) + minValue;
         }
 
         #endregion

@@ -20,73 +20,52 @@ namespace TDMonoGameEngine
         /// Random reference for generating pseudo-random numbers.
         /// </summary>
         public static readonly Random Randomizer = new Random();
-
-        public static double GenerateRandomDouble() => (Randomizer.NextDouble() * RandomConditionVal);
         public static int GenerateRandomInt() => Randomizer.Next(RandomConditionVal);
 
         /// <summary>
         /// Tests a random condition with two values.
-        /// This is commonly used when calculating a total percentage of something happening.
-        /// For example, this is used when testing whether a move will inflict a Status Effect on a BattleEntity.
-        /// <para>Two values are multiplied by each other then divided by <see cref="RandomConditionVal"/>.
+        /// This can be used when calculating a total percentage of something happening.
+        /// <para>Two values are multiplied by each other then divided by <paramref name="randCondVal"/>.
         /// A random value is then rolled; if it's less than the result, it returns true. This works for any non-negative values.</para>
         /// </summary>
-        /// <param name="value1">The first value to test with, representing a percentage with a number from 0 to 100+.</param>
-        /// <param name="value2">The second value to test with, representing a percentage with a number from 0 to 100+.</param>
+        /// <param name="value1">The first value to test with, representing a percentage with a number greater than or equal to 0.</param>
+        /// <param name="value2">The second value to test with, representing a percentage with a number greater than or equal to 0.</param>
+        /// <param name="randCondVal">The value used for the random condition. If this is greater than the result, it returns true.</param>
         /// <returns>true if the RNG value is less than a calculated percentage result, otherwise false.</returns>
-        public static bool TestRandomCondition(double value1, double value2)
+        public static bool TestRandomCondition(in double value1, in double value2, in double randCondVal)
         {
-            double value = GenerateRandomDouble();
+            double value = Randomizer.NextDouble(0, randCondVal);
 
-            double percentageResult = ((value1 * value2) / RandomConditionVal);
+            double percentageResult = ((value1 * value2) / randCondVal);
 
             return (value < percentageResult);
-        }
-
-        /// <summary>
-        /// Tests a random condition with one value.
-        /// </summary>
-        /// <param name="value">The value to test, representing a percentage with a number from 0 to 100+.</param>
-        /// <returns>true if the RNG value is less than a calculated percentage result, otherwise false.</returns>
-        public static bool TestRandomCondition(double value)
-        {
-            return TestRandomCondition(value, RandomConditionVal);
         }
 
         /// <summary>
         /// Tests a random condition with two values. An int overload.
         /// This is commonly used when calculating a total percentage of something happening.
-        /// <para>Two values are multiplied by each other then divided by <see cref="RandomGlobals.RandomConditionVal"/>.
+        /// <para>Two values are multiplied by each other then divided by <paramref name="randCondVal"/>.
         /// A random value is then rolled; if it's less than the result, it returns true. This works for any non-negative values.</para>
         /// </summary>
-        /// <param name="value1">The first value to test with, representing a percentage with a number from 0 to 100+.</param>
-        /// <param name="value2">The second value to test with, representing a percentage with a number from 0 to 100+.</param>
+        /// <param name="value1">The first value to test with, representing a percentage with a number greater than or equal to 0.</param>
+        /// <param name="value2">The second value to test with, representing a percentage with a number greater than or equal to 0.</param>
+        /// <param name="randCondVal">The value used for the random condition. If this is greater than the result, it returns true.</param>
         /// <returns>true if the RNG value is less than a calculated percentage result, otherwise false.</returns>
-        public static bool TestRandomCondition(int value1, int value2)
+        public static bool TestRandomCondition(in int value1, in int value2, in int randCondVal)
         {
-            int value = GenerateRandomInt();
+            int value = Randomizer.Next(randCondVal);
 
-            int percentageResult = ((value1 * value2) / RandomConditionVal);
+            int percentageResult = ((value1 * value2) / randCondVal);
 
             return (value < percentageResult);
         }
 
         /// <summary>
-        /// Tests a random condition with one value. An int overload.
+        /// Chooses a random index in a list of percentages.
         /// </summary>
-        /// <param name="value">The value to test, representing a percentage with a number from 0 to 100+.</param>
-        /// <returns>true if the RNG value is less than a calculated percentage result, otherwise false.</returns>
-        public static bool TestRandomCondition(int value)
-        {
-            return TestRandomCondition(value, RandomConditionVal);
-        }
-
-        /// <summary>
-        /// Chooses a random index in a list of percentages
-        /// </summary>
-        /// <param name="percentages">The container of percentages, each with positive values, with the sum adding up to 1</param>
-        /// <returns>The index in the container of percentages that was chosen</returns>
-        public static int ChoosePercentage(IList<double> percentages)
+        /// <param name="percentages">The container of percentages, each with positive values, with the sum adding up to 1.</param>
+        /// <returns>The index in the container of percentages that was chosen.</returns>
+        public static int ChoosePercentage(in IList<double> percentages)
         {
             double randomVal = Randomizer.NextDouble();
             double value = 0d;

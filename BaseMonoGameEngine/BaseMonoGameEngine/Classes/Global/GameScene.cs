@@ -44,7 +44,7 @@ namespace TDMonoGameEngine
         /// Sets the Camera2D for the GameScene.
         /// </summary>
         /// <param name="camera">The new Camera for the scene.</param>
-        public void SetCamera(Camera2D camera)
+        public void SetCamera(in Camera2D camera)
         {
             Camera = camera;
         }
@@ -76,13 +76,13 @@ namespace TDMonoGameEngine
             }
         }
 
-        public void AddSceneObject(SceneObject sceneObject)
+        public void AddSceneObject(in SceneObject sceneObject)
         {
             sceneObject.OnAddedToScene(this);
             SceneObjects.Add(sceneObject);
         }
 
-        public void RemoveSceneObject(SceneObject sceneObject)
+        public void RemoveSceneObject(in SceneObject sceneObject)
         {
             //Clean up before removing
             if (sceneObject != null)
@@ -122,7 +122,7 @@ namespace TDMonoGameEngine
         /// Adds a RenderLayer to the scene and sorts all RenderLayers in the scene by their LayerOrder.
         /// </summary>
         /// <param name="renderLayer">The RenderLayer to add.</param>
-        public void AddRenderLayer(RenderLayer renderLayer)
+        public void AddRenderLayer(in RenderLayer renderLayer)
         {
             RenderLayers.Add(renderLayer);
             RenderLayers.Sort(RenderLayerSorter);
@@ -142,7 +142,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="layerOrder">The layer order to apply the effect to.</param>
         /// <param name="layerEffect">The effect.</param>
-        public void AddRenderLayerEffect(int layerOrder, Effect layerEffect)
+        public void AddRenderLayerEffect(in int layerOrder, in Effect layerEffect)
         {
             if (layerEffect == null) return;
         
@@ -167,7 +167,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="layerOrder">The layer order to remove the effect from.</param>
         /// <param name="layerEffect">The effect.</param>
-        public void RemoveRenderLayerEffect(int layerOrder, Effect layerEffect)
+        public void RemoveRenderLayerEffect(in int layerOrder, in Effect layerEffect)
         {
             if (layerEffect == null) return;
         
@@ -191,7 +191,7 @@ namespace TDMonoGameEngine
         /// Removes all layer effects from a particular RenderLayer.
         /// </summary>
         /// <param name="layerOrder">The layer order to remove all effects from.</param>
-        public void RemoveAllRenderLayerEffects(int layerOrder)
+        public void RemoveAllRenderLayerEffects(in int layerOrder)
         {
             RenderLayer layer = null;
 

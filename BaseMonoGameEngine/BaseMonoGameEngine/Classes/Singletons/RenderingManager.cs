@@ -37,7 +37,7 @@ namespace TDMonoGameEngine
 
         #region Event Fields
 
-        public delegate void ScreenResized(Vector2 newSize);
+        public delegate void ScreenResized(in Vector2 newSize);
 
         /// <summary>
         /// The event invoked when the game window is resized.
@@ -173,7 +173,7 @@ namespace TDMonoGameEngine
         /// <param name="newSize">The new size of the game window.</param>
         /// <param name="manualSet">Whether this new size should be manually set.
         /// This should be false if the game window is resized natively.</param>
-        public void ResizeWindow(Vector2 newSize, bool manualSet)
+        public void ResizeWindow(in Vector2 newSize, in bool manualSet)
         {
             //We don't need to set the back buffer width and height since it's already set when resizing the window
             //Only set this explicitly if we should do so manually
@@ -188,7 +188,7 @@ namespace TDMonoGameEngine
             ScreenResizedEvent?.Invoke(newSize);
         }
 
-        public void ToggleFullScreen(bool fullScreen)
+        public void ToggleFullScreen(in bool fullScreen)
         {
             //Internally, GraphicsDeviceManager sets IsFullScreen to !IsFullScreen in ToggleFullScreen
             //Set the opposite value so it gets set to what we want
@@ -201,7 +201,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="effect">The post-processing effect to add.</param>
         /// <param name="index">The index to insert the effect at. If less than 0, it will add it to the end of the list.</param>
-        public void AddPostProcessingEffect(Effect effect, int index = -1)
+        public void AddPostProcessingEffect(in Effect effect, in int index = -1)
         {
             if (index < 0)
             {

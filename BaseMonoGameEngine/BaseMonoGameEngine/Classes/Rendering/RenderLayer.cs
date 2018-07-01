@@ -48,7 +48,7 @@ namespace TDMonoGameEngine
         /// </summary>
         private readonly List<RenderBatch> RenderBatches = new List<RenderBatch>();
 
-        public RenderLayer(int layerOrder, RenderingSettings renderSettings)
+        public RenderLayer(in int layerOrder, in RenderingSettings renderSettings)
         {
             //Keep the render targets at base resolution
             Vector2 rtSize = new Vector2(RenderingGlobals.BaseResolutionWidth, RenderingGlobals.BaseResolutionHeight);
@@ -64,7 +64,7 @@ namespace TDMonoGameEngine
             RenderingManager.Instance.ScreenResizedEvent += ScreenResized;
         }
 
-        private void ScreenResized(Vector2 newSize)
+        private void ScreenResized(in Vector2 newSize)
         {
             
         }
@@ -87,7 +87,7 @@ namespace TDMonoGameEngine
         /// Adds a post-processing effect for this layer.
         /// </summary>
         /// <param name="layerEffect">The Effect to add.</param>
-        public void AddLayerEffect(Effect layerEffect)
+        public void AddLayerEffect(in Effect layerEffect)
         {
             if (layerEffect == null) return;
         
@@ -98,7 +98,7 @@ namespace TDMonoGameEngine
         /// Removes a post-processing effect from this layer.
         /// </summary>
         /// <param name="layerEffect">The Effect to remove.</param>
-        public void RemoveLayerEffect(Effect layerEffect)
+        public void RemoveLayerEffect(in Effect layerEffect)
         {
             LayerEffects.Remove(layerEffect);
         }
@@ -223,8 +223,8 @@ namespace TDMonoGameEngine
             public RasterizerState rasterizerState;
             public bool UseCameraMatrix;
 
-            public RenderingSettings(SpriteBatch sb, SpriteSortMode ssm, BlendState bs, SamplerState ss, DepthStencilState dss,
-                RasterizerState rs, bool useCameraMatrix)
+            public RenderingSettings(in SpriteBatch sb, in SpriteSortMode ssm, in BlendState bs, in SamplerState ss,
+                in DepthStencilState dss, in RasterizerState rs, in bool useCameraMatrix)
             {
                 spriteBatch = sb;
                 spriteSortMode = ssm;

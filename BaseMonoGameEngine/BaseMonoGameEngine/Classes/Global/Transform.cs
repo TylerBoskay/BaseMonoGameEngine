@@ -21,7 +21,7 @@ namespace TDMonoGameEngine
 
         }
 
-        public Transform(Vector2 position, float rotation, Vector2 scale)
+        public Transform(in Vector2 position, in float rotation, in Vector2 scale)
         {
             Position = position;
             Rotation = rotation;

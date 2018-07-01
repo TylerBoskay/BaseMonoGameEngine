@@ -50,12 +50,12 @@ namespace TDMonoGameEngine
             RenderingManager.Instance.ScreenResizedEvent -= WindowSizeChanged;
         }
 
-        private void WindowSizeChanged(Vector2 newSize)
+        private void WindowSizeChanged(in Vector2 newSize)
         {
             SetBounds(new Rectangle(0, 0, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y));
         }
 
-        public void SetTransform(Vector2 position, float rotation, float scale)
+        public void SetTransform(in Vector2 position, in float rotation, in float scale)
         {
             SetTranslation(position);
             SetRotation(rotation);
@@ -120,32 +120,32 @@ namespace TDMonoGameEngine
 
         #region Transform Manipulations
 
-        public void SetTranslation(Vector2 translation)
+        public void SetTranslation(in Vector2 translation)
         {
             Position = translation;
         }
 
-        public void Translate(Vector2 amount)
+        public void Translate(in Vector2 amount)
         {
             Position += amount;
         }
 
-        public void SetRotation(float rotation)
+        public void SetRotation(in float rotation)
         {
             Rotation = rotation;
         }
 
-        public void Rotate(float amount)
+        public void Rotate(in float amount)
         {
             Rotation += amount;
         }
 
-        public void SetZoom(float scale)
+        public void SetZoom(in float scale)
         {
             Scale = scale;
         }
 
-        public void Zoom(float amount)
+        public void Zoom(in float amount)
         {
             Scale += amount;
         }

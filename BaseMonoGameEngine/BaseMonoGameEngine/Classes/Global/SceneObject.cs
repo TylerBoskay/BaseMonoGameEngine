@@ -52,12 +52,12 @@ namespace TDMonoGameEngine
 
         }
 
-        public void OnAddedToScene(GameScene scene)
+        public void OnAddedToScene(in GameScene scene)
         {
             Scene = scene;
         }
 
-        public void OnRemovedFromScene(GameScene scene)
+        public void OnRemovedFromScene(in GameScene scene)
         {
             Scene = null;
         }

@@ -141,7 +141,7 @@ namespace TDMonoGameEngine
         /// <param name="xAxis">The axis value for the X axis.</param>
         /// <param name="yAxis">The axis value for the Y axis.</param>
         /// <returns>A Vector2 containing the normalized X and Y axes values from -1 to 1.</returns>
-        public static Vector2 GetNormalizedJoystickAxesValues(int index, int xAxis, int yAxis)
+        public static Vector2 GetNormalizedJoystickAxesValues(in int index, in int xAxis, in int yAxis)
         {
             return new Vector2(GetNormalizedJoystickAxisValue(index, xAxis), GetNormalizedJoystickAxisValue(index, yAxis));
         }
@@ -151,7 +151,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="index">The index of the Joystick.</param>
         /// <returns>A Vector2 containing the normalized X and Y axes values from -1 to 1.</returns>
-        public static Vector2 GetLeftStickAxisValue(int index)
+        public static Vector2 GetLeftStickAxisValue(in int index)
         {
             return GetNormalizedJoystickAxesValues(index, 0, 1);
         }
@@ -161,7 +161,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="index">The index of the Joystick.</param>
         /// <returns>A Vector2 containing the normalized X and Y axes values from -1 to 1.</returns>
-        public static Vector2 GetRightStickAxisValue(int index)
+        public static Vector2 GetRightStickAxisValue(in int index)
         {
             JoystickCapabilities capabilities = Joystick.GetCapabilities(index);
             
@@ -191,7 +191,7 @@ namespace TDMonoGameEngine
         /// <param name="index">The index of the Joystick.</param>
         /// <param name="button">The button index.</param>
         /// <returns>true if the button is pressed, otherwise false.</returns>
-        public static bool GetButton(int index, int button)
+        public static bool GetButton(in int index, in int button)
         {
             //Check if this joystick has this button available
             if (HasButton(index, button) == false)
@@ -210,7 +210,7 @@ namespace TDMonoGameEngine
         ///// <param name="index">The index of the Joystick.</param>
         ///// <param name="button">The button index.</param>
         ///// <returns>true if the button was just pressed, otherwise false.</returns>
-        //public static bool GetButtonDown(int index, int button)
+        //public static bool GetButtonDown(in int index, in int button)
         //{
         //    //Check if this joystick has this button available
         //    if (HasButton(index, button) == false)
@@ -230,7 +230,7 @@ namespace TDMonoGameEngine
         /// <param name="button">The button index.</param>
         /// <param name="joystickState">The JoystickState to check.</param>
         /// <returns>true if the button was just pressed, otherwise false.</returns>
-        public static bool GetButtonDown(int index, int button, in JoystickState joystickState)
+        public static bool GetButtonDown(in int index, in int button, in JoystickState joystickState)
         {
             //Check if this joystick has this button available
             if (HasButton(index, button) == false || joystickState.IsConnected == false)
@@ -249,7 +249,7 @@ namespace TDMonoGameEngine
         ///// <param name="index">The index of the Joystick.</param>
         ///// <param name="button">The button index.</param>
         ///// <returns>true if the button was just released, otherwise false.</returns>
-        //public static bool GetButtonUp(int index, int button)
+        //public static bool GetButtonUp(in int index, in int button)
         //{
         //    //Check if this joystick has this button available
         //    if (HasButton(index, button) == false)
@@ -269,7 +269,7 @@ namespace TDMonoGameEngine
         /// <param name="button">The button index.</param>
         /// <param name="joystickState">The JoystickState to check.</param>
         /// <returns>true if the button was just released, otherwise false.</returns>
-        public static bool GetButtonUp(int index, int button, in JoystickState joystickState)
+        public static bool GetButtonUp(in int index, in int button, in JoystickState joystickState)
         {
             //Check if this joystick has this button available
             if (HasButton(index, button) == false || joystickState.IsConnected == false)
@@ -289,7 +289,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="index">The index of the Joystick to use.</param>
         /// <param name="joystickState">The JoystickState to update.</param>
-        public static void UpdateJoystickState(int index, ref JoystickState joystickState)
+        public static void UpdateJoystickState(in int index, ref JoystickState joystickState)
         {
             joystickState = GetJoystickState(index);
         }
@@ -310,7 +310,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="index">The index of the Joystick.</param>
         /// <returns>A JoystickState.</returns>
-        public static JoystickState GetJoystickState(int index)
+        public static JoystickState GetJoystickState(in int index)
         {
             return Joystick.GetState(index);
         }
@@ -319,7 +319,7 @@ namespace TDMonoGameEngine
         ///// Clears the JoystickState at the specified index.
         ///// </summary>
         ///// <param name="index">The index of the Joystick.</param>
-        //public static void ClearJoystickState(int index)
+        //public static void ClearJoystickState(in int index)
         //{
         //    JoystickStates[index] = new JoystickState();
         //}
@@ -338,7 +338,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="index">The index of the Joystick.</param>
         /// <returns>An array of ButtonStates.</returns>
-        public static ButtonState[] GetJoystickButtons(int index)
+        public static ButtonState[] GetJoystickButtons(in int index)
         {
             JoystickState state = GetJoystickState(index);
 

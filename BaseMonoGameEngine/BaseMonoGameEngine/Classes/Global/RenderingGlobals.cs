@@ -16,6 +16,12 @@ namespace TDMonoGameEngine
         public const int BaseResolutionWidth = 800;
         public const int BaseResolutionHeight = 480;
 
+        private static readonly Vector2 Resolution = new Vector2(BaseResolutionWidth, BaseResolutionHeight);
+        private static readonly Vector2 ResolutionHalf = Resolution / 2;
+
+        public static ref readonly Vector2 BaseResolution => ref Resolution;
+        public static ref readonly Vector2 BaseResolutionHalved => ref ResolutionHalf;
+
         /// <summary>
         /// Resizes a RenderTarget by disposing it and pointing it to a new RenderTarget instance with the desired size.
         /// <para>If the RenderTarget is already the new size, nothing happens.
@@ -23,7 +29,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="renderTarget">The RenderTarget to resize.</param>
         /// <param name="newSize">The new size of the RenderTarget.</param>
-        public static void ResizeRenderTarget(ref RenderTarget2D renderTarget, Vector2 newSize)
+        public static void ResizeRenderTarget(ref RenderTarget2D renderTarget, in Vector2 newSize)
         {
             int newWidth = (int)newSize.X;
             int newHeight = (int)newSize.Y;
@@ -35,7 +41,8 @@ namespace TDMonoGameEngine
                     return;
 
                 //Dispose the current RenderTarget, as they're not resizable
-                renderTarget.Dispose();
+                if (renderTarget.IsDisposed == false)
+                    renderTarget.Dispose();
             }
 
             //Point the reference to a new RenderTarget with the new size

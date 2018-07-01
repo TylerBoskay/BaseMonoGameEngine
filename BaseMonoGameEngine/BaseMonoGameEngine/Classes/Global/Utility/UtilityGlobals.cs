@@ -15,17 +15,17 @@ namespace TDMonoGameEngine
         public static readonly double TwoPI = (Math.PI * 2d);
         public static readonly double HalfPI = (Math.PI / 2d);
 
-        public static int Clamp(int value, int min, int max) => (value < min) ? min : (value > max) ? max : value;
-        public static float Clamp(float value, float min, float max) => (value < min) ? min : (value > max) ? max : value;
-        public static double Clamp(double value, double min, double max) => (value < min) ? min : (value > max) ? max : value;
-        public static uint Clamp(uint value, uint min, uint max) => (value < min) ? min : (value > max) ? max : value;
+        public static int Clamp(in int value, in int min, in int max) => (value < min) ? min : (value > max) ? max : value;
+        public static float Clamp(in float value, in float min, in float max) => (value < min) ? min : (value > max) ? max : value;
+        public static double Clamp(in double value, in double min, in double max) => (value < min) ? min : (value > max) ? max : value;
+        public static uint Clamp(in uint value, in uint min, in uint max) => (value < min) ? min : (value > max) ? max : value;
 
-        public static int Wrap(int value, int min, int max) => (value < min) ? max : (value > max) ? min : value;
-        public static float Wrap(float value, float min, float max) => (value < min) ? max : (value > max) ? min : value;
-        public static double Wrap(double value, double min, double max) => (value < min) ? max : (value > max) ? min : value;
+        public static int Wrap(in int value, in int min, in int max) => (value < min) ? max : (value > max) ? min : value;
+        public static float Wrap(in float value, in float min, in float max) => (value < min) ? max : (value > max) ? min : value;
+        public static double Wrap(in double value, in double min, in double max) => (value < min) ? max : (value > max) ? min : value;
 
-        public static T Min<T>(T val1, T val2) where T : IComparable => (val1.CompareTo(val2) < 0) ? val1 : (val2.CompareTo(val1) < 0) ? val2 : val1;
-        public static T Max<T>(T val1, T val2) where T : IComparable => (val1.CompareTo(val2) > 0) ? val1 : (val2.CompareTo(val1) > 0) ? val2 : val1;
+        public static T Min<T>(in T val1, in T val2) where T : IComparable => (val1.CompareTo(val2) < 0) ? val1 : (val2.CompareTo(val1) < 0) ? val2 : val1;
+        public static T Max<T>(in T val1, in T val2) where T : IComparable => (val1.CompareTo(val2) > 0) ? val1 : (val2.CompareTo(val1) > 0) ? val2 : val1;
 
         public static float ToDegrees(in float radians) => Microsoft.Xna.Framework.MathHelper.ToDegrees(radians);
         public static float ToRadians(in float degrees) => Microsoft.Xna.Framework.MathHelper.ToRadians(degrees);
@@ -33,13 +33,13 @@ namespace TDMonoGameEngine
         public static double ToDegrees(in double radians) => (radians * (180d / Math.PI));
         public static double ToRadians(in double degrees) => (degrees * (Math.PI / 180d));
 
-        public static int Lerp(int value1, int value2, float amount) => value1 + (int)((value2 - value1) * amount);
-        public static float Lerp(float value1, float value2, float amount) => value1 + ((value2 - value1) * amount);
-        public static double Lerp(double value1, double value2, float amount) => value1 + ((value2 - value1) * amount);
+        public static int Lerp(in int value1, in int value2, in float amount) => value1 + (int)((value2 - value1) * amount);
+        public static float Lerp(in float value1, in float value2, in float amount) => value1 + ((value2 - value1) * amount);
+        public static double Lerp(in double value1, in double value2, in float amount) => value1 + ((value2 - value1) * amount);
 
-        public static double LerpPrecise(double value1, double value2, float amount) => ((1 - amount) * value1) + (value2 * amount);
-        public static float LerpPrecise(float value1, float value2, float amount) => ((1 - amount) * value1) + (value2 * amount);
-        public static int LerpPrecise(int value1, int value2, float amount) => (int)(((1 - amount) * value1) + (value2 * amount));
+        public static double LerpPrecise(in double value1, in double value2, in float amount) => ((1 - amount) * value1) + (value2 * amount);
+        public static float LerpPrecise(in float value1, in float value2, in float amount) => ((1 - amount) * value1) + (value2 * amount);
+        public static int LerpPrecise(in int value1, in int value2, in float amount) => (int)(((1 - amount) * value1) + (value2 * amount));
 
         /// <summary>
         /// Bounces a value between 0 and a max value.
@@ -47,7 +47,7 @@ namespace TDMonoGameEngine
         /// <param name="time">The time value.</param>
         /// <param name="maxVal">The max value.</param>
         /// <returns>A double with a value between 0 and <paramref name="maxVal"/>.</returns>
-        public static double PingPong(double time, double maxVal)
+        public static double PingPong(in double time, in double maxVal)
         {
             double lengthTimesTwo = maxVal * 2d;
             double timeMod = time % lengthTimesTwo;
@@ -65,7 +65,7 @@ namespace TDMonoGameEngine
         /// <param name="minVal">The min value.</param>
         /// <param name="maxVal">The max value.</param>
         /// <returns>A float with a value between <paramref name="minVal"/> and <paramref name="maxVal"/>.</returns>
-        public static double PingPong(double time, double minVal, double maxVal)
+        public static double PingPong(in double time, in double minVal, in double maxVal)
         {
             return PingPong(time, maxVal - minVal) + minVal;
         }
@@ -76,7 +76,7 @@ namespace TDMonoGameEngine
         /// <param name="time">The time value.</param>
         /// <param name="maxVal">The max value.</param>
         /// <returns>A float with a value between 0 and <paramref name="maxVal"/>.</returns>
-        public static float PingPong(double time, float maxVal) => (float)PingPong(time, (double)maxVal);
+        public static float PingPong(in double time, in float maxVal) => (float)PingPong(time, (double)maxVal);
 
         /// <summary>
         /// Bounces a value between a min and a max value.
@@ -85,7 +85,7 @@ namespace TDMonoGameEngine
         /// <param name="minVal">The min value.</param>
         /// <param name="maxVal">The max value.</param>
         /// <returns>A float with a value between <paramref name="minVal"/> and <paramref name="maxVal"/>.</returns>
-        public static float PingPong(double time, float minVal, float maxVal) => (float)PingPong(time, (double)minVal, (double)maxVal);
+        public static float PingPong(in double time, in float minVal, in float maxVal) => (float)PingPong(time, (double)minVal, (double)maxVal);
 
         /// <summary>
         /// Performs a Hermite spline interpolation.
@@ -98,7 +98,7 @@ namespace TDMonoGameEngine
         /// <param name="tangent2">End tangent; the direction and speed to how the curve leaves the endpoint.</param>
         /// <param name="amount">Weighting factor; between 0 and 1.</param>
         /// <returns>A double representing the result of the Hermite spline interpolation.</returns>
-        public static double Hermite(float value1, float tangent1, float value2, float tangent2, float amount)
+        public static double Hermite(in float value1, in float tangent1, in float value2, in float tangent2, in float amount)
         {
             /*Hermite basis functions:
              * s = amount (or time)
@@ -161,7 +161,7 @@ namespace TDMonoGameEngine
         /// <param name="targetVal">The target value.</param>
         /// <param name="slowdownFactor">The slowdown factor. The higher this is, the slower <paramref name="curVal"/> will approach <paramref name="targetVal"/>.</param>
         /// <returns>A double representing the weighted average interpolation.</returns>
-        public static double WeightedAverageInterpolation(double curVal, double targetVal, double slowdownFactor)
+        public static double WeightedAverageInterpolation(in double curVal, in double targetVal, in double slowdownFactor)
         {
             //Avoid division by 0
             if (slowdownFactor == 0)
@@ -266,7 +266,7 @@ namespace TDMonoGameEngine
         /// <param name="angle">The angle of the point.</param>
         /// <param name="angleInDegrees">Whether the angle passed in is in degrees or not.</param>
         /// <returns>A Vector2 with the X and Y components at the location around the circle.</returns>
-        public static Vector2 GetPointAroundCircle(in Circle circle, double angle, bool angleInDegrees)
+        public static Vector2 GetPointAroundCircle(in Circle circle, double angle, in bool angleInDegrees)
         {
             //If the angle is in degrees, convert it to radians
             if (angleInDegrees == true)
@@ -277,23 +277,13 @@ namespace TDMonoGameEngine
             return circle.GetPointAround(angle);
         }
 
-        public static T[] GetEnumValues<T>()
-        {
-            return EnumUtility.GetValues<T>.EnumValues;
-        }
-
-        public static string[] GetEnumNames<T>()
-        {
-            return EnumUtility.GetNames<T>.EnumNames;
-        }
-
         /// <summary>
         /// Indicates whether an <see cref="IList{T}"/> is null or empty.
         /// </summary>
         /// <typeparam name="T">The Type of the elements in the IList.</typeparam>
         /// <param name="iList">The IList.</param>
         /// <returns>true if <paramref name="iList"/> is null or empty, otherwise false.</returns>
-        public static bool IListIsNullOrEmpty<T>(IList<T> iList)
+        public static bool IListIsNullOrEmpty<T>(in IList<T> iList)
         {
             return (iList == null || iList.Count == 0);
         }
@@ -316,7 +306,7 @@ namespace TDMonoGameEngine
         /// <paramref name="dividingFactor"/>.
         /// If <paramref name="dividingFactor"/> is 0, then 0.
         /// </returns>
-        public static float DifferenceDivided(float value1, float value2, float dividingFactor)
+        public static float DifferenceDivided(in float value1, in float value2, in float dividingFactor)
         {
             //Return 0 if we're trying to divide by 0
             if (dividingFactor == 0f)

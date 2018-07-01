@@ -22,7 +22,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="key">The key to test.</param>
         /// <returns>true if the key is pressed, otherwise false.</returns>
-        public static bool GetKey(Keys key)
+        public static bool GetKey(in Keys key)
         {
             KeyboardState kbState = KBState;
             return GetKey(key, kbState);
@@ -34,7 +34,7 @@ namespace TDMonoGameEngine
         /// <param name="key">The key to test.</param>
         /// <param name="keyboardState">The KeyboardState to check.</param>
         /// <returns>true if the key is pressed on the KeyboardState, otherwise false.</returns>
-        public static bool GetKey(Keys key, in KeyboardState keyboardState)
+        public static bool GetKey(in Keys key, in KeyboardState keyboardState)
         {
             return keyboardState.IsKeyDown(key);
         }
@@ -44,7 +44,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="key">The key to test.</param>
         /// <returns>true if the key was just released, otherwise false.</returns>
-        public static bool GetKeyUp(Keys key)
+        public static bool GetKeyUp(in Keys key)
         {
             return GetKeyUp(key, InputKeyboard);
         }
@@ -55,7 +55,7 @@ namespace TDMonoGameEngine
         /// <param name="key">The key to test.</param>
         /// <param name="keyboardState">The KeyboardState to check.</param>
         /// <returns>true if the key on the KeyboardState was just released, otherwise false.</returns>
-        public static bool GetKeyUp(Keys key, in KeyboardState keyboardState)
+        public static bool GetKeyUp(in Keys key, in KeyboardState keyboardState)
         {
             return (keyboardState.IsKeyDown(key) == true && KBState.IsKeyUp(key) == true);
         }
@@ -65,7 +65,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="key">The key to test.</param>
         /// <returns>true if the key on the keyboard was just pressed, otherwise false.</returns>
-        public static bool GetKeyDown(Keys key)
+        public static bool GetKeyDown(in Keys key)
         {
             return GetKeyDown(key, InputKeyboard);
         }
@@ -76,7 +76,7 @@ namespace TDMonoGameEngine
         /// <param name="key">The key to test.</param>
         /// <param name="keyboardState">The KeyboardState to check.</param>
         /// <returns>true if the key on the KeyboardState was just pressed, otherwise false.</returns>
-        public static bool GetKeyDown(Keys key, in KeyboardState keyboardState)
+        public static bool GetKeyDown(in Keys key, in KeyboardState keyboardState)
         {
             return (keyboardState.IsKeyUp(key) == true && KBState.IsKeyDown(key) == true);
         }

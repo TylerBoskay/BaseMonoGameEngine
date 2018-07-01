@@ -88,8 +88,7 @@
     <Compile Include="Classes\Global\SceneManager.cs" />
     <Compile Include="Classes\Global\Utility\EnumUtility.cs" />
     <Compile Include="Classes\Global\Utility\GCWatcher.cs" />
-    <Compile Include="Classes\Global\Utility\LineIntersection.cs" />
-    <Compile Include="Classes\Global\Utility\RectangleF.cs" />
+    <Compile Include="Classes\Global\RectangleF.cs" />
     <Compile Include="Classes\Interfaces\IEvent.cs" />
     <Compile Include="Classes\Interfaces\IEventHandler.cs" />
     <Compile Include="Classes\Interfaces\IFiniteStateMachine.cs" />
@@ -101,10 +100,10 @@
     <Compile Include="Classes\Global\SceneObject.cs" />
     <Compile Include="Classes\Global\Time.cs" />
     <Compile Include="Classes\Global\Transform.cs" />
-    <Compile Include="Classes\Global\Utility\Circle.cs" />
-    <Compile Include="Classes\Global\Utility\Grid.cs" />
+    <Compile Include="Classes\Global\Circle.cs" />
+    <Compile Include="Classes\Global\Grid.cs" />
     <Compile Include="Classes\Global\Utility\Interpolation.cs" />
-    <Compile Include="Classes\Global\Utility\Line.cs" />
+    <Compile Include="Classes\Global\Line.cs" />
     <Compile Include="Classes\Global\Utility\UtilityGlobals.cs" />
     <Compile Include="Classes\Interfaces\ICleanup.cs" />
     <Compile Include="Classes\Interfaces\ICopyable.cs" />

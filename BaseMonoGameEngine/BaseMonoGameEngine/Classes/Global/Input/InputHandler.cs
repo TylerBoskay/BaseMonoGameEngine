@@ -42,7 +42,7 @@ namespace TDMonoGameEngine
         /// </summary>
         private JoystickState JSState = default(JoystickState);
 
-        public InputHandler(InputTypes inputType)
+        public InputHandler(in InputTypes inputType)
         {
             InputType = inputType;
         }
@@ -52,7 +52,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="inputType">The InputTypes.</param>
         /// <returns>An InputHandler with default mappings for the specified input type.</returns>
-        public static InputHandler CreateWithDefaultMappings(InputTypes inputType)
+        public static InputHandler CreateWithDefaultMappings(in InputTypes inputType)
         {
             InputHandler inputHandler = new InputHandler(inputType);
             inputHandler.SetDefaultMappings(inputType);
@@ -65,7 +65,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="action">The input action.</param>
         /// <returns>true if the InputHandler has the input action, otherwise false.</returns>
-        private bool HasInputAction(string action)
+        private bool HasInputAction(in string action)
         {
             if (action == null) return false;
 
@@ -78,7 +78,7 @@ namespace TDMonoGameEngine
         /// <param name="playerIndex">The player index.</param>
         /// <param name="action">The action to test.</param>
         /// <returns>A float from -1 to 1 representing the axis value.</returns>
-        public float GetAxis(int playerIndex, string action)
+        public float GetAxis(in int playerIndex, in string action)
         {
             if (HasInputAction(action) == false)
             {
@@ -96,7 +96,7 @@ namespace TDMonoGameEngine
         /// <param name="playerIndex">The player index.</param>
         /// <param name="action">The action to test.</param>
         /// <returns>true if so, otherwise false.</returns>
-        public bool GetButton(int playerIndex, string action)
+        public bool GetButton(in int playerIndex, in string action)
         {
             if (HasInputAction(action) == false)
             {
@@ -114,7 +114,7 @@ namespace TDMonoGameEngine
         /// <param name="playerIndex">The player index.</param>
         /// <param name="action">The action to test.</param>
         /// <returns>true if so, otherwise false.</returns>
-        public bool GetButtonDown(int playerIndex, string action)
+        public bool GetButtonDown(in int playerIndex, in string action)
         {
             if (HasInputAction(action) == false)
             {
@@ -132,7 +132,7 @@ namespace TDMonoGameEngine
         /// <param name="playerIndex">The player index.</param>
         /// <param name="action">The action to test.</param>
         /// <returns>true if so, otherwise false.</returns>
-        public bool GetButtonUp(int playerIndex, string action)
+        public bool GetButtonUp(in int playerIndex, in string action)
         {
             if (HasInputAction(action) == false)
             {
@@ -150,7 +150,7 @@ namespace TDMonoGameEngine
         /// <param name="playerIndex">The player index.</param>
         /// <param name="inputMapValue">The input mapping value.</param>
         /// <returns>A float from -1 to 1 representing the axis value.</returns>
-        private float GetAxisForInputType(int playerIndex, in InputMapValue buttonMapValue)
+        private float GetAxisForInputType(in int playerIndex, in InputMapValue buttonMapValue)
         {
             if (InputType == InputTypes.Keyboard)
             {
@@ -185,7 +185,7 @@ namespace TDMonoGameEngine
         /// <param name="playerIndex">The player index.</param>
         /// <param name="inputMapValue">The input mapping value.</param>
         /// <returns>true if so, otherwise false.</returns>
-        private bool GetButtonForInputType(int playerIndex, in InputMapValue buttonMapValue)
+        private bool GetButtonForInputType(in int playerIndex, in InputMapValue buttonMapValue)
         {
             if (InputType == InputTypes.Keyboard)
             {
@@ -203,7 +203,7 @@ namespace TDMonoGameEngine
         /// <param name="playerIndex">The player index.</param>
         /// <param name="inputMapValue">The input mapping value.</param>
         /// <returns>true if so, otherwise false.</returns>
-        private bool GetButtonDownForInputType(int playerIndex, in InputMapValue buttonMapValue)
+        private bool GetButtonDownForInputType(in int playerIndex, in InputMapValue buttonMapValue)
         {
             if (InputType == InputTypes.Keyboard)
             {
@@ -221,7 +221,7 @@ namespace TDMonoGameEngine
         /// <param name="playerIndex">The player index.</param>
         /// <param name="inputMapValue">The input mapping value.</param>
         /// <returns>true if so, otherwise false.</returns>
-        private bool GetButtonUpForInputType(int playerIndex, in InputMapValue inputMapValue)
+        private bool GetButtonUpForInputType(in int playerIndex, in InputMapValue inputMapValue)
         {
             if (InputType == InputTypes.Keyboard)
             {
@@ -238,7 +238,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="action">The action to map.</param>
         /// <param name="value">The value mapped to the action.</param>
-        public void AddMapping(string action, InputMapValue value)
+        public void AddMapping(in string action, in InputMapValue value)
         {
             //Null keys cannot be added
             if (action == null)
@@ -247,10 +247,7 @@ namespace TDMonoGameEngine
             }
 
             //Remove a mapping if it exists
-            if (HasInputAction(action) == true)
-            {
-                InputMappings.Remove(action);
-            }
+            InputMappings.Remove(action);
 
             //Add the new mapping
             InputMappings.Add(action, value);
@@ -260,7 +257,7 @@ namespace TDMonoGameEngine
         /// Clears a mapped input.
         /// </summary>
         /// <param name="action">The action to clear the mapping for.</param>
-        public void ClearMapping(string action)
+        public void ClearMapping(in string action)
         {
             //Null keys cannot be added or removed
             if (action == null)
@@ -283,7 +280,7 @@ namespace TDMonoGameEngine
         /// Clears all mappings and sets them to the default mapping.
         /// </summary>
         /// <param name="inputType">The type of input to set the default mapping for.</param>
-        public void SetDefaultMappings(InputTypes inputType)
+        public void SetDefaultMappings(in InputTypes inputType)
         {
             ClearMappings();
 
@@ -324,7 +321,7 @@ namespace TDMonoGameEngine
         /// Updates the input state.
         /// </summary>
         /// <param name="playerIndex">The player index for updating the joystick input state.</param>
-        public void UpdateInputState(int playerIndex)
+        public void UpdateInputState(in int playerIndex)
         {
             KeyboardInput.UpdateKeyboardState(ref KBState);
             JoystickInput.UpdateJoystickState(playerIndex, ref JSState);
@@ -346,12 +343,12 @@ namespace TDMonoGameEngine
             /// </summary>
             public int? NegativeInputVal { get; private set; }
 
-            public InputMapValue(int buttonVal) : this (buttonVal, null)
+            public InputMapValue(in int buttonVal) : this (buttonVal, null)
             {
                 
             }
 
-            public InputMapValue(int buttonVal, int? negativeInputVal)
+            public InputMapValue(in int buttonVal, in int? negativeInputVal)
             {
                 InputVal = buttonVal;
                 NegativeInputVal = negativeInputVal;

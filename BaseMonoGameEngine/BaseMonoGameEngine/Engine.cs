@@ -158,7 +158,7 @@ namespace TDMonoGameEngine
         /// Any update logic that should occur immediately before the main Update loop
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values</param>
-        private void PreUpdate(GameTime gameTime)
+        private void PreUpdate(in GameTime gameTime)
         {
             //Tell if we change window focus state
             bool focused = IsActive;
@@ -185,7 +185,7 @@ namespace TDMonoGameEngine
         /// The main update loop
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values</param>
-        private void MainUpdate(GameTime gameTime)
+        private void MainUpdate(in GameTime gameTime)
         {
             if (EventManager.HasInstance == true)
                 EventManager.Instance.Update();
@@ -197,7 +197,7 @@ namespace TDMonoGameEngine
         /// Any update logic that should occur immediately after the main Update loop
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values</param>
-        private void PostUpdate(GameTime gameTime)
+        private void PostUpdate(in GameTime gameTime)
         {
             SoundManager.Instance.Update();
 
@@ -215,13 +215,8 @@ namespace TDMonoGameEngine
             IsFixedTimeStep = Time.FixedTimeStep;
             graphics.SynchronizeWithVerticalRetrace = Time.VSyncEnabled;
 
-            //This should always be at the end of PostUpdate()
-            if (Time.UpdateFPS == true)
-            {
-                //Set the FPS - TimeSpan normally rounds, so to be precise we'll create them from ticks
-                double val = Math.Round(Time.FPS <= 0d ? 0d : (1d / Time.FPS), 7);
-                TargetElapsedTime = TimeSpan.FromTicks((long)(TimeSpan.TicksPerSecond * val));
-            }
+            /* This should always be at the end of PostUpdate() */
+            TargetElapsedTime = Time.GetTimeSpanFromFPS(Time.FPS);
         }
 
         /// <summary>

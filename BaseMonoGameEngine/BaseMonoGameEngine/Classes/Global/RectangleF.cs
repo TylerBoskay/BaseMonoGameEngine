@@ -37,7 +37,7 @@ namespace TDMonoGameEngine
         /// <summary>
         /// Returns a <see cref="RectangleF"/> with X=0, Y=0, Width=0, Height=0.
         /// </summary>
-        public static RectangleF Empty => EmptyRectF;
+        public static ref readonly RectangleF Empty => ref EmptyRectF;
 
         /// <summary>
         /// A float representing the left of the RectangleF.
@@ -148,8 +148,7 @@ namespace TDMonoGameEngine
         /// <returns>Overlapping region of the two rectangles.</returns>
         public static RectangleF Intersect(in RectangleF value1, in RectangleF value2)
         {
-            RectangleF rectangle;
-            Intersect(value1, value2, out rectangle);
+            Intersect(value1, value2, out RectangleF rectangle);
             return rectangle;
         }
 

@@ -27,17 +27,10 @@ namespace TDMonoGameEngine
         /// </summary>
         public static TimeSpan ElapsedTime { get; private set; } = default(TimeSpan);
 
-        private static double ActiveElapsedTime = 0d;
-
         /// <summary>
         /// The frames per second the game runs at.
         /// </summary>
         public static double FPS = 60d;
-
-        /// <summary>
-        /// Whether the game's frame rate is updated at the end of each frame or not.
-        /// </summary>
-        public static bool UpdateFPS { get; private set; } = true;
 
         /// <summary>
         /// Whether in-game time is enabled or not. If set to false, ActiveMilliseconds won't be updated.
@@ -62,12 +55,17 @@ namespace TDMonoGameEngine
         /// <summary>
         /// The total amount of unpaused or unfrozen time, in milliseconds, since the game booted up.
         /// </summary>
-        public static double ActiveMilliseconds => ActiveElapsedTime;
+        public static double ActiveTotalMS { get; private set; } = 0d;
 
         /// <summary>
-        /// The amount of time since the previous frame.
+        /// The amount of time, in milliseconds, since the previous frame.
         /// </summary>
         public static double ElapsedMilliseconds => ElapsedTime.TotalMilliseconds;
+
+        /// <summary>
+        /// The amount of unpaused or unfrozen time, in milliseconds, since the previous frame.
+        /// </summary>
+        public static double ActiveElapsedMS => (InGameTimeEnabled == true) ? ElapsedTime.TotalMilliseconds : 0d;
 
         /// <summary>
         /// Determines if the game is running slowly or not.
@@ -85,28 +83,19 @@ namespace TDMonoGameEngine
         public static bool VSyncEnabled = true;
 
         /// <summary>
-        /// Enables or disables in-game time. If false, <see cref="ActiveMilliseconds"/> will not be updated.
+        /// Enables or disables in-game time. If false, <see cref="ActiveTotalMS"/> will not be updated.
         /// </summary>
-        /// <param name="ingameTimeEnabled"></param>
-        public static void ToggleInGameTime(bool ingameTimeEnabled)
+        /// <param name="ingameTimeEnabled">Whether to enable in-game time or not.</param>
+        public static void ToggleInGameTime(in bool ingameTimeEnabled)
         {
             InGameTimeEnabled = ingameTimeEnabled;
-        }
-
-        /// <summary>
-        /// Enables or disables updating the game's framerate at the end of each frame.
-        /// </summary>
-        /// <param name="enableUpdateFPS">true to enable updating the FPS, false to disable it.</param>
-        public static void ToggleFPSUpdate(bool enableUpdateFPS)
-        {
-            UpdateFPS = enableUpdateFPS;
         }
 
         /// <summary>
         /// Updates the game time.
         /// </summary>
         /// <param name="gameTime">Provides a snapshop of timing values.</param>
-        public static void UpdateTime(GameTime gameTime)
+        public static void UpdateTime(in GameTime gameTime)
         {
             TotalTime = gameTime.TotalGameTime;
             ElapsedTime = gameTime.ElapsedGameTime;
@@ -114,7 +103,7 @@ namespace TDMonoGameEngine
 
             if (InGameTimeEnabled == true)
             {
-                ActiveElapsedTime += ElapsedTime.TotalMilliseconds;
+                ActiveTotalMS += ElapsedTime.TotalMilliseconds;
             }
 
             TotalUpdates++;
@@ -126,6 +115,24 @@ namespace TDMonoGameEngine
         public static void UpdateFrames()
         {
             TotalFrames++;
+        }
+
+        /// <summary>
+        /// Obtains a TimeSpan equivalent to a framerate value.
+        /// </summary>
+        /// <param name="fpsVal">The framerate value in frames-per-second.</param>
+        /// <returns>A TimeSpan equivalent to the framerate value.
+        /// If <paramref name="fpsVal"/> is less or equal to 0, <see cref="TimeSpan.Zero"/> is returned.</returns>
+        public static TimeSpan GetTimeSpanFromFPS(in double fpsVal)
+        {
+            //Return TimeSpan.Zero for values less than or equal to 0
+            if (fpsVal <= 0d) return TimeSpan.Zero;
+
+            //Round to 7 digits for accuracy
+            double val = Math.Round(1d / fpsVal, 7);
+
+            //TimeSpan normally rounds, so to be precise we'll create them from ticks
+            return TimeSpan.FromTicks((long)(TimeSpan.TicksPerSecond * val));
         }
     }
 }

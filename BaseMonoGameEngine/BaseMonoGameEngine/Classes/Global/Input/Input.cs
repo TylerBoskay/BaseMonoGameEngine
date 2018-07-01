@@ -29,7 +29,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="playerIndex">The index of the player.</param>
         /// <param name="inputType">The input type.</param>
-        public static void SetDefaultMapping(int playerIndex, InputHandler.InputTypes inputType)
+        public static void SetDefaultMapping(in int playerIndex, in InputHandler.InputTypes inputType)
         {
             if (InputHandlers.ContainsKey(playerIndex) == false)
             {
@@ -45,7 +45,7 @@ namespace TDMonoGameEngine
         /// <param name="playerIndex">The index of the player.</param>
         /// <param name="action">The action to get the axis value for.</param>
         /// <returns>A float from -1 to 1 representing the axis value.</returns>
-        public static float GetAxis(int playerIndex, string action)
+        public static float GetAxis(in int playerIndex, in string action)
         {
             if (InputHandlers.ContainsKey(playerIndex) == false)
                 return 0f;
@@ -59,7 +59,7 @@ namespace TDMonoGameEngine
         /// <param name="playerIndex">The index of the player.</param>
         /// <param name="action">The action to get the axis value for.</param>
         /// <returns>true if the button is pressed, otherwise false.</returns>
-        public static bool GetButton(int playerIndex, string action)
+        public static bool GetButton(in int playerIndex, in string action)
         {
             if (InputHandlers.ContainsKey(playerIndex) == false)
                 return false;
@@ -73,7 +73,7 @@ namespace TDMonoGameEngine
         /// <param name="playerIndex">The index of the player.</param>
         /// <param name="action">The action to get the axis value for.</param>
         /// <returns>true if the button was just pressed, otherwise false.</returns>
-        public static bool GetButtonDown(int playerIndex, string action)
+        public static bool GetButtonDown(in int playerIndex, in string action)
         {
             if (InputHandlers.ContainsKey(playerIndex) == false)
                 return false;
@@ -87,7 +87,7 @@ namespace TDMonoGameEngine
         /// <param name="playerIndex">The index of the player.</param>
         /// <param name="action">The action to get the axis value for.</param>
         /// <returns>true if the button was just released, otherwise false.</returns>
-        public static bool GetButtonUp(int playerIndex, string action)
+        public static bool GetButtonUp(in int playerIndex, in string action)
         {
             if (InputHandlers.ContainsKey(playerIndex) == false)
                 return false;
@@ -99,7 +99,7 @@ namespace TDMonoGameEngine
         /// Resets the input state for a player.
         /// </summary>
         /// <param name="playerIndex">The index of the player to reset.</param>
-        public static void ClearInputState(int playerIndex)
+        public static void ClearInputState(in int playerIndex)
         {
             if (InputHandlers.ContainsKey(playerIndex) == false)
                 return;

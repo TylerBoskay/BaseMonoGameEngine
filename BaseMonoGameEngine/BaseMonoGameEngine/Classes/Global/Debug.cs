@@ -34,6 +34,11 @@ namespace TDMonoGameEngine
         public static bool DebugEnabled { get; private set; } = false;
         public static bool LogsEnabled { get; private set; } = false;
 
+        /// <summary>
+        /// Whether to store logs made in the <see cref="LogDump"/>. This defaults to true.
+        /// </summary>
+        public static bool StoreLogs = true;
+
         public static bool DebugPaused { get; private set; } = false;
         public static bool AdvanceNextFrame { get; private set; } = false;
 
@@ -87,6 +92,7 @@ namespace TDMonoGameEngine
                 LogsEnabled = true;
             #else
                 DebugEnabled = false;
+                LogsEnabled = true;
             #endif
         }
 
@@ -105,22 +111,17 @@ namespace TDMonoGameEngine
             }
         }
 
-        private static void ToggleDebug()
+        public static void ToggleDebug(in bool debugEnabled)
         {
-            #if DEBUG
-                DebugEnabled = !DebugEnabled;
-            #else
-                //Failsafe
-                DebugEnabled = false;
-            #endif
+            DebugEnabled = debugEnabled;
         }
 
-        private static void ToggleLogs()
+        public static void ToggleLogs(in bool logsEnabled)
         {
-            LogsEnabled = !LogsEnabled;
+            LogsEnabled = logsEnabled;
         }
 
-        private static string GetStackInfo(int skipFrames)
+        private static string GetStackInfo(in int skipFrames)
         {
             StackFrame trace = new StackFrame(skipFrames, true);
             int line = 0;
@@ -148,28 +149,31 @@ namespace TDMonoGameEngine
             return GetStackInfo(3);
         }
 
-        private static void DebugWriteLine(string value)
+        private static void DebugWriteLine(in string value)
         {
-            //Write to the log dump
-            LogDump.Append(value);
-            LogDump.Append("\n");
+            //Write to the log dump if we should
+            if (StoreLogs == true)
+            {
+                LogDump.Append(value);
+                LogDump.Append("\n");
+            }
 
             WriteLine(value);
         }
 
-        public static void Log(object value)
+        public static void Log(in object value)
         {
             if (LogsEnabled == false || DebugLogTypesHasFlag(LogLevels, DebugLogTypes.Information) == false) return;
             DebugWriteLine($"Information: {GetStackInfo()} {value}");
         }
 
-        public static void LogWarning(object value)
+        public static void LogWarning(in object value)
         {
             if (LogsEnabled == false || DebugLogTypesHasFlag(LogLevels, DebugLogTypes.Warning) == false) return;
             DebugWriteLine($"Warning: {GetStackInfo()} {value}");
         }
 
-        public static void LogError(object value)
+        public static void LogError(in object value)
         {
             if (LogsEnabled == false || DebugLogTypesHasFlag(LogLevels, DebugLogTypes.Error) == false) return;
             DebugWriteLine($"Error: {GetStackInfo()} {value}");
@@ -184,7 +188,7 @@ namespace TDMonoGameEngine
             DebugWriteLine($"ASSERT FAILURE AT: {stackInfo}");
         }
 
-        public static void Assert(bool condition)
+        public static void Assert(in bool condition)
         {
             if (condition == false)
                 LogAssert();
@@ -192,20 +196,15 @@ namespace TDMonoGameEngine
 
         public static void DebugUpdate()
         {
-            #if DEBUG
-                //Toggle debug
-                if (KeyboardInput.GetKey(Keys.LeftControl, DebugKeyboard) && KeyboardInput.GetKeyDown(Keys.D, DebugKeyboard))
-                {
-                    ToggleDebug();
-                }
-            #endif
+            //Toggle debug
+            if (KeyboardInput.GetKey(Keys.LeftControl, DebugKeyboard) && KeyboardInput.GetKeyDown(Keys.D, DebugKeyboard))
+            {
+                ToggleDebug(!DebugEnabled);
+            }
 
             //Return if debug isn't enabled
             if (DebugEnabled == false)
             {
-                if (Time.InGameTimeEnabled == false)
-                    Time.ToggleInGameTime(true);
-
                 //Update the input state if debug is disabled so that the toggle functions properly
                 KeyboardInput.UpdateKeyboardState(ref DebugKeyboard);
                 return;
@@ -230,7 +229,7 @@ namespace TDMonoGameEngine
                 //Toggle logs
                 else if (KeyboardInput.GetKeyDown(Keys.L, DebugKeyboard))
                 {
-                    ToggleLogs();
+                    ToggleLogs(!LogsEnabled);
                 }
                 //Take screenshot
                 else if (KeyboardInput.GetKeyDown(Keys.S, DebugKeyboard))
@@ -373,7 +372,7 @@ namespace TDMonoGameEngine
         /// <param name="debugLogTypes">The DebugLogTypes value.</param>
         /// <param name="debugLogTypesFlags">The flags to test.</param>
         /// <returns>true if any of the flags in debugLogTypes are in debugLogTypesFlags, otherwise false.</returns>
-        public static bool DebugLogTypesHasFlag(Debug.DebugLogTypes debugLogTypes, Debug.DebugLogTypes debugLogTypesFlags)
+        public static bool DebugLogTypesHasFlag(in Debug.DebugLogTypes debugLogTypes, in Debug.DebugLogTypes debugLogTypesFlags)
         {
             Debug.DebugLogTypes flags = (debugLogTypes & debugLogTypesFlags);
 
