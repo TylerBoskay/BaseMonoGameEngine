@@ -89,8 +89,6 @@
     <Compile Include="Classes\Global\Utility\EnumUtility.cs" />
     <Compile Include="Classes\Global\Utility\GCWatcher.cs" />
     <Compile Include="Classes\Global\RectangleF.cs" />
-    <Compile Include="Classes\Interfaces\IEvent.cs" />
-    <Compile Include="Classes\Interfaces\IEventHandler.cs" />
     <Compile Include="Classes\Interfaces\IFiniteStateMachine.cs" />
     <Compile Include="Classes\Interfaces\IEnableable.cs" />
     <Compile Include="Classes\Global\Input\KeyboardInput.cs" />
@@ -127,7 +125,6 @@
     <Compile Include="Classes\Rendering\Sprite.cs" />
     <Compile Include="Classes\Singletons\AssetManager.cs" />
     <Compile Include="Classes\Global\Camera2D.cs" />
-    <Compile Include="Classes\Singletons\EventManager.cs" />
     <Compile Include="Classes\Singletons\RenderingManager.cs" />
     <Compile Include="Classes\Singletons\SoundManager.cs" />
     <Compile Include="Engine.cs" />

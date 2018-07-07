@@ -49,7 +49,7 @@ namespace TDMonoGameEngine
         /// <summary>
         /// Rendering metrics. This data is obtained after all rendering is complete for the frame.
         /// </summary>
-        public GraphicsMetrics RenderingMetrics = default(GraphicsMetrics);
+        public GraphicsMetrics RenderingMetrics { get; private set; } = default(GraphicsMetrics);
 
         public GraphicsDeviceManager graphicsDeviceManager { get; private set; } = null;
         public GraphicsDevice graphicsDevice => graphicsDeviceManager?.GraphicsDevice;

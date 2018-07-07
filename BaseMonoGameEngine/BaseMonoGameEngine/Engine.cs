@@ -128,9 +128,6 @@ namespace TDMonoGameEngine
             SceneManager.Instance.CleanUp();
             RenderingManager.Instance.CleanUp();
 
-            if (EventManager.HasInstance == true)
-                EventManager.Instance.CleanUp();
-
             Debug.DebugCleanup();
             crashHandler.CleanUp();
 
@@ -187,9 +184,6 @@ namespace TDMonoGameEngine
         /// <param name="gameTime">Provides a snapshot of timing values</param>
         private void MainUpdate(in GameTime gameTime)
         {
-            if (EventManager.HasInstance == true)
-                EventManager.Instance.Update();
-
             SceneManager.Instance.ActiveScene.Update();
         }
         
@@ -241,7 +235,7 @@ namespace TDMonoGameEngine
         protected override void Draw(GameTime gameTime)
         {
             PreDraw();
-
+            
             RenderingManager.Instance.PerformRendering(SceneManager.Instance.ActiveScene);
             Debug.DebugDraw();
 

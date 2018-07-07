@@ -10,8 +10,8 @@ using Microsoft.Xna.Framework.Media;
 namespace TDMonoGameEngine
 {
     /// <summary>
-    /// Handles all audio playback
-    /// <para>This is a Singleton</para>
+    /// Handles all audio playback.
+    /// <para>This is a Singleton.</para>
     /// </summary>
     public class SoundManager : ICleanup
     {
@@ -39,7 +39,7 @@ namespace TDMonoGameEngine
         #region Enumerations
 
         /// <summary>
-        /// Enum for Sound IDs
+        /// Enum for Sound IDs.
         /// </summary>
         public enum Sound
         {
@@ -54,7 +54,7 @@ namespace TDMonoGameEngine
         };
 
         /// <summary>
-        /// The global BGM volume
+        /// The global BGM volume.
         /// </summary>
         public float MusicVolume 
         {
@@ -69,7 +69,7 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
-        /// The global SFX volume
+        /// The global SFX volume.
         /// </summary>
         public float SoundVolume
         {
@@ -87,26 +87,22 @@ namespace TDMonoGameEngine
         private float soundVolume = .5f;
 
         /// <summary>
-        /// The currently playing sounds
+        /// The pool of sounds.
+        /// <para>The key is the SoundEffect, and the value is a list of SoundEffectInstances created from it.</para>
         /// </summary>
-        private List<SoundHolder> Sounds = null;
+        private Dictionary<SoundEffect, List<SoundEffectInstance>> SoundPool = null;
 
-        private const double ClearSoundTimer = 10000d;
+        private const double ClearSoundTimer = 30000d;
         private double LastPlayedSound = 0d;
 
         private SoundManager()
         {
-            Sounds = new List<SoundHolder>();
+            SoundPool = new Dictionary<SoundEffect, List<SoundEffectInstance>>();
         }
 
         public void CleanUp()
         {
-            for (int i = 0; i < Sounds.Count; i++)
-            {
-                Sounds[i].CleanUp();
-            }
-
-            Sounds.Clear();
+            ClearAllSounds();
 
             instance = null;
         }
@@ -116,193 +112,102 @@ namespace TDMonoGameEngine
             LastPlayedSound = Time.TotalMilliseconds + ClearSoundTimer;
         }
 
-        private void ChangeMusicVolume(float mVolume)
+        private void ChangeMusicVolume(in float mVolume)
         {
-            musicVolume = mVolume;
+            musicVolume = UtilityGlobals.Clamp(mVolume, 0f, 1f);
         }
 
-        private void ChangeSoundVolume(float sVolume)
+        private void ChangeSoundVolume(in float sVolume)
         {
-            soundVolume = sVolume;
+            soundVolume = UtilityGlobals.Clamp(sVolume, 0f, 1f);
+            SoundEffect.MasterVolume = soundVolume;
+        }
 
-            //Update the volume for all the sounds
-            for (int i = 0; i < Sounds.Count; i++)
+        /// <summary>
+        /// Plays a sound.
+        /// </summary>
+        /// <param name="sound">The SoundEffect to play.</param>
+        /// <param name="volume">The volume to play the sound at.</param>
+        public void PlaySound(in SoundEffect sound, in float volume = 1f)
+        {
+            if (sound == null)
             {
-                Sounds[i].UpdateVolume();
-            }   
-        }
-
-        private SoundHolder NextAvailableSound()
-        {
-            //Check for available sounds
-            for (int i = 0; i < Sounds.Count; i++)
-            {
-                if (Sounds[i].IsPlaying == false) return Sounds[i];
-            }
-
-            //If no sounds are available, create a new sound holder and add it to the list
-            SoundHolder newHolder = new SoundHolder();
-            Sounds.Add(newHolder);
-            return newHolder;
-        }
-
-        public void PlaySound(string soundPath, float volume = 1f)
-        {
-            //Retrieve next sound holder, then assign the sound ID to the holder
-            SoundHolder holder = NextAvailableSound();
-            holder.SetSound(soundPath, false);
-            holder.SetVolume(volume);
-
-            //Play the sound
-            holder.Play();
-
-            UpdateLastSoundTimer();
-        }
-
-        public void PlayRawSound(string soundPath, float volume = 1f)
-        {
-            //Retrieve next sound holder, then assign the sound ID to the holder
-            SoundHolder holder = NextAvailableSound();
-            holder.SetSound(soundPath, true);
-            holder.SetVolume(volume);
-
-            //Play the sound
-            holder.Play();
-
-            UpdateLastSoundTimer();
-        }
-
-        public void PlaySound(Sound sound, float volume = 1f)
-        {
-            if (SoundMap.ContainsKey(sound) == false)
-            {
-                Debug.LogError($"Cannot play sound {sound} because it doesn't exist in {nameof(SoundMap)}!");
+                Debug.LogError($"Cannot play {nameof(sound)} because it is null!");
                 return;
             }
 
-            PlaySound(SoundMap[sound], volume);
+            //Retrieve the next sound instance
+            SoundEffectInstance soundInstance = NextAvailableSound(sound);
+
+            soundInstance.Volume = volume;
+            soundInstance.Play();
+
+            LastPlayedSound = Time.TotalMilliseconds + ClearSoundTimer;
+        }
+
+        /// <summary>
+        /// Obtains the next available SoundEffectInstance in the sound pool for a particular SoundEffect.
+        /// If no SoundEffectInstances are available, a new one is created.
+        /// </summary>
+        /// <param name="sound">The SoundEffect to retrieve the available SoundEffectInstance for.</param>
+        /// <returns>A SoundEffectInstance that is not currently playing a sound.</returns>
+        private SoundEffectInstance NextAvailableSound(in SoundEffect sound)
+        {
+            //Check for the available SoundEffectInstances associated with this SoundEffect
+            List<SoundEffectInstance> availableSounds = null;
+
+            //If there are none, add them as an entry in the sound pool
+            if (SoundPool.TryGetValue(sound, out availableSounds) == false)
+            {
+                availableSounds = new List<SoundEffectInstance>();
+                SoundPool.Add(sound, availableSounds);
+            }
+
+            //Check all existing sound instances and see if they're available for use
+            for (int i = 0; i < availableSounds.Count; i++)
+            {
+                //Return ones that are not playing
+                if (availableSounds[i].State != SoundState.Playing) return availableSounds[i];
+            }
+
+            //No sounds are available, so create a new instance and add it to the pool
+            SoundEffectInstance newInstance = sound.CreateInstance();
+            availableSounds.Add(newInstance);
+
+            return newInstance;
         }
 
         public void Update()
         {
             //Clear all sounds after a set amount of time
-            if (Sounds.Count > 0 && Time.TotalMilliseconds >= LastPlayedSound)
+            if (Time.TotalMilliseconds >= LastPlayedSound)
             {
-                for (int i = 0; i < Sounds.Count; i++)
-                {
-                    Sounds[i].CleanUp();
-                }
+                ClearAllSounds();
 
-                Sounds.Clear();
+                LastPlayedSound = Time.TotalMilliseconds + ClearSoundTimer;
             }
         }
 
-        private class SoundHolder : ICleanup
+        /// <summary>
+        /// Immediately stops all currently playing sounds and clears the sound pool.
+        /// </summary>
+        public void ClearAllSounds()
         {
-            /// <summary>
-            /// Tells if the sound instance is playing or not
-            /// </summary>
-            public bool IsPlaying => (SoundInstance != null && SoundInstance.State == SoundState.Playing);
-
-            /// <summary>
-            /// The volume of this sound instance. This is multiplied by the global sound volume to get the final volume to play the sound
-            /// </summary>
-            public float CurrentVolume { get; private set; } = 1f;
-
-            /// <summary>
-            /// The length of the SoundEffectInstance.
-            /// </summary>
-            private TimeSpan Duration = TimeSpan.Zero;
-
-            /// <summary>
-            /// The SoundEffectInstance of the sound to play
-            /// </summary>
-            private SoundEffectInstance SoundInstance = null;
-
-            /// <summary>
-            /// The path of the Sound.
-            /// </summary>
-            private string SoundPath = string.Empty;
-
-            public SoundHolder()
+            //Clear all sounds
+            foreach (KeyValuePair<SoundEffect, List<SoundEffectInstance>> sounds in SoundPool)
             {
-                
-            }
+                List<SoundEffectInstance> instanceList = sounds.Value;
 
-            public void CleanUp()
-            {
-                Stop(true);
-
-                if (SoundInstance != null)
+                //Stop all sound instances in the list and dispose them
+                for (int i = instanceList.Count - 1; i >= 0; i--)
                 {
-                    SoundInstance.Dispose();
-                    SoundInstance = null;
+                    instanceList[i].Stop(true);
+                    instanceList[i].Dispose();
+                    instanceList.RemoveAt(i);
                 }
             }
 
-            public void SetSound(string soundPath, bool raw)
-            {
-                //If it's the same sound, then return
-                if (SoundInstance != null && SoundPath == soundPath) return;
-
-                SoundPath = soundPath;
-
-                SoundEffect newSound = null;
-
-                //Load the sound asset and create an instance
-                if (raw == false)
-                {
-                    newSound = AssetManager.Instance.LoadAsset<SoundEffect>(SoundPath);
-                }
-                else
-                {
-                    newSound = AssetManager.Instance.LoadRawSound(SoundPath);
-                }
-
-                if (newSound != null)
-                {
-                    if (newSound.Duration == TimeSpan.Zero)
-                    {
-                        Debug.LogError($"Sound {SoundPath} has a duration of 0 and is invalid");
-                        return;
-                    }
-
-                    Duration = newSound.Duration;
-
-                    //Clean up the existing instance
-                    if (SoundInstance != null)
-                    {
-                        SoundInstance.Dispose();
-                        SoundInstance = null;
-                    }
-
-                    SoundInstance = newSound.CreateInstance();
-                }
-            }
-
-            public void Play()
-            {
-                if (SoundInstance != null)
-                    SoundInstance.Play();
-            }
-
-            public void Stop(bool immediate = false)
-            {
-                if (SoundInstance != null)
-                    SoundInstance.Stop(immediate);
-            }
-
-            public void SetVolume(float volume)
-            {
-                CurrentVolume = volume;
-                UpdateVolume();
-            }
-
-            public void UpdateVolume()
-            {
-                if (SoundInstance != null)
-                    SoundInstance.Volume = CurrentVolume * SoundManager.Instance.SoundVolume;
-            }
+            SoundPool.Clear();
         }
     }
 }
