@@ -11,7 +11,7 @@ namespace TDMonoGameEngine
     /// </summary>
     public static class ContentGlobals
     {
-        public const string ContentRoot = "Content";
+        public const string ContentRoot = "Content/";
         public const string AudioRoot = "Audio/";
         public const string SFXRoot = AudioRoot + "SFX/";
         public const string MusicRoot = AudioRoot + "Music/";

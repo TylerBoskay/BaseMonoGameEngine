@@ -99,7 +99,7 @@ namespace TDMonoGameEngine
             Texture2D tex = null;
 
             //Insert content at the start
-            string realTexPath = texturePath.Insert(0, Content.RootDirectory + "/");
+            string realTexPath = texturePath.Insert(0, Content.RootDirectory);
 
             //Return the cached texture if we have it
             if (RawTextures.ContainsKey(realTexPath) == true)
@@ -131,12 +131,18 @@ namespace TDMonoGameEngine
             return tex;
         }
 
+        /// <summary>
+        /// Loads a raw sound effect. They're cached for quick fetching.
+        /// <para>Sounds must have at most 24 bit depth!</para>
+        /// </summary>
+        /// <param name="soundPath">The path to the sound file.</param>
+        /// <returns>A SoundEffect loaded from <paramref name="soundPath"/>. null if the sound cannot be found or loaded.</returns>
         public SoundEffect LoadRawSound(in string soundPath)
         {
             SoundEffect sound = null;
             
             //Insert content at the start
-            string realSoundPath = soundPath.Insert(0, Content.RootDirectory + "/");
+            string realSoundPath = soundPath.Insert(0, Content.RootDirectory);
 
             //Return the cached sound if we have it
             if (RawSounds.ContainsKey(realSoundPath) == true)
@@ -169,11 +175,11 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
-        /// Load an asset of a particular type
+        /// Load an asset of a particular type.
         /// </summary>
-        /// <typeparam name="T">The type of content to load</typeparam>
-        /// <param name="assetPath">The path to load the asset from</param>
-        /// <returns>The asset if it was successfully found. Returns the same instance if the same asset was loaded previously</returns>
+        /// <typeparam name="T">The type of content to load.</typeparam>
+        /// <param name="assetPath">The path to load the asset from.</param>
+        /// <returns>The asset if it was successfully found. Returns the same instance if the same asset was loaded previously.</returns>
         public T LoadAsset<T>(in string assetPath)
         {
             //I opt for this rather than not handling the exception to make the content workflow less of a hassle
