@@ -133,7 +133,7 @@ namespace TDMonoGameEngine
             gameWindow.ClientSizeChanged -= GameWindowSizeChanged;
         }
 
-        public void Initialize(GraphicsDeviceManager graphicsDeviceMngr, GameWindow gameWdw, Vector2 screenSize)
+        public void Initialize(in GraphicsDeviceManager graphicsDeviceMngr, in GameWindow gameWdw, in Vector2 screenSize)
         {
             graphicsDeviceManager = graphicsDeviceMngr;
             gameWindow = gameWdw;
@@ -217,7 +217,7 @@ namespace TDMonoGameEngine
         /// Removes a post-processing effect.
         /// </summary>
         /// <param name="effectToRemove">The post-processing effect to remove.</param>
-        public void RemovePostProcessingEffect(Effect effectToRemove)
+        public void RemovePostProcessingEffect(in Effect effectToRemove)
         {
             PostProcessingEffects.Remove(effectToRemove);
         }
@@ -226,7 +226,7 @@ namespace TDMonoGameEngine
         /// Removes a post-processing effect at a particular index.
         /// </summary>
         /// <param name="index">The index to remove the post-processing effect at.</param>
-        public void RemovePostProcessingEffect(int index)
+        public void RemovePostProcessingEffect(in int index)
         {
             PostProcessingEffects.RemoveAt(index);
         }

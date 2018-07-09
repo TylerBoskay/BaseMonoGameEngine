@@ -54,7 +54,7 @@ namespace TDMonoGameEngine
             
         }
 
-        public void Initialize(ContentManager content)
+        public void Initialize(in ContentManager content)
         {
             Content = content;
             Content.RootDirectory = ContentGlobals.ContentRoot;
@@ -172,6 +172,30 @@ namespace TDMonoGameEngine
             }
 
             return sound;
+        }
+
+        /// <summary>
+        /// Loads a font with a specified name. <see cref="ContentGlobals.FontRoot"/> is used as the path.
+        /// </summary>
+        /// <param name="fontName">The name of the font.</param>
+        /// <returns>A SpriteFont instance if the font was successfully loaded, otherwise null.</returns>
+        public SpriteFont LoadFont(in string fontName)
+        {
+            string fullPath = ContentGlobals.FontRoot + fontName;
+
+            return LoadAsset<SpriteFont>(fullPath);
+        }
+
+        /// <summary>
+        /// Loads a shader with a specified name. <see cref="ContentGlobals.ShaderRoot"/> is used as the path.
+        /// </summary>
+        /// <param name="shaderName">The name of the shader.</param>
+        /// <returns>An Effect instance if the shader was successfully loaded, otherwise null.</returns>
+        public Effect LoadShader(in string shaderName)
+        {
+            string fullPath = ContentGlobals.ShaderRoot + shaderName;
+
+            return LoadAsset<Effect>(fullPath);
         }
 
         /// <summary>

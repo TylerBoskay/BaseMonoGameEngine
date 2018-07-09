@@ -107,12 +107,12 @@ namespace TDMonoGameEngine
         /// </summary>
         public Vector2 Center => new Vector2(X + (Width / 2f), Y + (Height / 2f));
 
-        public RectangleF(Vector2 location, Vector2 size) : this(location.X, location.Y, size.X, size.Y)
+        public RectangleF(in Vector2 location, in Vector2 size) : this(location.X, location.Y, size.X, size.Y)
         {
             
         }
 
-        public RectangleF(float x, float y, float width, float height)
+        public RectangleF(in float x, in float y, in float width, in float height)
         {
             X = x;
             Y = y;

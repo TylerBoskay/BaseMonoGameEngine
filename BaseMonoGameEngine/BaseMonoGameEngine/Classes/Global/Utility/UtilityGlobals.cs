@@ -322,9 +322,9 @@ namespace TDMonoGameEngine
         /// <summary>
         /// Creates a Rectangle from two Vector2s representing the position and scale of the Rectangle.
         /// </summary>
-        /// <param name="position"></param>
-        /// <param name="scale"></param>
-        /// <returns></returns>
+        /// <param name="position">A Vector2 representing the position of the Rectangle.</param>
+        /// <param name="scale">A Vector2 representing the scale of the Rectangle.</param>
+        /// <returns>A <see cref="Rectangle"/> with the position and scale set.</returns>
         public static Rectangle CreateRect(in Vector2 position, in Vector2 scale)
         {
             return new Rectangle((int)position.X, (int)position.Y, (int)scale.X, (int)scale.Y);
