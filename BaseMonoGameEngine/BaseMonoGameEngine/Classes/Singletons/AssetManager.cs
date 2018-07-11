@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using MonoGame.Extended.Tiled;
 
 namespace TDMonoGameEngine
 {
@@ -172,6 +173,18 @@ namespace TDMonoGameEngine
             }
 
             return sound;
+        }
+
+        /// <summary>
+        /// Loads a TiledMap with a specified name.
+        /// </summary>
+        /// <param name="mapName">The name of the map.</param>
+        /// <returns>A TiledMap instance if the map was successfully loaded, otherwise null.</returns>
+        public TiledMap LoadTiledMap(in string mapName)
+        {
+            string fullPath = ContentGlobals.MapRoot + mapName;
+
+            return LoadAsset<TiledMap>(fullPath);
         }
 
         /// <summary>

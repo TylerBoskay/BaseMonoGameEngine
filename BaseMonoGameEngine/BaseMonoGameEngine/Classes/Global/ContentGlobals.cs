@@ -20,5 +20,6 @@ namespace TDMonoGameEngine
         public const string ShaderRoot = "Shaders/";
         public const string ShaderTextureRoot = ShaderRoot + "ShaderTextures/";
         public const string FontRoot = "Fonts/";
+        public const string MapRoot = "TiledMaps/";
     }
 }

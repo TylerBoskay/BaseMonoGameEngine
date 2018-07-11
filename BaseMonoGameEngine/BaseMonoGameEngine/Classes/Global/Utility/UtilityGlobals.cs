@@ -278,6 +278,26 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
+        /// Rotates a Vector2 around another Vector2 representing a pivot.
+        /// </summary>
+        /// <param name="vector">The Vector2 to rotate.</param>
+        /// <param name="pivot">A Vector2 representing the pivot to rotate around.</param>
+        /// <param name="angle">The rotation angle, in radians.</param>
+        /// <returns>A Vector2 rotated around <paramref name="pivot"/> by <paramref name="angle"/>.</returns>
+        public static Vector2 RotateVectorAround(in Vector2 vector, in Vector2 pivot, in double angle)
+        {
+            //Get the X and Y difference
+            float xDiff = vector.X - pivot.X;
+            float yDiff = vector.Y - pivot.Y;
+
+            //Rotate the vector
+            float x = (float)((Math.Cos(angle) * xDiff) - (Math.Sin(angle) * yDiff) + pivot.X);
+            float y = (float)((Math.Sin(angle) * xDiff) + (Math.Cos(angle) * yDiff) + pivot.Y);
+
+            return new Vector2(x, y);
+        }
+
+        /// <summary>
         /// Indicates whether an <see cref="IList{T}"/> is null or empty.
         /// </summary>
         /// <typeparam name="T">The Type of the elements in the IList.</typeparam>
