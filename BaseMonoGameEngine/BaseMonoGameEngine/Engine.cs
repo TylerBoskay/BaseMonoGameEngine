@@ -252,7 +252,7 @@ namespace TDMonoGameEngine
         private void PostDraw()
         {
             //NOTE: TESTING
-            MapTestRender.DrawMap();
+            //MapTestRender.DrawMap();
 
             RenderingManager.Instance.EndDraw();
 

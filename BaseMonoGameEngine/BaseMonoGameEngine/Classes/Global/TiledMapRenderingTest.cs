@@ -30,11 +30,6 @@ namespace TDMonoGameEngine
 
             RenderingManager.Instance.StartBatch(RenderingManager.Instance.spriteBatch, SpriteSortMode.Deferred, null, null, null, null, null, camera.TransformMatrix);
 
-            TiledMapTileset tileSet = Map.Tilesets[0];
-            
-            //Get the texture for the tile layer
-            Texture2D tileSetTex = tileSet.Texture;
-
             //Layers are ordered by depth from top to bottom in the .tmx file
             for (int i = 0; i < Map.TileLayers.Count; i++)
             {
@@ -48,12 +43,18 @@ namespace TDMonoGameEngine
 
                     TiledMapTile tile = layer.Tiles[j];
 
+                    //Find which tileset this tile belongs to
+                    TiledMapTileset tileSet = Map.GetTilesetByTileGlobalIdentifier(tile.GlobalIdentifier);
+
+                    //Continue if the tileset wasn't found or its texture is null
+                    if (tileSet == null || tileSet.Texture == null) continue;
+                    
                     //For some reason, Tiled stores the GlobalIdentifier as 1 more than what it actually is
                     Rectangle getRegion = tileSet.GetTileRegion(tile.GlobalIdentifier - 1);
 
                     Vector2 pos = new Vector2(((j % NumTilesWidth) * Map.TileWidth), (j / NumTilesWidth) * Map.TileHeight);
 
-                    RenderingManager.Instance.DrawSprite(tileSetTex, pos, getRegion, Color.White * layer.Opacity, 0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 1f);
+                    RenderingManager.Instance.DrawSprite(tileSet.Texture, pos, getRegion, Color.White * layer.Opacity, 0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 1f);
                 }
             }
 

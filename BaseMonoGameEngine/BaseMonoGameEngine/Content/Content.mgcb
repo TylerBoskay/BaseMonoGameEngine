@@ -51,9 +51,6 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/Outline.fx
 
-#begin TiledMaps/BG2.tsx
-/copy:TiledMaps/BG2.tsx
-
 #begin TiledMaps/BGSprite.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -65,6 +62,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:TiledMaps/BGSprite.png
+
+#begin TiledMaps/test.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:TiledMaps/test.png
 
 #begin TiledMaps/untitled.tmx
 /importer:TiledMapImporter
