@@ -317,5 +317,154 @@ namespace TDMonoGameEngine
         }
 
         #endregion
+
+        #region SpriteBatch Extensions
+
+        /// <summary>
+        /// Draws a rectangle.
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch used for drawing.</param>
+        /// <param name="rectTex">The texture for the rectangle.</param>
+        /// <param name="rect">The Rectangle to draw.</param>
+        /// <param name="color">The color of the rectangle.</param>
+        /// <param name="layer">The layer of the rectangle.</param>
+        public static void DrawRect(this SpriteBatch spriteBatch, in Texture2D rectTex, in Rectangle rect, in Color color, in float layer)
+        {
+            spriteBatch.Draw(rectTex, rect, null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
+        }
+
+        /// <summary>
+        /// Draws a float rectangle.
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch used for drawing.</param>
+        /// <param name="rectTex">The texture for the rectangle.</param>
+        /// <param name="rect">The RectangleF to draw.</param>
+        /// <param name="color">The color of the rectangle.</param>
+        /// <param name="layer">The layer of the rectangle.</param>
+        public static void DrawRect(this SpriteBatch spriteBatch, in Texture2D rectTex, in RectangleF rect, in Color color, in float layer)
+        {
+            spriteBatch.Draw(rectTex, rect.TopLeft, null, color, 0f, Vector2.Zero, rect.Size, SpriteEffects.None, layer);
+        }
+
+        /// <summary>
+        /// Draws a hollow rectangle.
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch used for drawing.</param>
+        /// <param name="rectTex">The texture for the rectangle.</param>
+        /// <param name="rect">The Rectangle to draw.</param>
+        /// <param name="color">The color of the hollow rectangle.</param>
+        /// <param name="layer">The layer of the hollow rectangle.</param>
+        /// <param name="thickness">The thickness of the hollow rectangle.</param>
+        public static void DrawHollowRect(this SpriteBatch spriteBatch, in Texture2D rectTex, in Rectangle rect, in Color color, in float layer, in int thickness)
+        {
+            Rectangle[] rects = new Rectangle[4]
+            {
+                new Rectangle(rect.X, rect.Y, rect.Width, thickness),
+                new Rectangle(rect.Right - thickness, rect.Y, thickness, rect.Height),
+                new Rectangle(rect.X, rect.Y, thickness, rect.Height),
+                new Rectangle(rect.X, rect.Bottom - thickness, rect.Width, thickness)
+            };
+
+            for (int i = 0; i < rects.Length; i++)
+            {
+                spriteBatch.Draw(rectTex, rects[i], null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
+            }
+        }
+
+        /// <summary>
+        /// Draws a hollow float rectangle.
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch used for drawing.</param>
+        /// <param name="rectTex">The texture for the rectangle.</param>
+        /// <param name="rect">The RectangleF to draw.</param>
+        /// <param name="color">The color of the hollow rectangle.</param>
+        /// <param name="layer">The layer of the hollow rectangle.</param>
+        /// <param name="thickness">The thickness of the hollow rectangle.</param>
+        public static void DrawHollowRect(this SpriteBatch spriteBatch, in Texture2D rectTex, in RectangleF rect, in Color color, in float layer, in int thickness)
+        {
+            RectangleF[] rects = new RectangleF[4]
+            {
+                new RectangleF(rect.X, rect.Y, rect.Width, thickness),
+                new RectangleF(rect.Right - thickness, rect.Y, thickness, rect.Height),
+                new RectangleF(rect.X, rect.Y, thickness, rect.Height),
+                new RectangleF(rect.X, rect.Bottom - thickness, rect.Width, thickness)
+            };
+
+            for (int i = 0; i < rects.Length; i++)
+            {
+                RectangleF rectf = rects[i];
+
+                spriteBatch.Draw(rectTex, rectf.TopLeft, null, color, 0f, Vector2.Zero, rectf.Size, SpriteEffects.None, layer);
+            }
+        }
+
+        /// <summary>
+        /// Draws a circle.
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch used for drawing.</param>
+        /// <param name="circleTex">The texture for the circle.</param>
+        /// <param name="circle">The circle to draw.</param>
+        /// <param name="color">The color of the circle.</param>
+        /// <param name="layer">The layer of the circle.</param>
+        /// <remarks>Brute force algorithm obtained from here: https://stackoverflow.com/a/1237519 
+        /// This seems to gives a more full looking circle than Bresenham's algorithm.
+        /// </remarks>
+        public static void DrawCircle(this SpriteBatch spriteBatch, in Texture2D circleTex, in Circle circle, in Color color, in float layer)
+        {
+            float radius = (float)circle.Radius;
+            Vector2 origin = circle.Center;
+            float radiusSquared = radius * radius;
+            float radiusSquaredPlusRadius = radiusSquared + radius;
+
+            for (float y = -radius; y <= radius; y++)
+            {
+                for (float x = -radius; x <= radius; x++)
+                {
+                    float xSquared = x * x;
+                    float ySquared = y * y;
+
+                    if ((xSquared + ySquared) < radiusSquaredPlusRadius)
+                    {
+                        spriteBatch.Draw(circleTex, new Vector2(origin.X + x, origin.Y + y), null, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, layer);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draws a hollow circle.
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch used for drawing.</param>
+        /// <param name="circleTex">The texture for the circle.</param>
+        /// <param name="circle">The circle to draw.</param>
+        /// <param name="color">The color of the circle.</param>
+        /// <param name="layer">The layer of the circle.</param>
+        /// <remarks>Brute force algorithm obtained from here: https://stackoverflow.com/a/1237519 
+        /// This seems to gives a more full looking circle than Bresenham's algorithm.
+        /// </remarks>
+        public static void DrawHollowCircle(this SpriteBatch spriteBatch, in Texture2D circleTex, in Circle circle, in Color color, in float layer)
+        {
+            float radius = (float)circle.Radius;
+            Vector2 origin = circle.Center;
+            float radiusSquared = radius * radius;
+            float radiusSqMinusRadius = radiusSquared - radius;
+            float radiusSqPlusRadius = radiusSquared + radius;
+
+            for (float y = -radius; y <= radius; y++)
+            {
+                for (float x = -radius; x <= radius; x++)
+                {
+                    float xSquared = x * x;
+                    float ySquared = y * y;
+
+                    if ((xSquared + ySquared) > radiusSqMinusRadius && (xSquared + ySquared) < radiusSqPlusRadius)
+                    {
+                        spriteBatch.Draw(circleTex, new Vector2(origin.X + x, origin.Y + y), null, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, layer);
+                    }
+                }
+            }
+        }
+
+        #endregion
     }
 }
