@@ -241,6 +241,31 @@ namespace TDMonoGameEngine
                     //Log dump
                     DumpLogs();
                 }
+                //FPS increase
+                else if (KeyboardInput.GetKeyDown(Keys.OemPlus, DebugKeyboard))
+                {
+                    Time.FPS += 5d;
+                }
+                //FPS decrease
+                else if (KeyboardInput.GetKeyDown(Keys.OemMinus, DebugKeyboard))
+                {
+                    Time.FPS = UtilityGlobals.Clamp(Time.FPS - 5d, 5d, double.MaxValue);
+                }
+                //Reset FPS
+                else if (KeyboardInput.GetKeyDown(Keys.Space, DebugKeyboard))
+                {
+                    Time.FPS = 60d;
+                }
+                //Toggle VSync
+                else if (KeyboardInput.GetKeyDown(Keys.Back))
+                {
+                    Time.VSyncEnabled = !Time.VSyncEnabled;
+                }
+                //Toggle fixed time step
+                else if (KeyboardInput.GetKeyDown(Keys.OemCloseBrackets))
+                {
+                    Time.FixedTimeStep = !Time.FixedTimeStep;
+                }
             }
 
             //Camera controls
@@ -592,6 +617,9 @@ namespace TDMonoGameEngine
             FPSCounter.Draw();
 
             SpriteFont font = AssetManager.Instance.LoadAsset<SpriteFont>($"{ContentGlobals.FontRoot}Font");
+
+            debugUIBatch.DrawString(font, "Fixed Timestep: " + Time.FixedTimeStep, new Vector2(640, 0), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
+            debugUIBatch.DrawString(font, "VSync: " + Time.VSyncEnabled, new Vector2(703, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
 
             //Rendering info
             //ClearCount is the number of times Clear was called

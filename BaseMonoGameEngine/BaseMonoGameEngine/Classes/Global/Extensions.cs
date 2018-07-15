@@ -321,6 +321,28 @@ namespace TDMonoGameEngine
         #region SpriteBatch Extensions
 
         /// <summary>
+        /// Draws a line.
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch used for drawing.</param>
+        /// <param name="rectTex">The texture for the line.</param>
+        /// <param name="start">The start point.</param>
+        /// <param name="end">The end point.</param>
+        /// <param name="color">The color of the line.</param>
+        /// <param name="layer">The layer of the line.</param>
+        /// <param name="thickness">The thickness of the line.</param>
+        public static void DrawLine(this SpriteBatch spriteBatch, in Texture2D lineTex, in Vector2 start, in Vector2 end, in Color color, in float layer, in int thickness)
+        {
+            //Get rotation with the angle between the start and end vectors
+            float lineRotation = (float)UtilityGlobals.TangentAngle(start, end);
+
+            //Get the scale; use the X as the length and the Y as the width
+            Vector2 diff = end - start;
+            Vector2 lineScale = new Vector2(diff.Length(), thickness);
+
+            spriteBatch.Draw(lineTex, start, null, color, lineRotation, Vector2.Zero, lineScale, SpriteEffects.None, layer);
+        }
+
+        /// <summary>
         /// Draws a rectangle.
         /// </summary>
         /// <param name="spriteBatch">The SpriteBatch used for drawing.</param>

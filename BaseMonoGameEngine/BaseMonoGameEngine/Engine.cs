@@ -212,7 +212,12 @@ namespace TDMonoGameEngine
 
             //Set time step and VSync settings
             IsFixedTimeStep = Time.FixedTimeStep;
-            graphics.SynchronizeWithVerticalRetrace = Time.VSyncEnabled;
+
+            if (graphics.SynchronizeWithVerticalRetrace != Time.VSyncEnabled)
+            {
+                graphics.SynchronizeWithVerticalRetrace = Time.VSyncEnabled;
+                graphics.ApplyChanges();
+            }
 
             /* This should always be at the end of PostUpdate() */
             TargetElapsedTime = Time.GetTimeSpanFromFPS(Time.FPS);
