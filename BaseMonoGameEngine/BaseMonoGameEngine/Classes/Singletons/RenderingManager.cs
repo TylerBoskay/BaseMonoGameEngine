@@ -255,6 +255,9 @@ namespace TDMonoGameEngine
             PostProcessingEffects.RemoveAt(index);
         }
 
+        /// <summary>
+        /// Removes all post-processing effects.
+        /// </summary>
         public void RemoveAllPostProcessingEffects()
         {
             PostProcessingEffects.Clear();

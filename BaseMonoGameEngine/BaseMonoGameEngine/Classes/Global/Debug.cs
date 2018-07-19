@@ -18,6 +18,16 @@ namespace TDMonoGameEngine
     public static class Debug
     {
         /// <summary>
+        /// A delegate for custom debug commands.
+        /// </summary>
+        public delegate void DebugCommand();
+
+        /// <summary>
+        /// A list of custom debug commands that can be injected into the debug input.
+        /// </summary>
+        private static List<DebugCommand> CustomDebugCommands = new List<DebugCommand>();
+
+        /// <summary>
         /// The types of Debug logs.
         /// <para>This is a bit field.</para>
         /// </summary>
@@ -51,7 +61,7 @@ namespace TDMonoGameEngine
 
         public static bool DebuggerAttached => Debugger.IsAttached;
 
-        private static KeyboardState DebugKeyboard = default(KeyboardState);
+        public static KeyboardState DebugKeyboard = default(KeyboardState);
 
         public static SpriteBatch DebugSpriteBatch
         {
@@ -109,6 +119,8 @@ namespace TDMonoGameEngine
                 debugUIBatch.Dispose();
                 debugUIBatch = null;
             }
+
+            RemoveAllCustomDebugCommands();
         }
 
         public static void ToggleDebug(in bool debugEnabled)
@@ -310,6 +322,12 @@ namespace TDMonoGameEngine
                 }
             }
 
+            //Invoke injected debug commands
+            for (int i = 0; i < CustomDebugCommands.Count; i++)
+            {
+                CustomDebugCommands[i]();
+            }
+
             //If a pause is eventually added that can be performed normally, put a check for it in here to
             //prevent the in-game timer from turning on when it shouldn't
             Time.ToggleInGameTime(DebugPaused == false || AdvanceNextFrame == true);
@@ -370,6 +388,9 @@ namespace TDMonoGameEngine
             return screenshot;
         }
 
+        /// <summary>
+        /// Dumps the current debug logs to a .txt file.
+        /// </summary>
         public static void DumpLogs()
         {
             string initFileName = "Log Dump " + DebugGlobals.GetFileFriendlyTimeStamp();
@@ -403,6 +424,54 @@ namespace TDMonoGameEngine
 
             return (flags != 0);
         }
+
+        #region Debug Command Methods
+
+        /// <summary>
+        /// Injects a custom debug command at the end of the debug update loop.
+        /// This method will be invoked even if the game is paused through debug, provided debug is enabled.
+        /// </summary>
+        /// <param name="debugCommand">The debug command to inject.</param>
+        /// <param name="index">The index to insert the debug command at. If less than 0, it will add it to the end of the list.</param>
+        public static void InjectCustomDebugCommand(in DebugCommand debugCommand, int index = -1)
+        {
+            if (index < 0)
+            {
+                CustomDebugCommands.Add(debugCommand);
+            }
+            else
+            {
+                CustomDebugCommands.Insert(index, debugCommand);
+            }
+        }
+
+        /// <summary>
+        /// Removes a custom debug command.
+        /// </summary>
+        /// <param name="debugCommand">The debug command to remove.</param>
+        public static void RemoveCustomDebugCommand(in DebugCommand debugCommand)
+        {
+            CustomDebugCommands.Remove(debugCommand);
+        }
+
+        /// <summary>
+        /// Removes a custom debug command at a particular index.
+        /// </summary>
+        /// <param name="index">The index to remove the custom debug command at.</param>
+        public static void RemoveCustomDebugCommand(in int index)
+        {
+            CustomDebugCommands.RemoveAt(index);
+        }
+
+        /// <summary>
+        /// Removes all custom debug commands.
+        /// </summary>
+        public static void RemoveAllCustomDebugCommands()
+        {
+            CustomDebugCommands.Clear();
+        }
+
+        #endregion
 
         #region Debug Drawing Methods
 
