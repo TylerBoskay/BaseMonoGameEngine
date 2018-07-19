@@ -36,22 +36,6 @@ namespace TDMonoGameEngine
 
         #endregion
 
-        #region Native SDL Methods
-
-        [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_SetWindowMinimumSize(IntPtr window, int min_w, int min_h);
-
-        [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_GetWindowMinimumSize(IntPtr window, out IntPtr w, out IntPtr h);
-
-        [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_SetWindowMaximumSize(IntPtr window, int max_w, int max_h);
-
-        [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_GetWindowMaximumSize(IntPtr window, out IntPtr w, out IntPtr h);
-
-        #endregion
-
         #region Event Fields
 
         public delegate void ScreenResized(in Vector2 newSize);
@@ -89,26 +73,12 @@ namespace TDMonoGameEngine
         /// <summary>
         /// The minimum size of the game window.
         /// </summary>
-        public Vector2 MinWindowSize
-        {
-            get
-            {
-                SDL_GetWindowMinimumSize(gameWindow.Handle, out IntPtr w, out IntPtr h);
-                return new Vector2(w.ToInt32(), h.ToInt32());
-            }
-        }
+        public Vector2 MinWindowSize = Vector2.Zero;
 
         /// <summary>
         /// The maximum size of the game window.
         /// </summary>
-        public Vector2 MaxWindowSize
-        {
-            get
-            {
-                SDL_GetWindowMaximumSize(gameWindow.Handle, out IntPtr w, out IntPtr h);
-                return new Vector2(w.ToInt32(), h.ToInt32());
-            }
-        }
+        public Vector2 MaxWindowSize = Vector2.Zero;
 
         /// <summary>
         /// The number of post-processing shaders in effect.
@@ -206,45 +176,38 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
+        /// Clamps the window size to the minimum and maximum defined values.
+        /// </summary>
+        /// <param name="windowSize">The new size of the game window.</param>
+        private void CheckWindowSize(ref Vector2 windowSize)
+        {
+            //If the max window size is 0, it's the default value and we shouldn't clamp to it
+            float maxX = (MaxWindowSize.X > 0f) ? MaxWindowSize.X : int.MaxValue;
+            float maxY = (MaxWindowSize.Y > 0f) ? MaxWindowSize.Y : int.MaxValue;
+
+            windowSize.X = UtilityGlobals.Clamp(windowSize.X, MinWindowSize.X, maxX);
+            windowSize.Y = UtilityGlobals.Clamp(windowSize.Y, MinWindowSize.Y, maxY);
+        }
+
+        /// <summary>
         /// Resizes the window. If this is called from <see cref="GameWindowSizeChanged(object, EventArgs)"/>, <paramref name="manualSet"/>
         /// should be false.
         /// </summary>
         /// <param name="newSize">The new size of the game window.</param>
         /// <param name="manualSet">Whether this new size should be manually set.
         /// This should be false if the game window is resized natively.</param>
-        public void ResizeWindow(in Vector2 newSize, in bool manualSet)
+        public void ResizeWindow(Vector2 newSize, in bool manualSet)
         {
-            //We don't need to set the back buffer width and height since it's already set when resizing the window
-            //Only set this explicitly if we should do so manually
-            if (manualSet == true)
-            {
-                graphicsDeviceManager.PreferredBackBufferWidth = (int)newSize.X;
-                graphicsDeviceManager.PreferredBackBufferHeight = (int)newSize.Y;
+            //Confirm window size
+            CheckWindowSize(ref newSize);
 
-                graphicsDeviceManager.ApplyChanges();
-            }
+            //Set the back buffer width and height and apply the changes
+            graphicsDeviceManager.PreferredBackBufferWidth = (int)newSize.X;
+            graphicsDeviceManager.PreferredBackBufferHeight = (int)newSize.Y;
+
+            graphicsDeviceManager.ApplyChanges();
 
             ScreenResizedEvent?.Invoke(newSize);
-        }
-
-        /// <summary>
-        /// Sets the minimum size of the game window.
-        /// </summary>
-        /// <param name="width">The minimum width of the game window.</param>
-        /// <param name="height">The minimum height of the game window.</param>
-        public void SetMinWindowSize(int width, int height)
-        {
-            SDL_SetWindowMinimumSize(gameWindow.Handle, width, height);
-        }
-
-        /// <summary>
-        /// Sets the maximum size of the game window.
-        /// </summary>
-        /// <param name="width">The maximum width of the game window.</param>
-        /// <param name="height">The maximum height of the game window.</param>
-        public void SetMaxWindowSize(int width, int height)
-        {
-            SDL_SetWindowMaximumSize(gameWindow.Handle, width, height);
         }
 
         /// <summary>
