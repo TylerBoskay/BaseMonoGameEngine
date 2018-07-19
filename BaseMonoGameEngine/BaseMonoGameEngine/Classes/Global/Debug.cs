@@ -23,9 +23,19 @@ namespace TDMonoGameEngine
         public delegate void DebugCommand();
 
         /// <summary>
+        /// A delegate for custom debug drawing methods.
+        /// </summary>
+        public delegate void DebugDrawing();
+
+        /// <summary>
         /// A list of custom debug commands that can be injected into the debug input.
         /// </summary>
         private static List<DebugCommand> CustomDebugCommands = new List<DebugCommand>();
+
+        /// <summary>
+        /// A list of custom debug drawing methods that can be injected into the debug draw.
+        /// </summary>
+        private static List<DebugDrawing> CustomDebugDrawMethods = new List<DebugDrawing>();
 
         /// <summary>
         /// The types of Debug logs.
@@ -425,7 +435,7 @@ namespace TDMonoGameEngine
             return (flags != 0);
         }
 
-        #region Debug Command Methods
+        #region Custom Debug Command and Drawing Methods
 
         /// <summary>
         /// Injects a custom debug command at the end of the debug update loop.
@@ -469,6 +479,33 @@ namespace TDMonoGameEngine
         public static void RemoveAllCustomDebugCommands()
         {
             CustomDebugCommands.Clear();
+        }
+
+        /// <summary>
+        /// Adds a custom debug drawing method at the end of the debug draw loop.
+        /// This method should handle drawing with the debug SpriteBatches and is not invoked if debug is disabled.
+        /// </summary>
+        /// <param name="debugDrawMethod">The debug drawing method to add.</param>
+        public static void AddCustomDebugDrawMethod(DebugDrawing debugDrawMethod)
+        {
+            CustomDebugDrawMethods.Add(debugDrawMethod);
+        }
+
+        /// <summary>
+        /// Removes a custom debug drawing method.
+        /// </summary>
+        /// <param name="debugDrawMethod">The debug drawing method to remove.</param>
+        public static void RemoveCustomDebugDrawMethod(DebugDrawing debugDrawMethod)
+        {
+            CustomDebugDrawMethods.Remove(debugDrawMethod);
+        }
+
+        /// <summary>
+        /// Removes all custom debug drawing methods.
+        /// </summary>
+        public static void RemoveAllCustomDebugDrawMethods()
+        {
+            CustomDebugDrawMethods.Clear();
         }
 
         #endregion
@@ -722,6 +759,12 @@ namespace TDMonoGameEngine
                 DebugUIBatch?.DrawString(font, $"Pos: {SceneManager.Instance.ActiveScene.Camera.Position}", cameraBasePos + new Vector2(0, 20), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
                 DebugUIBatch?.DrawString(font, $"Rot: {SceneManager.Instance.ActiveScene.Camera.Rotation}", cameraBasePos + new Vector2(0, 40), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
                 DebugUIBatch?.DrawString(font, $"Zoom: {SceneManager.Instance.ActiveScene.Camera.Scale}", cameraBasePos + new Vector2(0, 60), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+            }
+
+            //Invoke custom drawing methods
+            for (int i = 0; i < CustomDebugDrawMethods.Count; i++)
+            {
+                CustomDebugDrawMethods[i]();
             }
         }
 
