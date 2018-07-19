@@ -131,6 +131,7 @@ namespace TDMonoGameEngine
             }
 
             RemoveAllCustomDebugCommands();
+            RemoveAllCustomDebugDrawMethods();
         }
 
         public static void ToggleDebug(in bool debugEnabled)
