@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -32,6 +33,22 @@ namespace TDMonoGameEngine
         public static bool HasInstance => (instance != null);
 
         private static RenderingManager instance = null;
+
+        #endregion
+
+        #region Native SDL Methods
+
+        [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_SetWindowMinimumSize(IntPtr window, int min_w, int min_h);
+
+        [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_GetWindowMinimumSize(IntPtr window, out IntPtr w, out IntPtr h);
+
+        [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_SetWindowMaximumSize(IntPtr window, int max_w, int max_h);
+
+        [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_GetWindowMaximumSize(IntPtr window, out IntPtr w, out IntPtr h);
 
         #endregion
 
@@ -66,9 +83,31 @@ namespace TDMonoGameEngine
         /// <summary>
         /// The dimensions of the back buffer.
         /// </summary>
-        public Vector2 BackBufferDimensions
+        public Vector2 BackBufferDimensions => new Vector2(graphicsDevice.PresentationParameters.BackBufferWidth,
+            graphicsDevice.PresentationParameters.BackBufferHeight);
+
+        /// <summary>
+        /// The minimum size of the game window.
+        /// </summary>
+        public Vector2 MinWindowSize
         {
-            get => new Vector2(graphicsDevice.PresentationParameters.BackBufferWidth, graphicsDevice.PresentationParameters.BackBufferHeight);
+            get
+            {
+                SDL_GetWindowMinimumSize(gameWindow.Handle, out IntPtr w, out IntPtr h);
+                return new Vector2(w.ToInt32(), h.ToInt32());
+            }
+        }
+
+        /// <summary>
+        /// The maximum size of the game window.
+        /// </summary>
+        public Vector2 MaxWindowSize
+        {
+            get
+            {
+                SDL_GetWindowMaximumSize(gameWindow.Handle, out IntPtr w, out IntPtr h);
+                return new Vector2(w.ToInt32(), h.ToInt32());
+            }
         }
 
         /// <summary>
@@ -84,7 +123,7 @@ namespace TDMonoGameEngine
         /// <summary>
         /// Tells whether the game is full screen or not.
         /// </summary>
-        public bool IsFullscreen => graphicsDeviceManager.IsFullScreen;
+        public bool IsFullScreen => graphicsDeviceManager.IsFullScreen;
 
         private RenderTarget2D MainRenderTarget = null;
         private RenderTarget2D PPRenderTarget = null;
@@ -184,16 +223,38 @@ namespace TDMonoGameEngine
 
                 graphicsDeviceManager.ApplyChanges();
             }
-            
+
             ScreenResizedEvent?.Invoke(newSize);
         }
 
-        public void ToggleFullScreen(in bool fullScreen)
+        /// <summary>
+        /// Sets the minimum size of the game window.
+        /// </summary>
+        /// <param name="width">The minimum width of the game window.</param>
+        /// <param name="height">The minimum height of the game window.</param>
+        public void SetMinWindowSize(int width, int height)
         {
-            //Internally, GraphicsDeviceManager sets IsFullScreen to !IsFullScreen in ToggleFullScreen
-            //Set the opposite value so it gets set to what we want
-            graphicsDeviceManager.IsFullScreen = !fullScreen;
-            graphicsDeviceManager.ToggleFullScreen();
+            SDL_SetWindowMinimumSize(gameWindow.Handle, width, height);
+        }
+
+        /// <summary>
+        /// Sets the maximum size of the game window.
+        /// </summary>
+        /// <param name="width">The maximum width of the game window.</param>
+        /// <param name="height">The maximum height of the game window.</param>
+        public void SetMaxWindowSize(int width, int height)
+        {
+            SDL_SetWindowMaximumSize(gameWindow.Handle, width, height);
+        }
+
+        /// <summary>
+        /// Sets whether the game is full screen or not.
+        /// </summary>
+        /// <param name="fullScreen">The value indicating full screen.</param>
+        public void SetFullScreen(in bool fullScreen)
+        {
+            graphicsDeviceManager.IsFullScreen = fullScreen;
+            graphicsDeviceManager.ApplyChanges();
         }
 
         /// <summary>
