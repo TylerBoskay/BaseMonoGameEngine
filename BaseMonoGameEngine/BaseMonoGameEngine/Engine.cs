@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Tiled;
 
 namespace TDMonoGameEngine
 {
@@ -41,8 +40,6 @@ namespace TDMonoGameEngine
         /// The game window.
         /// </summary>
         public GameWindow GameWindow => Window;
-
-        private TiledMapRenderingTest MapTestRender = null;
         
         public Engine()
         {
@@ -105,8 +102,6 @@ namespace TDMonoGameEngine
             scene.AddSceneObject(new TestGameHUD(player1, 1));
             scene.AddSceneObject(new AfterImages(player1.spriteRenderer, player1.AnimationManager, 3, 8, .25f,
                 AfterImages.AfterImageAlphaSetting.FadeOff, AfterImages.AfterImageAnimSetting.Current));
-
-            MapTestRender = new TiledMapRenderingTest(AssetManager.Instance.LoadTiledMap("untitled"));
 
             base.Initialize();
         }

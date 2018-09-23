@@ -308,15 +308,6 @@ namespace TDMonoGameEngine
             return (iList == null || iList.Count == 0);
         }
 
-        #region Flag Check Utilities
-
-        /* Adding flags: flag1 |= flag2            ; 10 | 01 = 11
-         * Checking flags: (flag1 & flag2) != 0    ; 11 & 10 = 10
-         * Removing flags: (flag1 & (~flag2))      ; 1111 & (~0010) = 1111 & 1101 = 1101
-         * */
-
-        #endregion
-
         /// <summary>
         /// Subtracts a float from another float and divides the result by a dividing factor.
         /// </summary>
@@ -390,6 +381,36 @@ namespace TDMonoGameEngine
             }
 
             return squaredDistance;
+        }
+
+        /// <summary>
+        /// Tells if a double is approximately equal to another one.
+        /// </summary>
+        /// <param name="value">The value to check.</param>
+        /// <param name="comparison">The value to compare to.</param>
+        /// <param name="error">The threshold of error to account for.</param>
+        /// <returns>true if (<paramref name="value"/> - <paramref name="comparison"/>) is within <paramref name="error"/>.</returns>
+        public static bool IsApproximate(double value, double comparison, double error)
+        {
+            double check = Math.Abs(value - comparison);
+            double absError = Math.Abs(error);
+
+            return (check <= absError);
+        }
+
+        /// <summary>
+        /// Tells if a float is approximately equal to another one.
+        /// </summary>
+        /// <param name="value">The value to check.</param>
+        /// <param name="comparison">The value to compare to.</param>
+        /// <param name="error">The threshold of error to account for.</param>
+        /// <returns>true if (<paramref name="value"/> - <paramref name="comparison"/>) is within <paramref name="error"/>.</returns>
+        public static bool IsApproximate(float value, float comparison, float error)
+        {
+            float check = Math.Abs(value - comparison);
+            float absError = Math.Abs(error);
+
+            return (check <= absError);
         }
     }
 }

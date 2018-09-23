@@ -17,6 +17,8 @@ namespace TDMonoGameEngine
     /// </summary>
     public static class Debug
     {
+        private const string ScreenshotFolderName = "Screenshots";
+
         /// <summary>
         /// A delegate for custom debug commands.
         /// </summary>
@@ -257,7 +259,7 @@ namespace TDMonoGameEngine
                 //Take screenshot
                 else if (KeyboardInput.GetKeyDown(Keys.S, DebugKeyboard))
                 {
-                    TakeScreenshot();
+                    TakeScreenshotWindows();
                 }
                 else if (KeyboardInput.GetKeyDown(Keys.M, DebugKeyboard))
                 {
@@ -348,19 +350,19 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
-        /// Takes a screenshot of the screen.
+        /// Takes a screenshot of the screen. This uses a SaveFileDialog and only works on Windows platforms.
         /// </summary>
-        public static void TakeScreenshot()
+        private static void TakeScreenshotWindows()
         {
-            //Wrap the Texture2D in the using so it's guaranteed to get disposed
-            using (Texture2D screenshotTex = GetScreenshot())
-            {
-                //Open the file dialogue so you can name the file and place it wherever you want
-                System.Windows.Forms.SaveFileDialog dialogue = new System.Windows.Forms.SaveFileDialog();
-                dialogue.FileName = string.Empty;
-                dialogue.Filter = "PNG (*.png)|*.png";
+            //Open the file dialogue so you can name the file and place it wherever you want
+            System.Windows.Forms.SaveFileDialog dialogue = new System.Windows.Forms.SaveFileDialog();
+            dialogue.FileName = string.Empty;
+            dialogue.Filter = "PNG (*.png)|*.png";
 
-                if (dialogue.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (dialogue.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                //Wrap the Texture2D in the using so it's guaranteed to get disposed
+                using (Texture2D screenshotTex = GetScreenshot())
                 {
                     using (FileStream fstream = new FileStream(dialogue.FileName, FileMode.Create))
                     {
@@ -371,6 +373,62 @@ namespace TDMonoGameEngine
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Takes a screenshot of the screen. This does not use a SaveFileDialog and works on non-Windows platforms.
+        /// </summary>
+        private static void TakeScreenshotNonWindows()
+        {
+            /* Non-Windows platforms can't use System.Windows.Forms on Mono, so we'll put all screenshots in a dedicated folder */
+            string screenshotFolderPath = Path.Combine(Environment.CurrentDirectory, ScreenshotFolderName);
+
+            //Create the directory if it doesn't exist
+            if (Directory.Exists(screenshotFolderPath) == false)
+            {
+                Directory.CreateDirectory(screenshotFolderPath);
+            }
+
+            string fileName = "PuzzleGameScreenshot";
+            string filePath = Path.Combine(screenshotFolderPath, fileName);
+
+            int? index = null;
+
+            string finalPath = GetNextScreenshotPath(filePath, index);
+
+            //Keep searching for the next file name
+            while (File.Exists(finalPath) == true)
+            {
+                if (index == null) index = 0;
+                else index++;
+
+                finalPath = GetNextScreenshotPath(filePath, index);
+            }
+
+            //Wrap the Texture2D in the using so it's guaranteed to get disposed
+            using (Texture2D screenshotTex = GetScreenshot())
+            {
+                //Save the file
+                using (FileStream fstream = new FileStream(finalPath, FileMode.Create))
+                {
+                    int width = RenderingManager.Instance.graphicsDevice.PresentationParameters.BackBufferWidth;
+                    int height = RenderingManager.Instance.graphicsDevice.PresentationParameters.BackBufferHeight;
+
+                    screenshotTex.SaveAsPng(fstream, width, height);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the path to save the next screenshot for non-Windows platforms.
+        /// </summary>
+        /// <param name="curPath">The current path.</param>
+        /// <param name="index">The number to append to the path. This is not null if a file exists for the current path.</param>
+        /// <returns>A string representing the path to save the next screenshot.</returns>
+        private static string GetNextScreenshotPath(in string curPath, in int? index)
+        {
+            if (index == null) return curPath + ".png";
+            else return curPath + index + ".png";
         }
 
         /// <summary>
