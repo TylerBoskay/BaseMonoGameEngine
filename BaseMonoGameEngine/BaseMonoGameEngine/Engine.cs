@@ -34,7 +34,6 @@ namespace TDMonoGameEngine
         public bool WasFocused { get; private set; } = false;
 
         private GraphicsDeviceManager graphics;
-        private CrashHandler crashHandler = null;
 
         /// <summary>
         /// The game window.
@@ -44,8 +43,6 @@ namespace TDMonoGameEngine
         public Engine()
         {
             graphics = new GraphicsDeviceManager(this);
-
-            crashHandler = new CrashHandler();
             
             //false for variable timestep, true for fixed
             Time.FixedTimeStep = true;
@@ -129,7 +126,6 @@ namespace TDMonoGameEngine
             RenderingManager.Instance.CleanUp();
 
             Debug.DebugCleanup();
-            crashHandler.CleanUp();
 
             LostFocusEvent = null;
             RegainedFocusEvent = null;
