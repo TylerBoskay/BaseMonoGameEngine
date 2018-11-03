@@ -51,54 +51,45 @@ namespace TDMonoGameEngine
          * */
 
         /// <summary>
-        /// Tells if one set of Enum values contains another set of Enum values. This is for Enums that represent a collection of flags.
+        /// Tells if one set of values contains another set of values. This is for values that represent a collection of flags.
+        /// <para>This takes in longs to avoid boxing.</para>
         /// </summary>
-        /// <typeparam name="T">The Enum type.</typeparam>
-        /// <param name="flags">The set of values.</param>
-        /// <param name="checkFlags">The set of values to test against.</param>
+        /// <param name="flags">The set of values as a long.</param>
+        /// <param name="checkFlags">The set of values to test against, as a long.</param>
         /// <returns>true if <paramref name="flags"/> contains <paramref name="checkFlags"/>, otherwise false.</returns>
-        public static bool HasEnumVal<T>(in T flags, in T checkFlags) where T : Enum
+        public static bool HasEnumVal(in long flags, in long checkFlags)
         {
-            long val = Convert.ToInt64(flags);
-            long val2 = Convert.ToInt64(checkFlags);
-
-            long check = (val & val2);
+            long check = (flags & checkFlags);
 
             return (check != 0);
         }
 
         /// <summary>
-        /// Adds Enum values onto a set of Enum values. This is for Enums that represent a collection of flags.
+        /// Adds values onto a set of other values. This is for values that represent a collection of flags.
+        /// <para>This takes in longs to avoid boxing.</para>
         /// </summary>
-        /// <typeparam name="T">The Enum type.</typeparam>
-        /// <param name="flags">The set of values.</param>
-        /// <param name="newFlags">The new values to add.</param>
-        /// <returns>An enum value of type <typeparamref name="T"/> with the new values added.</returns>
-        public static T AddEnumVal<T>(in T flags, in T newFlags) where T : Enum
+        /// <param name="flags">The set of values as a long.</param>
+        /// <param name="newFlags">The new values to add, as a long.</param>
+        /// <returns>A long with the new values added.</returns>
+        public static long AddEnumVal(in long flags, in long checkFlags)
         {
-            long val = Convert.ToInt64(flags);
-            long val2 = Convert.ToInt64(newFlags);
+            long add = (flags | checkFlags);
 
-            long add = (val | val2);
-
-            return (T)Enum.ToObject(typeof(T), add);
+            return add;
         }
 
         /// <summary>
-        /// Removes Enum values from a set of Enum values. This is for Enums that represent a collection of flags.
+        /// Removes values from a set of other values. This is for values that represent a collection of flags.
+        /// <para>This takes in longs to avoid boxing.</para>
         /// </summary>
-        /// <typeparam name="T">The Enum type.</typeparam>
-        /// <param name="flags">The set of values.</param>
-        /// <param name="flagsToRemove">The values to remove.</param>
-        /// <returns>An enum value of type <typeparamref name="T"/> with the values removed.</returns>
-        public static T RemoveEnumVal<T>(in T flags, in T flagsToRemove) where T : Enum
+        /// <param name="flags">The set of values as a long.</param>
+        /// <param name="flagsToRemove">The values to remove, as a long.</param>
+        /// <returns>A long with the values removed.</returns>
+        public static long RemoveEnumVal(in long flags, in long flagsToRemove)
         {
-            long val = Convert.ToInt64(flags);
-            long val2 = Convert.ToInt64(flagsToRemove);
+            long remove = (flags & (~flagsToRemove));
 
-            long remove = (val & (~val2));
-
-            return (T)Enum.ToObject(typeof(T), remove);
+            return remove;
         }
     }
 }

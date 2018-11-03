@@ -488,5 +488,79 @@ namespace TDMonoGameEngine
         }
 
         #endregion
+
+        #region Effect Extensions
+
+        public static void SetParameterValue(this Effect effect, string name, bool value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        public static void SetParameterValue(this Effect effect, string name, float value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        public static void SetParameterValue(this Effect effect, string name, float[] value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        public static void SetParameterValue(this Effect effect, string name, int value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        public static void SetParameterValue(this Effect effect, string name, Matrix value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        public static void SetParameterValue(this Effect effect, string name, Matrix[] value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        public static void SetParameterValue(this Effect effect, string name, Quaternion value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        public static void SetParameterValue(this Effect effect, string name, Texture value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        public static void SetParameterValue(this Effect effect, string name, Vector2 value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        public static void SetParameterValue(this Effect effect, string name, Vector2[] value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        public static void SetParameterValue(this Effect effect, string name, Vector3 value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        public static void SetParameterValue(this Effect effect, string name, Vector3[] value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        public static void SetParameterValue(this Effect effect, string name, Vector4 value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        public static void SetParameterValue(this Effect effect, string name, Vector4[] value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
+        #endregion
     }
 }
