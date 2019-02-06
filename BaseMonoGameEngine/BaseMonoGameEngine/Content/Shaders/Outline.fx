@@ -22,20 +22,29 @@ float4 Outline(VertexShaderOutput input) : COLOR
 {
 	float4 currentPixel = tex2D(s0, input.TextureCoordinates) * input.Color;
 	float4 output = currentPixel;
+	float alpha = output.a;
 
-	if (currentPixel.a == 0.0f)
+	float2 uvPix = float2(1 / sheetSize.x, 1 / sheetSize.y);
+
+	//Sample colors from all four directions around this pixel
+	float4 colorRight = tex2D(s0, input.TextureCoordinates + float2(uvPix.x, 0));
+	float4 colorDown = tex2D(s0, input.TextureCoordinates + float2(0, uvPix.y));
+	float4 colorUp = tex2D(s0, input.TextureCoordinates + float2(0, -uvPix.y));
+	float4 colorLeft = tex2D(s0, input.TextureCoordinates + float2(-uvPix.x, 0));
+
+	//Get the max alpha value for all surrounding pixels
+	alpha = max(alpha, colorRight.a);
+	alpha = max(alpha, colorDown.a);
+	alpha = max(alpha, colorUp.a);
+	alpha = max(alpha, colorLeft.a);
+
+	output.a = alpha;
+
+	//If the alpha in any direction is found to be greater than the current pixel's alpha,
+	//then we're on the edge, so set the color
+	if (alpha > currentPixel.a)
 	{
-		float2 uvPix = float2(1 / sheetSize.x, 1 / sheetSize.y);
-
-		float4 colorRight = tex2D(s0, input.TextureCoordinates + float2(uvPix.x, 0));
-		float4 colorDown = tex2D(s0, input.TextureCoordinates + float2(0, uvPix.y));
-		float4 colorUp = tex2D(s0, input.TextureCoordinates + float2(0, -uvPix.y));
-		float4 colorLeft = tex2D(s0, input.TextureCoordinates + float2(-uvPix.x, 0));
-
-		if (colorRight.a > 0 || colorDown.a > 0 || colorLeft.a > 0 || colorUp.a > 0)
-		{
-			output = outlineColor;
-		}
+		output = outlineColor;
 	}
 
 	return output;
