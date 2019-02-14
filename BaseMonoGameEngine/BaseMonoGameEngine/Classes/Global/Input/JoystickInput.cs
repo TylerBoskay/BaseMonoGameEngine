@@ -294,6 +294,43 @@ namespace TDMonoGameEngine
             joystickState = GetJoystickState(index);
         }
 
+        /// <summary>
+        /// Returns if a joystick is connected.
+        /// </summary>
+        /// <param name="index">The index of the Joystick to use.</param>
+        /// <returns>true if the Joystick is currently connected, otherwise false.</returns>
+        public static bool IsJoystickConnected(in int index)
+        {
+            JoystickState state = GetJoystickState(index);
+            return state.IsConnected;
+        }
+
+        /// <summary>
+        /// Returns true if a Joystick was connected this frame.
+        /// </summary>
+        /// <param name="index">The index of the Joystick to use.</param>
+        /// <param name="curJoystickState">The JoystickState to compare with.</param>
+        /// <returns>true if the Joystick at <paramref name="index"/> was connected this frame, otherwise false.</returns>
+        public static bool HasJoystickJustConnected(in int index, in JoystickState curJoystickState)
+        {
+            JoystickState state = GetJoystickState(index);
+
+            return (curJoystickState.IsConnected == false && state.IsConnected == true);
+        }
+
+        /// <summary>
+        /// Returns true if a Joystick was disconnected this frame.
+        /// </summary>
+        /// <param name="index">The index of the Joystick to use.</param>
+        /// <param name="curJoystickState">The JoystickState to compare with.</param>
+        /// <returns>true if the Joystick at <paramref name="index"/> was disconnected this frame, otherwise false.</returns>
+        public static bool HasJoystickJustDisconnected(in int index, in JoystickState curJoystickState)
+        {
+            JoystickState state = GetJoystickState(index);
+
+            return (curJoystickState.IsConnected == true && state.IsConnected == false);
+        }
+
         ///// <summary>
         ///// Updates all JoystickStates from 0 to <see cref="MaxJoysticks"/>.
         ///// </summary>

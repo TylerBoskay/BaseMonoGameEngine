@@ -150,14 +150,27 @@ namespace TDMonoGameEngine
         {
             StackFrame trace = new StackFrame(skipFrames, true);
             int line = 0;
-            string method = "";
+            string method = string.Empty;
+            string fileName = string.Empty;
 
             string traceFileName = trace.GetFileName();
-            if (string.IsNullOrEmpty(traceFileName) == true)
-                traceFileName = "N/A";
+            if (string.IsNullOrEmpty(traceFileName) == false)
+            {
+                int fileIndex = traceFileName.LastIndexOf('\\');
 
-            string[] file = traceFileName.Split('\\');
-            string fileName = file?[file.Length - 1];
+                //If it didn't find a backslash, try looking for a forward slash
+                if (fileIndex < 0)
+                {
+                    fileIndex = traceFileName.LastIndexOf('/');
+                }
+
+                if (fileIndex >= 0)
+                {
+                    string file = traceFileName.Substring(fileIndex + 1, traceFileName.Length - (fileIndex + 1));
+                    fileName = file;
+                }
+            }
+
             if (string.IsNullOrEmpty(fileName) == true)
                 fileName = "N/A FileName";
 
