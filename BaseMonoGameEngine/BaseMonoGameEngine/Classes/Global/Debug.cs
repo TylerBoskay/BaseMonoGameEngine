@@ -56,6 +56,9 @@ namespace TDMonoGameEngine
         public static bool DebugEnabled { get; private set; } = false;
         public static bool LogsEnabled { get; private set; } = false;
 
+        public static bool DebugUpdateEnabled = false;
+        public static bool DebugDrawEnabled = false;
+
         /// <summary>
         /// Whether to store logs made in the <see cref="LogDump"/>. This defaults to true.
         /// </summary>
@@ -112,9 +115,13 @@ namespace TDMonoGameEngine
             #if DEBUG
                 DebugEnabled = true;
                 LogsEnabled = true;
+                DebugUpdateEnabled = true;
+                DebugDrawEnabled = false;
             #else
                 DebugEnabled = false;
                 LogsEnabled = true;
+                DebugUpdateEnabled = false;
+                DebugDrawEnabled = false;
             #endif
         }
 
@@ -234,14 +241,20 @@ namespace TDMonoGameEngine
 
         public static void DebugUpdate()
         {
+            //Return if debug isn't enabled
+            if (DebugEnabled == false)
+            {
+                return;
+            }
+
             //Toggle debug
             if (KeyboardInput.GetKey(Keys.LeftControl, DebugKeyboard) && KeyboardInput.GetKeyDown(Keys.D, DebugKeyboard))
             {
-                ToggleDebug(!DebugEnabled);
+                DebugUpdateEnabled = !DebugUpdateEnabled;
             }
 
-            //Return if debug isn't enabled
-            if (DebugEnabled == false)
+            //Return if debug updating isn't enabled
+            if (DebugUpdateEnabled == false)
             {
                 //Update the input state if debug is disabled so that the toggle functions properly
                 KeyboardInput.UpdateKeyboardState(ref DebugKeyboard);
@@ -272,12 +285,18 @@ namespace TDMonoGameEngine
                 //Take screenshot
                 else if (KeyboardInput.GetKeyDown(Keys.S, DebugKeyboard))
                 {
+#if WINDOWS || DEBUG
                     TakeScreenshotWindows();
+#elif !WINDOWS
+                    TakeScreenshotNonWindows();
+#endif
                 }
                 else if (KeyboardInput.GetKeyDown(Keys.M, DebugKeyboard))
                 {
+#if WINDOWS || DEBUG
                     //Log dump
                     DumpLogs();
+#endif
                 }
                 //FPS increase
                 else if (KeyboardInput.GetKeyDown(Keys.OemPlus, DebugKeyboard))
@@ -303,6 +322,11 @@ namespace TDMonoGameEngine
                 else if (KeyboardInput.GetKeyDown(Keys.OemCloseBrackets))
                 {
                     Time.FixedTimeStep = !Time.FixedTimeStep;
+                }
+                //Toggle Debug Draw
+                else if (KeyboardInput.GetKeyDown(Keys.Q, DebugKeyboard))
+                {
+                    DebugDrawEnabled = !DebugDrawEnabled;
                 }
             }
 
@@ -354,14 +378,11 @@ namespace TDMonoGameEngine
                 CustomDebugCommands[i]();
             }
 
-            //If a pause is eventually added that can be performed normally, put a check for it in here to
-            //prevent the in-game timer from turning on when it shouldn't
-            Time.ToggleInGameTime(DebugPaused == false || AdvanceNextFrame == true);
-
             FPSCounter.Update();
             KeyboardInput.UpdateKeyboardState(ref DebugKeyboard);
         }
 
+#if WINDOWS || DEBUG
         /// <summary>
         /// Takes a screenshot of the screen. This uses a SaveFileDialog and only works on Windows platforms.
         /// </summary>
@@ -388,6 +409,7 @@ namespace TDMonoGameEngine
             }
         }
 
+#else
         /// <summary>
         /// Takes a screenshot of the screen. This does not use a SaveFileDialog and works on non-Windows platforms.
         /// </summary>
@@ -431,6 +453,7 @@ namespace TDMonoGameEngine
                 }
             }
         }
+#endif
 
         /// <summary>
         /// Gets the path to save the next screenshot for non-Windows platforms.
@@ -470,6 +493,8 @@ namespace TDMonoGameEngine
             return screenshot;
         }
 
+#if WINDOWS || DEBUG
+
         /// <summary>
         /// Dumps the current debug logs to a .txt file.
         /// </summary>
@@ -494,6 +519,8 @@ namespace TDMonoGameEngine
             }
         }
 
+#endif
+
         /// <summary>
         /// Tells whether a set of DebugLogTypes has any of the flags in another DebugLogTypes set.
         /// </summary>
@@ -507,7 +534,7 @@ namespace TDMonoGameEngine
             return (flags != 0);
         }
 
-        #region Custom Debug Command and Drawing Methods
+#region Custom Debug Command and Drawing Methods
 
         /// <summary>
         /// Injects a custom debug command at the end of the debug update loop.
@@ -580,9 +607,9 @@ namespace TDMonoGameEngine
             CustomDebugDrawMethods.Clear();
         }
 
-        #endregion
+#endregion
 
-        #region Debug Drawing Methods
+#region Debug Drawing Methods
 
         /// <summary>
         /// Draws a line.
@@ -773,7 +800,7 @@ namespace TDMonoGameEngine
             }
         }
 
-        #endregion
+#endregion
 
         public static void DebugStartDraw()
         {
@@ -789,12 +816,20 @@ namespace TDMonoGameEngine
 
         public static void DebugDraw()
         {
-            if (DebugEnabled == false) return;
+            if (DebugEnabled == false || DebugDrawEnabled == false) return;
 
             //FPS counter
             FPSCounter.Draw();
 
             SpriteFont font = AssetManager.Instance.LoadAsset<SpriteFont>($"{ContentGlobals.FontRoot}Font");
+
+#if LINUX
+            string rendererStr = "Renderer: OpenGL";
+#elif WINDOWS
+            string rendererStr = "Renderer: DirectX";
+#endif
+
+            debugUIBatch.DrawString(font, rendererStr, new Vector2(640, 0), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
 
             debugUIBatch.DrawString(font, "Fixed Timestep: " + Time.FixedTimeStep, new Vector2(640, 0), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
             debugUIBatch.DrawString(font, "VSync: " + Time.VSyncEnabled, new Vector2(703, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
@@ -840,7 +875,7 @@ namespace TDMonoGameEngine
             }
         }
 
-        #region Classes
+#region Classes
 
         /// <summary>
         /// Global values regarding debugging.
@@ -855,7 +890,7 @@ namespace TDMonoGameEngine
             {
                 string time = GetFileFriendlyTimeStamp();
 
-                string path = $"{System.IO.Directory.GetCurrentDirectory()}\\{GetAssemblyName()} {GetBuildNumber()} Crash Log - {time}.txt";
+                string path = Path.Combine(System.Environment.CurrentDirectory, $"{Engine.GameName} Crash Log - {time}.txt");
 
                 return path;
             }
@@ -975,6 +1010,6 @@ namespace TDMonoGameEngine
             }
         }
 
-        #endregion
+#endregion
     }
 }

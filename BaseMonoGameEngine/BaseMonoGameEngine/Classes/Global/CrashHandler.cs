@@ -40,21 +40,44 @@ namespace TDMonoGameEngine
             Exception exc = e.ExceptionObject as Exception;
             if (exc != null)
             {
-                //Dump the message, stack trace, and logs to a file
-                using (StreamWriter writer = File.CreateText(Debug.DebugGlobals.GetCrashLogPath()))
-                {
-                    writer.Write($"OS Version: {Debug.DebugGlobals.GetOSInfo()}\n\n");
-                    writer.Write($"Message: {exc.Message}\n\nStack Trace:\n");
-                    writer.Write($"{exc.StackTrace}\n\n");
+                string fileName = Debug.DebugGlobals.GetCrashLogPath();
 
-                    //Don't write the log dump unless there are logs
-                    if (Debug.LogDump.Length > 0)
-                    {
-                        writer.Write($"Log Dump:\n{Debug.LogDump.ToString()}");
-                    }
+                StringBuilder sb = new StringBuilder();
+
+                //Dump the message, stack trace, and logs
+                sb.Append($"Uh oh, looks like {Engine.GameName} crashed :(. Please report this crash by submitting this log file to thomasdeeb1@gmail.com.\n\n");
+                sb.Append($"OS Version: {Debug.DebugGlobals.GetOSInfo()}\n");
+#if LINUX
+                sb.Append("Renderer: OpenGL\n\n");
+#elif WINDOWS
+                sb.Append("Renderer: DirectX\n\n");
+#endif
+                sb.Append($"Message: {exc.Message}\n\nStack Trace:\n");
+                sb.Append($"{exc.StackTrace}\n\n");
+
+                //Don't write the log dump unless there are logs
+                if (Debug.LogDump.Length > 0)
+                {
+                    sb.Append($"Log Dump:\n{Debug.LogDump.ToString()}");
+                }
+
+                string crashDump = sb.ToString();
+
+                //Dump the message, stack trace, and logs to a file
+                using (StreamWriter writer = File.CreateText(fileName))
+                {
+                    writer.Write(crashDump);
 
                     writer.Flush();
                 }
+
+                //On Windows, show an error message box
+#if WINDOWS || DEBUG
+                string thing = $"Uh oh, looks like {Engine.GameName} crashed :(. Please report this crash by submitting the file found at the following path to emailhere@email.com.\n\n\"{fileName}\"\n\nCrash Message: { exc.Message}";
+
+                System.Windows.Forms.MessageBox.Show(thing, $"{Engine.GameName} crashed!", System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Error);
+#endif
             }
         }
     }

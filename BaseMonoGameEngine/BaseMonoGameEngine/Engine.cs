@@ -39,9 +39,24 @@ namespace TDMonoGameEngine
         /// The game window.
         /// </summary>
         public GameWindow GameWindow => Window;
-        
+
+        /// <summary>
+        /// The name of this game.
+        /// </summary>
+        public const string GameName = "TDMonoGameEngine";
+
         public Engine()
         {
+            Debug.Log("Starting up engine");
+
+            Debug.Log("Initializing graphics device");
+
+#if LINUX
+            Debug.Log("Renderer: OpenGL");
+#elif WINDOWS
+            Debug.Log("Renderer: DirectX");
+#endif
+
             graphics = new GraphicsDeviceManager(this);
             
             //false for variable timestep, true for fixed
@@ -77,6 +92,10 @@ namespace TDMonoGameEngine
         /// </summary>
         protected override void Initialize()
         {
+            //Set the culture to invariant
+            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+
+            Window.Title = GameName;
             IsFixedTimeStep = Time.FixedTimeStep;
 
             AssetManager.Instance.Initialize(Content);
@@ -223,7 +242,7 @@ namespace TDMonoGameEngine
             Time.UpdateFrames();
             
             RenderingManager.Instance.StartDraw();
-            if (Debug.DebugEnabled == true)
+            if (Debug.DebugEnabled == true && Debug.DebugDrawEnabled == true)
             {
                 Debug.DebugStartDraw();
             }
@@ -253,7 +272,7 @@ namespace TDMonoGameEngine
             RenderingManager.Instance.EndDraw();
 
             //Draw debug information on top of everything else
-            if (Debug.DebugEnabled == true)
+            if (Debug.DebugEnabled == true && Debug.DebugDrawEnabled == true)
             {
                 Debug.DebugEndDraw();
             }

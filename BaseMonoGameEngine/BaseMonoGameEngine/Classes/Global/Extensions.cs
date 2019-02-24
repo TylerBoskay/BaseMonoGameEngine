@@ -115,6 +115,24 @@ namespace TDMonoGameEngine
             return spriteFont.GetOrigin(text, .5f, .5f);
         }
 
+        /// <summary>
+        /// Finds a Glyph associated with a particular character in a SpriteFont.
+        /// </summary>
+        /// <param name="spriteFont">The font to get the Glyph for.</param>
+        /// <param name="c">The character to find the glyph for.</param>
+        /// <returns>A Glyph? containing the Glyph found, otherwise null.</returns>
+        public static SpriteFont.Glyph? FindGlyphForChar(this SpriteFont spriteFont, in char c)
+        {
+            for (int i = 0; i < spriteFont.Glyphs.Length; i++)
+            {
+                ref SpriteFont.Glyph glyph = ref spriteFont.Glyphs[i];
+
+                if (glyph.Character == c) return glyph;
+            }
+
+            return null;
+        }
+
         #endregion
 
         #region Rectangle Extensions
@@ -485,6 +503,207 @@ namespace TDMonoGameEngine
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Draws a polygon, or a set of points.
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch used for drawing.</param>
+        /// <param name="lineTex">The texture for each line in the polygon.</param>
+        /// <param name="points">An <see cref="IList{T}"/> of points for the polygon.</param>
+        /// <param name="color">The color of the line.</param>
+        /// <param name="layer">The layer of the line.</param>
+        /// <param name="thickness">The thickness of the lines to draw.</param>
+        public static void DrawPolygon(this SpriteBatch spriteBatch, in Texture2D lineTex, in IList<Vector2> points, in Color color,
+            in float layer, in int thickness)
+        {
+            //Nothing to draw
+            if (points == null || points.Count == 0) return;
+
+            //Draw a point
+            if (points.Count == 1)
+            {
+                spriteBatch.Draw(lineTex, points[0], null, color);
+                return;
+            }
+
+            //Draw all the polygon's lines minus one
+            for (int i = 0; i < points.Count - 1; i++)
+            {
+                spriteBatch.DrawLine(lineTex, points[i], points[i + 1], color, layer, thickness);
+            }
+
+            //Draw a line from the last point to the first one if we should
+            spriteBatch.DrawLine(lineTex, points[points.Count - 1], points[0], color, layer, thickness);
+        }
+
+        /// <summary>
+        /// Draws an individual character. This returns the offset calculated while drawing,
+        /// which can be used to get the correct position of the next character.
+        /// <para>This is a near replica of MonoGame's DrawString() method, with adjustments for a single character and more comments.</para>
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch to use to render the character.</param>
+        /// <param name="font">The SpriteFont to render the character with.</param>
+        /// <param name="c">The character to render.</param>
+        /// <param name="glyph">The Glyph for the character rendered in the SpriteFont.</param>
+        /// <param name="startOffset">The starting offset to render the character.
+        /// This can be used to pick up where another character left off.</param>
+        /// <param name="position">The position to render the character.</param>
+        /// <param name="color">The color to render the character in.</param>
+        /// <param name="rotation">The rotation to render the character in.</param>
+        /// <param name="origin">The origin to render the character with.</param>
+        /// <param name="scale">The scale to render the character in.</param>
+        /// <param name="effects">The SpriteEffects to render the character in.</param>
+        /// <param name="layerDepth">The depth to render the character in.</param>
+        /// <returns>A Vector2 containing the offset calculated when rendering the character.</returns>
+        public static Vector2 DrawCharacter(this SpriteBatch spriteBatch, SpriteFont font, in char c, in SpriteFont.Glyph? glyph,
+            in Vector2 startOffset, in Vector2 position, in Color color, in float rotation, in Vector2 origin, in Vector2 scale,
+            in SpriteEffects effects, in float layerDepth)
+        {
+            Vector2 offset = startOffset;
+            bool firstGlyphOfLine = (offset.X == 0f);
+
+            //On carriage return, simply exit
+            if (c == '\r')
+                return offset;
+
+            //If we encounter a newline, reset the X offset and go down by the line spacing
+            if (c == '\n')
+            {
+                offset.X = 0;
+                offset.Y += font.LineSpacing;
+                firstGlyphOfLine = true;
+                return offset;
+            }
+
+            //If this character can't be rendered, exit
+            if (glyph == null)
+                return offset;
+
+            SpriteFont.Glyph charGlyph = glyph.Value;
+
+            //The first character on a line might have a negative left side bearing
+            //In this scenario, offset the text to the right so that the text does not hang off the left side of its rectangle
+            if (firstGlyphOfLine)
+            {
+                offset.X = Math.Max(charGlyph.LeftSideBearing * scale.X, 0);
+                firstGlyphOfLine = false;
+            }
+            //Add the left side bearing and the spacing
+            else
+            {
+                offset.X += ((font.Spacing + charGlyph.LeftSideBearing) * scale.X);
+            }
+
+            //Add the cropping
+            Vector2 p = offset;
+            p.X += charGlyph.Cropping.X * scale.X;
+            p.Y += charGlyph.Cropping.Y * scale.Y;
+
+            //Add the position passed in to obtain the final position to render this character
+            p += position;
+
+            //Render the character using the font's texture, the character's bounds in the font, and the other information passed in
+            spriteBatch.Draw(font.Texture, p, charGlyph.BoundsInTexture, color, rotation, origin, scale, effects, layerDepth);
+
+            //Add the character's width with its right side bearing for the next character
+            offset.X += ((charGlyph.Width + charGlyph.RightSideBearing) * scale.X);
+
+            return offset;
+        }
+
+        /// <summary>
+        /// Draws an individual character. This returns the offset calculated while drawing,
+        /// which can be used to get the correct position of the next character.
+        /// <para>This overload finds the glyph in the SpriteFont.</para>
+        /// <para>This is a near replica of MonoGame's DrawString() method, with adjustments for a single character and more comments.</para>
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch to use to render the character.</param>
+        /// <param name="font">The SpriteFont to render the character with.</param>
+        /// <param name="c">The character to render.</param>
+        /// <param name="startOffset">The starting offset to render the character.
+        /// This can be used to pick up where another character left off.</param>
+        /// <param name="position">The position to render the character.</param>
+        /// <param name="color">The color to render the character in.</param>
+        /// <param name="rotation">The rotation to render the character in.</param>
+        /// <param name="origin">The origin to render the character with.</param>
+        /// <param name="scale">The scale to render the character in.</param>
+        /// <param name="effects">The SpriteEffects to render the character in.</param>
+        /// <param name="layerDepth">The depth to render the character in.</param>
+        /// <returns>A Vector2 containing the offset calculated when rendering the character.</returns>
+        public static Vector2 DrawCharacter(this SpriteBatch spriteBatch, SpriteFont font, in char c,
+            in Vector2 startOffset, in Vector2 position, in Color color, in float rotation, in Vector2 origin, in Vector2 scale,
+            in SpriteEffects effects, in float layerDepth)
+        {
+            SpriteFont.Glyph? charGlyph = font.FindGlyphForChar(c);
+
+            return DrawCharacter(spriteBatch, font, c, charGlyph, startOffset, position, color, rotation, origin, scale, effects, layerDepth);
+        }
+
+        /// <summary>
+        /// Draws a character with an outline.
+        /// <para>Note: This method performs 4 more draw calls to simulate an outline.</para>
+        /// </summary>
+        public static Vector2 DrawCharacterOutline(this SpriteBatch spriteBatch, in float outlineThickness, in Color outlineColor, SpriteFont font,
+            in char c, in SpriteFont.Glyph? glyph, in Vector2 startOffset, in Vector2 position, in Color color, in float rotation,
+            in Vector2 origin, in Vector2 scale, in SpriteEffects effects, in float layerDepth)
+        {
+            DrawCharacter(spriteBatch, font, c, glyph, startOffset, position - new Vector2(outlineThickness, 0), outlineColor, rotation,
+                origin, scale, effects, layerDepth);
+            DrawCharacter(spriteBatch, font, c, glyph, startOffset, position - new Vector2(0, outlineThickness), outlineColor, rotation,
+                origin, scale, effects, layerDepth);
+            DrawCharacter(spriteBatch, font, c, glyph, startOffset, position + new Vector2(outlineThickness, 0), outlineColor, rotation,
+                origin, scale, effects, layerDepth);
+            DrawCharacter(spriteBatch, font, c, glyph, startOffset, position + new Vector2(0, outlineThickness), outlineColor, rotation,
+                origin, scale, effects, layerDepth);
+
+            return DrawCharacter(spriteBatch, font, c, glyph, startOffset, position, color, rotation, origin, scale, effects, layerDepth);
+        }
+
+        /// <summary>
+        /// Draws a character with an outline. This overload finds the glyph in the SpriteFont.
+        /// <para>Note: This method performs 4 more draw calls to simulate an outline.</para>
+        /// </summary>
+        public static Vector2 DrawCharacterOutline(this SpriteBatch spriteBatch, in float outlineThickness, in Color outlineColor, SpriteFont font,
+            in char c, in Vector2 startOffset, in Vector2 position, in Color color, in float rotation,
+            in Vector2 origin, in Vector2 scale, in SpriteEffects effects, in float layerDepth)
+        {
+            SpriteFont.Glyph? glyph = font.FindGlyphForChar(c);
+
+            return DrawCharacterOutline(spriteBatch, outlineThickness, outlineColor, font, c, glyph, startOffset, position, color,
+                rotation, origin, scale, effects, layerDepth);
+        }
+
+        /// <summary>
+        /// Submit a text string of sprites for drawing in the current batch.
+        /// <para>Note: This method performs 4 more draw calls to simulate an outline.</para>
+        /// </summary>
+        public static void DrawStringOutline(this SpriteBatch spriteBatch, in float outlineThickness, in Color outlineColor,
+            in SpriteFont spriteFont, string text, in Vector2 position, in Color color, in float rotation, in Vector2 origin, in float scale,
+            in SpriteEffects effects, in float layerDepth)
+        {
+            spriteBatch.DrawString(spriteFont, text, position - new Vector2(outlineThickness, 0), outlineColor, rotation, origin, scale, effects, layerDepth);
+            spriteBatch.DrawString(spriteFont, text, position - new Vector2(0, outlineThickness), outlineColor, rotation, origin, scale, effects, layerDepth);
+            spriteBatch.DrawString(spriteFont, text, position + new Vector2(outlineThickness, 0), outlineColor, rotation, origin, scale, effects, layerDepth);
+            spriteBatch.DrawString(spriteFont, text, position + new Vector2(0, outlineThickness), outlineColor, rotation, origin, scale, effects, layerDepth);
+
+            spriteBatch.DrawString(spriteFont, text, position, color, rotation, origin, scale, effects, layerDepth);
+        }
+
+        /// <summary>
+        /// Submit a text string of sprites for drawing in the current batch.
+        /// <para>Note: This method performs 4 more draw calls to simulate an outline.</para>
+        /// </summary>
+        public static void DrawStringOutline(this SpriteBatch spriteBatch, in float outlineThickness, in Color outlineColor,
+            in SpriteFont spriteFont, string text, in Vector2 position, in Color color, in float rotation, in Vector2 origin, in Vector2 scale,
+            in SpriteEffects effects, in float layerDepth)
+        {
+            spriteBatch.DrawString(spriteFont, text, position - new Vector2(outlineThickness, 0), outlineColor, rotation, origin, scale, effects, layerDepth);
+            spriteBatch.DrawString(spriteFont, text, position - new Vector2(0, outlineThickness), outlineColor, rotation, origin, scale, effects, layerDepth);
+            spriteBatch.DrawString(spriteFont, text, position + new Vector2(outlineThickness, 0), outlineColor, rotation, origin, scale, effects, layerDepth);
+            spriteBatch.DrawString(spriteFont, text, position + new Vector2(0, outlineThickness), outlineColor, rotation, origin, scale, effects, layerDepth);
+
+            spriteBatch.DrawString(spriteFont, text, position, color, rotation, origin, scale, effects, layerDepth);
         }
 
         #endregion
