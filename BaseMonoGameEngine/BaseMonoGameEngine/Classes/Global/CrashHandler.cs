@@ -45,7 +45,7 @@ namespace TDMonoGameEngine
                 StringBuilder sb = new StringBuilder();
 
                 //Dump the message, stack trace, and logs
-                sb.Append($"Uh oh, looks like {Engine.GameName} crashed :(. Please report this crash by submitting this log file to thomasdeeb1@gmail.com.\n\n");
+                sb.Append($"Uh oh, looks like {Engine.GameName} crashed :(. Please report this crash by submitting this log file to emailhere@email.com.\n\n");
                 sb.Append($"OS Version: {Debug.DebugGlobals.GetOSInfo()}\n");
 #if LINUX
                 sb.Append("Renderer: OpenGL\n\n");
