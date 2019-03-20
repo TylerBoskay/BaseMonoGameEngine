@@ -412,5 +412,48 @@ namespace TDMonoGameEngine
 
             return (check <= absError);
         }
+
+        /// <summary>
+        /// Clamps a Rectangle to another, lining it up with the edge of the other in a certain direction and offsetting by a position.
+        /// </summary>
+        /// <param name="clampDir">The direction to clamp the Rectangle: 0 for Up, 1 for Down, 2 for Left, and 3 for Right.</param>
+        /// <param name="posToClamp">The position associated with the clamped Rectangle.</param>
+        /// <param name="rectToClamp">The Rectangle to clamp.</param>
+        /// <param name="clampedRect">The Rectangle to clamp to.</param>
+        /// <returns>A Vector2 containing the clamped position.</returns>
+        public static Vector2 ClampRectToOther(in int clampDir, in Vector2 posToClamp, in RectangleF rectToClamp, in RectangleF clampedRect)
+        {
+            Vector2 diff = new Vector2((float)Math.Round(rectToClamp.Center.X - posToClamp.X, 2),
+                (float)Math.Round(rectToClamp.Center.Y - posToClamp.Y, 2));
+
+            if (clampDir == 0)
+            {
+                Vector2 val = new Vector2(posToClamp.X, clampedRect.Bottom);
+                val.Y += (rectToClamp.Height / 2) - diff.Y;
+
+                return val;
+            }
+            else if (clampDir == 1)
+            {
+                Vector2 val = new Vector2(posToClamp.X, clampedRect.Top);
+                val.Y -= (rectToClamp.Height / 2) + diff.Y;
+
+                return val;
+            }
+            else if (clampDir == 2)
+            {
+                Vector2 val = new Vector2(clampedRect.Right, posToClamp.Y);
+                val.X += (rectToClamp.Width / 2) - diff.X;
+
+                return val;
+            }
+            else
+            {
+                Vector2 val = new Vector2(clampedRect.Left, posToClamp.Y);
+                val.X -= (rectToClamp.Width / 2) + diff.X;
+
+                return val;
+            }
+        }
     }
 }
