@@ -43,7 +43,7 @@ namespace TDMonoGameEngine
         /// </summary>
         public enum Sound
         {
-            
+
         }
 
         #endregion
@@ -51,7 +51,7 @@ namespace TDMonoGameEngine
         /// <summary>
         /// The global music volume.
         /// </summary>
-        public float MusicVolume 
+        public float MusicVolume
         {
             get
             {
@@ -84,13 +84,13 @@ namespace TDMonoGameEngine
         /// <summary>
         /// A cache of SoundEffectInstances for each music track.
         /// </summary>
-        private Dictionary<SoundEffect, SoundEffectInstance> MusicCache = null;
+        private Dictionary<string, SoundEffectInstance> MusicCache = null;
 
         /// <summary>
         /// The pool of sounds.
-        /// <para>The key is the SoundEffect, and the value is a list of SoundEffectInstances created from it.</para>
+        /// <para>The key is the name of the SoundEffect, and the value is a list of <see cref="SoundInstanceHolder"/>s created from the SoundEffect.</para>
         /// </summary>
-        private Dictionary<SoundEffect, List<SoundEffectInstance>> SoundPool = null;
+        private Dictionary<string, List<SoundInstanceHolder>> SoundPool = null;
 
         private const double ClearSoundTimer = 30000d;
         private double LastPlayedSound = 0d;
@@ -105,16 +105,28 @@ namespace TDMonoGameEngine
         /// </summary>
         private SoundEffectInstance CurMusicTrack = null;
 
+        public SoundEffectInstance CurrentMusicTrack => CurMusicTrack;
+
         private SoundManager()
         {
-            MusicCache = new Dictionary<SoundEffect, SoundEffectInstance>();
-            SoundPool = new Dictionary<SoundEffect, List<SoundEffectInstance>>();
+            MusicCache = new Dictionary<string, SoundEffectInstance>(16);
+            SoundPool = new Dictionary<string, List<SoundInstanceHolder>>(16);
         }
 
         public void CleanUp()
         {
-            CurMusicTrack?.Dispose();
+            if (CurMusicTrack != null && CurMusicTrack.IsDisposed == false)
+            {
+                CurMusicTrack.Stop(true);
+                CurMusicTrack.Dispose();
+            }
+
             CurMusicTrack = null;
+
+            if (MusicTrack != null && MusicTrack.IsDisposed == false)
+            {
+                MusicTrack.Dispose();
+            }
 
             MusicTrack = null;
             ClearMusicCache();
@@ -126,7 +138,7 @@ namespace TDMonoGameEngine
 
         private void UpdateLastSoundTimer()
         {
-            LastPlayedSound = Time.TotalMilliseconds + ClearSoundTimer;
+            LastPlayedSound = Time.TotalTime.TotalMilliseconds + ClearSoundTimer;
         }
 
         /// <summary>
@@ -150,8 +162,16 @@ namespace TDMonoGameEngine
         {
             soundVolume = UtilityGlobals.Clamp(sVolume, 0f, 1f);
 
-            //Change the volume of all sound effects
-            SoundEffect.MasterVolume = SoundVolume;
+            if (SoundPool.Count == 0) return;
+
+            //Change the volume of all current sound effects
+            foreach (List<SoundInstanceHolder> soundHolders in SoundPool.Values)
+            {
+                for (int i = 0; i < soundHolders.Count; i++)
+                {
+                    soundHolders[i].SoundInstance.Volume = soundHolders[i].Volume * soundVolume;
+                }
+            }
         }
 
         /// <summary>
@@ -177,6 +197,7 @@ namespace TDMonoGameEngine
                     StopMusic(true);
 
                     CurMusicTrack.Volume = MusicVolume;
+                    CurMusicTrack.IsLooped = loop;
                     CurMusicTrack.Play();
                 }
 
@@ -195,17 +216,18 @@ namespace TDMonoGameEngine
 
             //Check if we have an instance for this track in the music cache
             //If not, create one
-            if (MusicCache.TryGetValue(MusicTrack, out CurMusicTrack) == false)
+            if (MusicCache.TryGetValue(MusicTrack.Name, out CurMusicTrack) == false)
             {
                 SoundEffectInstance trackInstance = MusicTrack.CreateInstance();
 
-                MusicCache.Add(MusicTrack, trackInstance);
+                MusicCache.Add(MusicTrack.Name, trackInstance);
                 CurMusicTrack = trackInstance;
             }
 
             //Play the instance
             CurMusicTrack.Volume = MusicVolume;
             CurMusicTrack.IsLooped = loop;
+
             CurMusicTrack.Play();
         }
 
@@ -219,11 +241,39 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
+        /// Immediately stops playing the current music track and clears its reference.
+        /// </summary>
+        public void StopAndClearMusicTrack()
+        {
+            CurMusicTrack?.Stop(true);
+            CurMusicTrack = null;
+
+            MusicTrack = null;
+        }
+
+        /// <summary>
+        /// Pauses the current music track.
+        /// </summary>
+        public void PauseMusic()
+        {
+            CurMusicTrack?.Pause();
+        }
+
+        /// <summary>
+        /// Resumes the current music track.
+        /// </summary>
+        public void ResumeMusic()
+        {
+            CurMusicTrack?.Resume();
+        }
+
+        /// <summary>
         /// Plays a sound.
         /// </summary>
         /// <param name="sound">The SoundEffect to play.</param>
+        /// <param name="loop">Whether to loop the SoundEffect or not.</param>
         /// <param name="volume">The volume to play the sound at.</param>
-        public void PlaySound(in SoundEffect sound, in float volume = 1f)
+        public void PlaySound(in SoundEffect sound, in bool loop, in float volume = 1f)
         {
             if (sound == null)
             {
@@ -232,55 +282,62 @@ namespace TDMonoGameEngine
             }
 
             //Retrieve the next sound instance
-            SoundEffectInstance soundInstance = NextAvailableSound(sound);
+            SoundInstanceHolder soundInstanceHolder = NextAvailableSound(sound);
 
-            soundInstance.Volume = volume;
-            soundInstance.Play();
+            soundInstanceHolder.Volume = volume;
+
+            //Scale the volume by the sound volume
+            soundInstanceHolder.SoundInstance.Volume = volume * SoundVolume;
+            soundInstanceHolder.SoundInstance.IsLooped = loop;
+            soundInstanceHolder.SoundInstance.Play();
 
             UpdateLastSoundTimer();
         }
 
         /// <summary>
-        /// Obtains the next available SoundEffectInstance in the sound pool for a particular SoundEffect.
-        /// If no SoundEffectInstances are available, a new one is created.
+        /// Obtains the next available SoundInstanceHolder in the sound pool for a particular SoundEffect.
+        /// If no SoundInstanceHolders are available, a new one is created.
         /// </summary>
-        /// <param name="sound">The SoundEffect to retrieve the available SoundEffectInstance for.</param>
-        /// <returns>A SoundEffectInstance that is not currently playing a sound.</returns>
-        private SoundEffectInstance NextAvailableSound(in SoundEffect sound)
+        /// <param name="sound">The SoundEffect to retrieve the available SoundInstanceHolder for.</param>
+        /// <returns>A SoundInstanceHolder that is not currently playing a sound.</returns>
+        private SoundInstanceHolder NextAvailableSound(in SoundEffect sound)
         {
-            //Check for the available SoundEffectInstances associated with this SoundEffect
-            List<SoundEffectInstance> availableSounds = null;
+            //Check for the available SoundInstanceHolders associated with this SoundEffect
+            List<SoundInstanceHolder> availableSounds = null;
 
             //If there are none, add them as an entry in the sound pool
-            if (SoundPool.TryGetValue(sound, out availableSounds) == false)
+            if (SoundPool.TryGetValue(sound.Name, out availableSounds) == false)
             {
-                availableSounds = new List<SoundEffectInstance>();
-                SoundPool.Add(sound, availableSounds);
+                availableSounds = new List<SoundInstanceHolder>();
+                SoundPool.Add(sound.Name, availableSounds);
             }
 
             //Check all existing sound instances and see if they're available for use
             for (int i = 0; i < availableSounds.Count; i++)
             {
                 //Return ones that are not playing
-                if (availableSounds[i].State != SoundState.Playing) return availableSounds[i];
+                if (availableSounds[i].SoundInstance.State != SoundState.Playing) return availableSounds[i];
             }
 
             //No sounds are available, so create a new instance and add it to the pool
-            SoundEffectInstance newInstance = sound.CreateInstance();
-            availableSounds.Add(newInstance);
+            SoundInstanceHolder soundInstanceHolder = new SoundInstanceHolder(sound.CreateInstance(), 1f);
+            availableSounds.Add(soundInstanceHolder);
 
-            return newInstance;
+            return soundInstanceHolder;
         }
 
         public void Update()
         {
             //Clear all sounds after a set amount of time
-            if (Time.TotalMilliseconds >= LastPlayedSound)
-            {
-                ClearAllSounds();
-
-                UpdateLastSoundTimer();
-            }
+            //if (Time.TotalTime.TotalMilliseconds >= LastPlayedSound)
+            //{
+            //    if (SoundPool.Count > 0)
+            //    {
+            //        ClearAllSounds();
+            //    }
+            //
+            //    UpdateLastSoundTimer();
+            //}
         }
 
         /// <summary>
@@ -289,20 +346,29 @@ namespace TDMonoGameEngine
         /// <param name="sound">The SoundEffect to stop all instances for.</param>
         public void StopAllSounds(in SoundEffect sound)
         {
-            if (sound == null)
+            StopAllSounds(sound?.Name);
+        }
+
+        /// <summary>
+        /// Immediately stops all sound instances for a sound with a particular name.
+        /// </summary>
+        /// <param name="soundName">The name of the sound to stop all instances for.</param>
+        public void StopAllSounds(in string soundName)
+        {
+            if (string.IsNullOrEmpty(soundName) == true)
             {
-                Debug.LogError($"Cannot stop all sound instances of {nameof(sound)} because it is null!");
+                Debug.LogError($"Cannot stop all sound instances of {nameof(soundName)} because it is null or empty!");
                 return;
             }
 
-            List<SoundEffectInstance> instanceList = null;
+            List<SoundInstanceHolder> instanceList = null;
 
-            if (SoundPool.TryGetValue(sound, out instanceList) == true)
+            if (SoundPool.TryGetValue(soundName, out instanceList) == true)
             {
                 //Immediately stop the instances
                 for (int i = 0; i < instanceList.Count; i++)
                 {
-                    instanceList[i].Stop(true);
+                    instanceList[i].SoundInstance.Stop(true);
                 }
             }
         }
@@ -313,14 +379,14 @@ namespace TDMonoGameEngine
         public void StopAllSounds()
         {
             //Go through all sounds
-            foreach (KeyValuePair<SoundEffect, List<SoundEffectInstance>> sounds in SoundPool)
+            foreach (KeyValuePair<string, List<SoundInstanceHolder>> sounds in SoundPool)
             {
-                List<SoundEffectInstance> instanceList = sounds.Value;
+                List<SoundInstanceHolder> instanceList = sounds.Value;
 
                 //Immediately stop all sound instances in the list
                 for (int i = 0; i < instanceList.Count; i++)
                 {
-                    instanceList[i].Stop(true);
+                    instanceList[i].SoundInstance.Stop(true);
                 }
             }
         }
@@ -331,15 +397,18 @@ namespace TDMonoGameEngine
         public void ClearAllSounds()
         {
             //Clear all sounds
-            foreach (KeyValuePair<SoundEffect, List<SoundEffectInstance>> sounds in SoundPool)
+            foreach (KeyValuePair<string, List<SoundInstanceHolder>> sounds in SoundPool)
             {
-                List<SoundEffectInstance> instanceList = sounds.Value;
+                List<SoundInstanceHolder> instanceList = sounds.Value;
 
                 //Stop all sound instances in the list and dispose them
                 for (int i = instanceList.Count - 1; i >= 0; i--)
                 {
-                    instanceList[i].Stop(true);
-                    instanceList[i].Dispose();
+                    if (instanceList[i].SoundInstance.IsDisposed == false)
+                    {
+                        instanceList[i].SoundInstance.Stop(true);
+                        instanceList[i].SoundInstance.Dispose();
+                    }
                     instanceList.RemoveAt(i);
                 }
             }
@@ -348,18 +417,39 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
-        /// Immediately stops all music tracks in the cache and clears it.
+        /// Immediately stops all music tracks in the cache and clears it. This includes the track currently playing.
         /// </summary>
         public void ClearMusicCache()
         {
-            foreach (KeyValuePair<SoundEffect, SoundEffectInstance> track in MusicCache)
+            foreach (KeyValuePair<string, SoundEffectInstance> track in MusicCache)
             {
-                track.Value.Stop(true);
-                track.Value.Dispose();
+                if (track.Value.IsDisposed == false)
+                {
+                    track.Value.Stop(true);
+                    track.Value.Dispose();
+                }
             }
 
             MusicCache.Clear();
+
             CurMusicTrack = null;
+            MusicTrack = null;
+        }
+
+        /// <summary>
+        /// Holds a SoundEffectInstance and a value for its volume.
+        /// This exists to help with the master sound volume.
+        /// </summary>
+        private class SoundInstanceHolder
+        {
+            public SoundEffectInstance SoundInstance = null;
+            public float Volume = 0f;
+
+            public SoundInstanceHolder(SoundEffectInstance soundInstance, in float volume)
+            {
+                SoundInstance = soundInstance;
+                Volume = volume;
+            }
         }
     }
 }

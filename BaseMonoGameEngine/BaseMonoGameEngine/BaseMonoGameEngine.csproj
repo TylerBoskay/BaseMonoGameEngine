@@ -127,6 +127,7 @@
     <Compile Include="Classes\Global\Camera2D.cs" />
     <Compile Include="Classes\Singletons\RenderingManager.cs" />
     <Compile Include="Classes\Singletons\SoundManager.cs" />
+    <Compile Include="Classes\Collision\TileEngine.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

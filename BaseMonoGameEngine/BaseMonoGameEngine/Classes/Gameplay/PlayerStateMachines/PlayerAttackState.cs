@@ -19,7 +19,7 @@ namespace TDMonoGameEngine
 
         public override void Enter()
         {
-            SoundManager.Instance.PlaySound(AssetManager.Instance.LoadRawSound($"{ContentGlobals.AudioRoot}SFX/Attack.wav"));
+            SoundManager.Instance.PlaySound(AssetManager.Instance.LoadRawSound($"{ContentGlobals.AudioRoot}SFX/Attack.wav"), false);
 
             PlayerRef.spriteRenderer.FlipData = SpriteEffects.None;
 
