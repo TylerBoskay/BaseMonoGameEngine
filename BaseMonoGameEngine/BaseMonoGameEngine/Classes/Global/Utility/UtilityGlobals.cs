@@ -199,7 +199,7 @@ namespace TDMonoGameEngine
         /// <param name="vec1">The first vector.</param>
         /// <param name="vec2">The second vector.</param>
         /// <returns>A double representing the cosign angle between the two vectors, in radians.</returns>
-        public static double CosignAngle(in Vector2 vec1, in Vector2 vec2)
+        public static double CosignAngle(Vector2 vec1, Vector2 vec2)
         {
             //a · b = (a.X * b.X) + (a.Y * b.Y) = ||a|| * ||b|| * cos(θ)
             double dotProduct = Vector2.Dot(vec1, vec2);
@@ -242,7 +242,7 @@ namespace TDMonoGameEngine
         /// <param name="vec1">The first vector.</param>
         /// <param name="vec2">The second vector.</param>
         /// <returns>A double representing the sine angle between the two vectors, in radians.</returns>
-        public static double SineAngle(in Vector2 vec1, in Vector2 vec2)
+        public static double SineAngle(Vector2 vec1, Vector2 vec2)
         {
             //||a x b|| = ||a|| * ||b|| * sin(θ)
             double crossMag = Cross(vec1, vec2);
@@ -266,7 +266,7 @@ namespace TDMonoGameEngine
         /// <param name="angle">The angle of the point.</param>
         /// <param name="angleInDegrees">Whether the angle passed in is in degrees or not.</param>
         /// <returns>A Vector2 with the X and Y components at the location around the circle.</returns>
-        public static Vector2 GetPointAroundCircle(in Circle circle, double angle, in bool angleInDegrees)
+        public static Vector2 GetPointAroundCircle(Circle circle, double angle, in bool angleInDegrees)
         {
             //If the angle is in degrees, convert it to radians
             if (angleInDegrees == true)
@@ -390,7 +390,7 @@ namespace TDMonoGameEngine
         /// <param name="comparison">The value to compare to.</param>
         /// <param name="error">The threshold of error to account for.</param>
         /// <returns>true if (<paramref name="value"/> - <paramref name="comparison"/>) is within <paramref name="error"/>.</returns>
-        public static bool IsApproximate(double value, double comparison, double error)
+        public static bool IsApproximate(in double value, in double comparison, in double error)
         {
             double check = Math.Abs(value - comparison);
             double absError = Math.Abs(error);
@@ -405,12 +405,25 @@ namespace TDMonoGameEngine
         /// <param name="comparison">The value to compare to.</param>
         /// <param name="error">The threshold of error to account for.</param>
         /// <returns>true if (<paramref name="value"/> - <paramref name="comparison"/>) is within <paramref name="error"/>.</returns>
-        public static bool IsApproximate(float value, float comparison, float error)
+        public static bool IsApproximate(in float value, in float comparison, in float error)
         {
             float check = Math.Abs(value - comparison);
             float absError = Math.Abs(error);
 
             return (check <= absError);
+        }
+
+        /// <summary>
+        /// Tells if a Vector2 is approximately equal to another.
+        /// This compares the X and Y components of the Vector2.
+        /// </summary>
+        /// <param name="value">The value to check.</param>
+        /// <param name="comparison">The value to compare to.</param>
+        /// <param name="error">The threshold of error to account for.</param>
+        /// <returns>true if (<paramref name="value"/> - <paramref name="comparison"/>) is within <paramref name="error"/>.</returns>
+        public static bool IsApproximate(in Vector2 value, in Vector2 comparison, in float error)
+        {
+            return (IsApproximate(value.X, comparison.X, error) && IsApproximate(value.Y, comparison.Y, error));
         }
 
         /// <summary>
@@ -421,7 +434,7 @@ namespace TDMonoGameEngine
         /// <param name="rectToClamp">The Rectangle to clamp.</param>
         /// <param name="clampedRect">The Rectangle to clamp to.</param>
         /// <returns>A Vector2 containing the clamped position.</returns>
-        public static Vector2 ClampRectToOther(in int clampDir, in Vector2 posToClamp, in RectangleF rectToClamp, in RectangleF clampedRect)
+        public static Vector2 ClampRectToOther(in int clampDir, in Vector2 posToClamp, RectangleF rectToClamp, RectangleF clampedRect)
         {
             Vector2 diff = new Vector2((float)Math.Round(rectToClamp.Center.X - posToClamp.X, 2),
                 (float)Math.Round(rectToClamp.Center.Y - posToClamp.Y, 2));

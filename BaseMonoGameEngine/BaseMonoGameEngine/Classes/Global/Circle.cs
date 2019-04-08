@@ -81,7 +81,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="rectF">The RectangleF.</param>
         /// <returns>true if it intersects the RectangleF, otherwise false.</returns>
-        public bool Intersects(in RectangleF rectF)
+        public bool Intersects(RectangleF rectF)
         {
             //This currently checks for AABB
             //For non-AABB check if:

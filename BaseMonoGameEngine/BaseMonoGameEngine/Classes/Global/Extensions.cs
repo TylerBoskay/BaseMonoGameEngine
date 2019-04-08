@@ -49,7 +49,7 @@ namespace TDMonoGameEngine
         /// <param name="texture2D">The Texture2D to get the texture coordinates from.</param>
         /// <param name="sourceRect">The Rectangle to get the coordinates from.</param>
         /// <returns>A Vector2 with the Rectangle's X and Y values divided by the texture's width and height, respectively.</returns>
-        public static Vector2 GetTexCoordsAt(this Texture2D texture2D, in Rectangle? sourceRect)
+        public static Vector2 GetTexCoordsAt(this Texture2D texture2D, Rectangle? sourceRect)
         {
             Vector2 texCoords = Vector2.Zero;
 
@@ -171,7 +171,7 @@ namespace TDMonoGameEngine
         /// <param name="rectangle">The Rectangle.</param>
         /// <param name="circle">The Circle to test intersection with.</param>
         /// <returns>true if the Rectangle intersects the Circle, otherwise false.</returns>
-        public static bool Intersects(this Rectangle rectangle, in Circle circle) => circle.Intersects(rectangle);
+        public static bool Intersects(this Rectangle rectangle, Circle circle) => circle.Intersects(rectangle);
 
         /// <summary>
         /// Gets the origin of a Rectangle.
@@ -381,7 +381,7 @@ namespace TDMonoGameEngine
         /// <param name="rect">The RectangleF to draw.</param>
         /// <param name="color">The color of the rectangle.</param>
         /// <param name="layer">The layer of the rectangle.</param>
-        public static void DrawRect(this SpriteBatch spriteBatch, in Texture2D rectTex, in RectangleF rect, in Color color, in float layer)
+        public static void DrawRect(this SpriteBatch spriteBatch, in Texture2D rectTex, RectangleF rect, in Color color, in float layer)
         {
             spriteBatch.Draw(rectTex, rect.TopLeft, null, color, 0f, Vector2.Zero, rect.Size, SpriteEffects.None, layer);
         }
@@ -395,20 +395,17 @@ namespace TDMonoGameEngine
         /// <param name="color">The color of the hollow rectangle.</param>
         /// <param name="layer">The layer of the hollow rectangle.</param>
         /// <param name="thickness">The thickness of the hollow rectangle.</param>
-        public static void DrawHollowRect(this SpriteBatch spriteBatch, in Texture2D rectTex, in Rectangle rect, in Color color, in float layer, in int thickness)
+        public static void DrawHollowRect(this SpriteBatch spriteBatch, in Texture2D rectTex, Rectangle rect, in Color color, in float layer, in int thickness)
         {
-            Rectangle[] rects = new Rectangle[4]
-            {
-                new Rectangle(rect.X, rect.Y, rect.Width, thickness),
-                new Rectangle(rect.Right - thickness, rect.Y, thickness, rect.Height),
-                new Rectangle(rect.X, rect.Y, thickness, rect.Height),
-                new Rectangle(rect.X, rect.Bottom - thickness, rect.Width, thickness)
-            };
+            Rectangle topLine = new Rectangle(rect.X, rect.Y, rect.Width, thickness);
+            Rectangle rightLine = new Rectangle(rect.Right - thickness, rect.Y, thickness, rect.Height);
+            Rectangle leftLine = new Rectangle(rect.X, rect.Y, thickness, rect.Height);
+            Rectangle bottomLine = new Rectangle(rect.X, rect.Bottom - thickness, rect.Width, thickness);
 
-            for (int i = 0; i < rects.Length; i++)
-            {
-                spriteBatch.Draw(rectTex, rects[i], null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
-            }
+            spriteBatch.Draw(rectTex, topLine, null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
+            spriteBatch.Draw(rectTex, rightLine, null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
+            spriteBatch.Draw(rectTex, leftLine, null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
+            spriteBatch.Draw(rectTex, bottomLine, null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
         }
 
         /// <summary>
@@ -420,7 +417,7 @@ namespace TDMonoGameEngine
         /// <param name="color">The color of the hollow rectangle.</param>
         /// <param name="layer">The layer of the hollow rectangle.</param>
         /// <param name="thickness">The thickness of the hollow rectangle.</param>
-        public static void DrawHollowRect(this SpriteBatch spriteBatch, in Texture2D rectTex, in RectangleF rect, in Color color, in float layer, in int thickness)
+        public static void DrawHollowRect(this SpriteBatch spriteBatch, in Texture2D rectTex, RectangleF rect, in Color color, in float layer, in int thickness)
         {
             RectangleF[] rects = new RectangleF[4]
             {
@@ -556,7 +553,7 @@ namespace TDMonoGameEngine
         /// <param name="effects">The SpriteEffects to render the character in.</param>
         /// <param name="layerDepth">The depth to render the character in.</param>
         /// <returns>A Vector2 containing the offset calculated when rendering the character.</returns>
-        public static Vector2 DrawCharacter(this SpriteBatch spriteBatch, SpriteFont font, in char c, in SpriteFont.Glyph? glyph,
+        public static Vector2 DrawCharacter(this SpriteBatch spriteBatch, SpriteFont font, in char c, SpriteFont.Glyph? glyph,
             in Vector2 startOffset, in Vector2 position, in Color color, in float rotation, in Vector2 origin, in Vector2 scale,
             in SpriteEffects effects, in float layerDepth)
         {

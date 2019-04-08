@@ -83,7 +83,7 @@ namespace TDMonoGameEngine
         /// <param name="visibleArea">The visible region of the screen.</param>
         /// <param name="bounds">A Rectangle representing the bounding region to check is in the view.</param>
         /// <returns>true if the bounds is in the view, otherwise false.</returns>
-        public bool IsInCameraView(in Rectangle visibleArea, in Rectangle bounds)
+        public bool IsInCameraView(Rectangle visibleArea, in Rectangle bounds)
         {
             return visibleArea.Intersects(bounds);
         }

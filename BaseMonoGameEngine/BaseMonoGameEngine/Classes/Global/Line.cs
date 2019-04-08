@@ -291,12 +291,12 @@ namespace TDMonoGameEngine
             return ((r >= 0 && r <= 1) && (s >= 0 && s <= 1));
         }
 
-        private static bool AlmostEqualTo(double value1, double value2)
+        private static bool AlmostEqualTo(in double value1, in double value2)
         {
             return Math.Abs(value1 - value2) <= CloseToZero;
         }
 
-        private static bool AlmostZero(double value)
+        private static bool AlmostZero(in double value)
         {
             return Math.Abs(value) <= CloseToZero;
         }

@@ -44,14 +44,14 @@ namespace TDMonoGameEngine
         /// <returns>An array of Rectangles associated with the regions of the sliced texture.</returns>
         public Rectangle[] CreateRegions(in Rectangle rectangle)
         {
-            List<Rectangle> regions = new List<Rectangle>();
-
+            Rectangle[] regions = new Rectangle[Slices];
+            
             for (int i = 0; i < Slices; i++)
             {
-                regions.Add(GetRectForIndex(rectangle, i));
+                regions[i] = GetRectForIndex(rectangle, i);
             }
 
-            return regions.ToArray();
+            return regions;
         }
     }
 }

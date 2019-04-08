@@ -9,6 +9,11 @@ namespace TDMonoGameEngine
     /// <summary>
     /// Enum utility class.
     /// </summary>
+    /// <remarks>
+    /// Adding flags: flag1 |= flag2            ; 10 | 01 = 11
+    /// Checking flags: (flag1 & flag2) != 0    ; 11 & 10 = 10
+    /// Removing flags: (flag1 & (~flag2))      ; 1111 & (~0010) = 1111 & 1101 = 1101
+    /// </remarks>
     public static class EnumUtility
     {
         /// <summary>

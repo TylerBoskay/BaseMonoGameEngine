@@ -125,7 +125,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="value">The RectangleF to test intersection with.</param>
         /// <returns>true if this RectangleF intersects with the other, otherwise false.</returns>
-        public bool Intersects(in RectangleF value)
+        public bool Intersects(RectangleF value)
         {
             return (value.Left < Right && Left < value.Right && value.Top < Bottom && Top < value.Bottom);
         }
@@ -158,7 +158,7 @@ namespace TDMonoGameEngine
         /// <param name="value1">The first <see cref="RectangleF"/>.</param>
         /// <param name="value2">The second <see cref="RectangleF"/>.</param>
         /// <param name="result">The overlapping region of the two rectangles as an output parameter.</param>
-        public static void Intersect(in RectangleF value1, in RectangleF value2, out RectangleF result)
+        public static void Intersect(RectangleF value1, RectangleF value2, out RectangleF result)
         {
             //If they intersect, see where
             if (value1.Intersects(value2) == true)
@@ -181,7 +181,7 @@ namespace TDMonoGameEngine
         /// </summary>
         /// <param name="circle">The Circle to test for intersection.</param>
         /// <returns>true if they intersect, otherwise false.</returns>
-        public bool Intersects(in Circle circle)
+        public bool Intersects(Circle circle)
         {
             return circle.Intersects(this);
         }

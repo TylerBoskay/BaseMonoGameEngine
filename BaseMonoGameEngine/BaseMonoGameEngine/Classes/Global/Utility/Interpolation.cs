@@ -239,6 +239,19 @@ namespace TDMonoGameEngine
         /// <summary>
         /// Performs interpolation based on the InterpolationType.
         /// </summary>
+        /// <param name="startVal">The starting value.</param>
+        /// <param name="endVal">The ending value.</param>
+        /// <param name="time">The time, between 0 and 1.</param>
+        /// <param name="interpolationType">The type of interpolation.</param>
+        /// <returns>A byte in the range of <paramref name="startVal"/> and <paramref name="endVal"/> based on the interpolation type.</returns>
+        public static byte Interpolate(in byte startVal, in byte endVal, in double time, in InterpolationTypes interpolationType)
+        {
+            return (byte)CustomInterpolate(startVal, endVal, time, GetInterpolationFromType(interpolationType));
+        }
+
+        /// <summary>
+        /// Performs interpolation based on the InterpolationType.
+        /// </summary>
         /// <param name="startVal">The starting Vector2 value.</param>
         /// <param name="endVal">The ending Vector2 value.</param>
         /// <param name="time">The time, between 0 and 1.</param>
@@ -267,6 +280,44 @@ namespace TDMonoGameEngine
             float y = Interpolate(startVal.Y, endVal.Y, time, yInterpolationType);
 
             return new Vector2(x, y);
+        }
+
+        /// <summary>
+        /// Performs interpolation between Colors based on the InterpolationType.
+        /// </summary>
+        /// <param name="startVal">The starting Color value.</param>
+        /// <param name="endVal">The ending Color value.</param>
+        /// <param name="time">The time, between 0 and 1.</param>
+        /// <param name="interpolationType">The type of interpolation.</param>
+        /// <returns>A Color in the range of <paramref name="startVal"/> and <paramref name="endVal"/> based on the interpolation type.</returns>
+        public static Color Interpolate(Color startVal, Color endVal, in double time, in InterpolationTypes interpolationType)
+        {
+            byte r = Interpolate(startVal.R, endVal.R, time, interpolationType);
+            byte g = Interpolate(startVal.G, endVal.G, time, interpolationType);
+            byte b = Interpolate(startVal.B, endVal.B, time, interpolationType);
+            byte a = Interpolate(startVal.A, endVal.A, time, interpolationType);
+
+            return new Color(r, g, b, a);
+        }
+
+        #endregion
+
+        #region Inverse
+
+        /// <summary>
+        /// Calculates the time of a linear interpolation.
+        /// </summary>
+        /// <param name="startVal">The starting value.</param>
+        /// <param name="endVal">The ending value.</param>
+        /// <param name="value">The current value between <paramref name="startVal"/> and <paramref name="endVal"/>.</param>
+        /// <returns>A double between 0 and 1.</returns>
+        public static double InverseLerp(in double startVal, in double endVal, in double value)
+        {
+            double diff = endVal - startVal;
+
+            if (Math.Abs(diff) < double.Epsilon) return startVal;
+
+            return (value - startVal) / diff;
         }
 
         #endregion
