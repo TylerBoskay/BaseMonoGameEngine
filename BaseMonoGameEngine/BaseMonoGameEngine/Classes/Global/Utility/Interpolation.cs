@@ -49,43 +49,51 @@ namespace TDMonoGameEngine
         //They are based off Robert Penner's easing equations in Actionscript found here: http://gizma.com/easing/
         //Some methods sourced from: https://github.com/acron0/Easings/blob/master/Easings.cs and https://joshondesign.com/2013/03/01/improvedEasingEquations with modifications
 
+        private static InterpolationMethod Linear = LinearTime;
         private static double LinearTime(in double time)
         {
             return time;
         }
 
+        private static InterpolationMethod EaseInQuad = EaseInQuadTime;
         private static double EaseInQuadTime(in double time)
         {
             return Math.Pow(time, 2);
         }
 
+        private static InterpolationMethod EaseOutQuad = EaseOutQuadTime;
         private static double EaseOutQuadTime(in double time)
         {
             return (1 - EaseInQuadTime(1 - time));
         }
 
+        private static InterpolationMethod EaseInOutQuad = EaseInOutQuadTime;
         private static double EaseInOutQuadTime(in double time)
         {
             if (time < .5d) return (EaseInQuadTime(time * 2d) / 2d);
             return (1 - (EaseInQuadTime((1 - time) * 2d) / 2d));
         }
 
+        private static InterpolationMethod EaseInCubic = EaseInCubicTime;
         private static double EaseInCubicTime(in double time)
         {
             return Math.Pow(time, 3);
         }
 
+        private static InterpolationMethod EaseOutCubic = EaseOutCubicTime;
         private static double EaseOutCubicTime(in double time)
         {
             return (1 - EaseInCubicTime(1 - time));
         }
 
+        private static InterpolationMethod EaseInOutCubic = EaseInOutCubicTime;
         private static double EaseInOutCubicTime(in double time)
         {
             if (time < .5d) return (EaseInCubicTime(time * 2d) / 2d);
             return (1 - (EaseInCubicTime((1 - time) * 2d) / 2d));
         }
 
+        private static InterpolationMethod EaseInExponential = EaseInExponentialTime;
         private static double EaseInExponentialTime(in double time)
         {
             //Exponential gets close to the starting value, but not to it
@@ -93,6 +101,7 @@ namespace TDMonoGameEngine
             return Math.Pow(2, 10 * (time - 1));
         }
 
+        private static InterpolationMethod EaseOutExponential = EaseOutExponentialTime;
         private static double EaseOutExponentialTime(in double time)
         {
             //Exponential gets close to the final value, but not to it
@@ -100,6 +109,7 @@ namespace TDMonoGameEngine
             return -Math.Pow(2, -10 * time) + 1;
         }
 
+        private static InterpolationMethod EaseInOutExponential = EaseInOutExponentialTime;
         private static double EaseInOutExponentialTime(in double time)
         {
             //Exponential gets close to the starting and final values, but not to them
@@ -109,31 +119,37 @@ namespace TDMonoGameEngine
             return (.5d * -Math.Pow(2, (-20 * time) + 10)) + 1;
         }
 
+        private static InterpolationMethod EaseInSine = EaseInSineTime;
         private static double EaseInSineTime(in double time)
         {
             return Math.Sin((time - 1) * UtilityGlobals.HalfPI) + 1;
         }
 
+        private static InterpolationMethod EaseOutSine = EaseOutSineTime;
         private static double EaseOutSineTime(in double time)
         {
             return Math.Sin(time * UtilityGlobals.HalfPI);
         }
 
+        private static InterpolationMethod EaseInOutSine = EaseInOutSineTime;
         private static double EaseInOutSineTime(in double time)
         {
             return (.5d * (1 - Math.Cos(time * Math.PI)));
         }
 
+        private static InterpolationMethod EaseInElastic = EaseInElasticTime;
         private static double EaseInElasticTime(in double time)
         {
             return (Math.Sin(13 * (UtilityGlobals.HalfPI * time)) * Math.Pow(2, 10 * (time - 1)));
         }
 
+        private static InterpolationMethod EaseOutElastic = EaseOutElasticTime;
         private static double EaseOutElasticTime(in double time)
         {
             return (Math.Sin(-13 * (UtilityGlobals.HalfPI * (time + 1))) * Math.Pow(2, -10 * time)) + 1;
         }
 
+        private static InterpolationMethod EaseInOutElastic = EaseInOutElasticTime;
         private static double EaseInOutElasticTime(in double time)
         {
             if (time < 0.5d)
@@ -157,22 +173,22 @@ namespace TDMonoGameEngine
         {
             switch (interpolationType)
             {
-                case InterpolationTypes.Linear: return LinearTime;
-                case InterpolationTypes.QuadIn: return EaseInQuadTime;
-                case InterpolationTypes.QuadOut: return EaseOutQuadTime;
-                case InterpolationTypes.QuadInOut: return EaseInOutQuadTime;
-                case InterpolationTypes.CubicIn: return EaseInCubicTime;
-                case InterpolationTypes.CubicOut: return EaseOutCubicTime;
-                case InterpolationTypes.CubicInOut: return EaseInOutCubicTime;
-                case InterpolationTypes.ExponentialIn: return EaseInExponentialTime;
-                case InterpolationTypes.ExponentialOut: return EaseOutExponentialTime;
-                case InterpolationTypes.ExponentialInOut: return EaseInOutExponentialTime;
-                case InterpolationTypes.SineIn: return EaseInSineTime;
-                case InterpolationTypes.SineOut: return EaseOutSineTime;
-                case InterpolationTypes.SineInOut: return EaseInOutSineTime;
-                case InterpolationTypes.ElasticIn: return EaseInElasticTime;
-                case InterpolationTypes.ElasticOut: return EaseOutElasticTime;
-                case InterpolationTypes.ElasticInOut: return EaseInOutElasticTime;
+                case InterpolationTypes.Linear: return Linear;
+                case InterpolationTypes.QuadIn: return EaseInQuad;
+                case InterpolationTypes.QuadOut: return EaseOutQuad;
+                case InterpolationTypes.QuadInOut: return EaseInOutQuad;
+                case InterpolationTypes.CubicIn: return EaseInCubic;
+                case InterpolationTypes.CubicOut: return EaseOutCubic;
+                case InterpolationTypes.CubicInOut: return EaseInOutCubic;
+                case InterpolationTypes.ExponentialIn: return EaseInExponential;
+                case InterpolationTypes.ExponentialOut: return EaseOutExponential;
+                case InterpolationTypes.ExponentialInOut: return EaseInOutExponential;
+                case InterpolationTypes.SineIn: return EaseInSine;
+                case InterpolationTypes.SineOut: return EaseOutSine;
+                case InterpolationTypes.SineInOut: return EaseInOutSine;
+                case InterpolationTypes.ElasticIn: return EaseInElastic;
+                case InterpolationTypes.ElasticOut: return EaseOutElastic;
+                case InterpolationTypes.ElasticInOut: return EaseInOutElastic;
                 default: return null;
             }
         }
@@ -250,7 +266,7 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
-        /// Performs interpolation based on the InterpolationType.
+        /// Performs interpolation between Vector2s based on the InterpolationType.
         /// </summary>
         /// <param name="startVal">The starting Vector2 value.</param>
         /// <param name="endVal">The ending Vector2 value.</param>
