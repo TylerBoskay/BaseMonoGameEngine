@@ -24,6 +24,12 @@ namespace TDMonoGameEngine
             CubicIn,
             CubicOut,
             CubicInOut,
+            QuartIn,
+            QuartOut,
+            QuartInOut,
+            QuintIn,
+            QuintOut,
+            QuintInOut,
             ExponentialIn,
             ExponentialOut,
             ExponentialInOut,
@@ -91,6 +97,44 @@ namespace TDMonoGameEngine
         {
             if (time < .5d) return (EaseInCubicTime(time * 2d) / 2d);
             return (1 - (EaseInCubicTime((1 - time) * 2d) / 2d));
+        }
+
+        private static InterpolationMethod EaseInQuart = EaseInQuartTime;
+        private static double EaseInQuartTime(in double time)
+        {
+            return Math.Pow(time, 4);
+        }
+
+        private static InterpolationMethod EaseOutQuart = EaseOutQuartTime;
+        private static double EaseOutQuartTime(in double time)
+        {
+            return (1 - EaseInQuartTime(1 - time));
+        }
+
+        private static InterpolationMethod EaseInOutQuart = EaseInOutQuartTime;
+        private static double EaseInOutQuartTime(in double time)
+        {
+            if (time < .5d) return (EaseInQuartTime(time * 2d) / 2d);
+            return (1 - (EaseInQuartTime((1 - time) * 2d) / 2d));
+        }
+
+        private static InterpolationMethod EaseInQuint = EaseInQuintTime;
+        private static double EaseInQuintTime(in double time)
+        {
+            return Math.Pow(time, 5);
+        }
+
+        private static InterpolationMethod EaseOutQuint = EaseOutQuintTime;
+        private static double EaseOutQuintTime(in double time)
+        {
+            return (1 - EaseInQuintTime(1 - time));
+        }
+
+        private static InterpolationMethod EaseInOutQuint = EaseInOutQuintTime;
+        private static double EaseInOutQuintTime(in double time)
+        {
+            if (time < .5d) return (EaseInQuintTime(time * 2d) / 2d);
+            return (1 - (EaseInQuintTime((1 - time) * 2d) / 2d));
         }
 
         private static InterpolationMethod EaseInExponential = EaseInExponentialTime;
@@ -180,6 +224,12 @@ namespace TDMonoGameEngine
                 case InterpolationTypes.CubicIn: return EaseInCubic;
                 case InterpolationTypes.CubicOut: return EaseOutCubic;
                 case InterpolationTypes.CubicInOut: return EaseInOutCubic;
+                case InterpolationTypes.QuartIn: return EaseInQuart;
+                case InterpolationTypes.QuartOut: return EaseOutQuart;
+                case InterpolationTypes.QuartInOut: return EaseInOutQuart;
+                case InterpolationTypes.QuintIn: return EaseInQuint;
+                case InterpolationTypes.QuintOut: return EaseOutQuint;
+                case InterpolationTypes.QuintInOut: return EaseInOutQuint;
                 case InterpolationTypes.ExponentialIn: return EaseInExponential;
                 case InterpolationTypes.ExponentialOut: return EaseOutExponential;
                 case InterpolationTypes.ExponentialInOut: return EaseInOutExponential;
