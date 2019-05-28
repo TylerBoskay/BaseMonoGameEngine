@@ -24,12 +24,12 @@ namespace TDMonoGameEngine
             CubicIn,
             CubicOut,
             CubicInOut,
-            QuartIn,
-            QuartOut,
-            QuartInOut,
-            QuintIn,
-            QuintOut,
-            QuintInOut,
+            QuarticIn,
+            QuarticOut,
+            QuarticInOut,
+            QuinticIn,
+            QuinticOut,
+            QuinticInOut,
             ExponentialIn,
             ExponentialOut,
             ExponentialInOut,
@@ -99,42 +99,42 @@ namespace TDMonoGameEngine
             return (1 - (EaseInCubicTime((1 - time) * 2d) / 2d));
         }
 
-        private static InterpolationMethod EaseInQuart = EaseInQuartTime;
-        private static double EaseInQuartTime(in double time)
+        private static InterpolationMethod EaseInQuartic = EaseInQuarticTime;
+        private static double EaseInQuarticTime(in double time)
         {
             return Math.Pow(time, 4);
         }
 
-        private static InterpolationMethod EaseOutQuart = EaseOutQuartTime;
-        private static double EaseOutQuartTime(in double time)
+        private static InterpolationMethod EaseOutQuartic = EaseOutQuarticTime;
+        private static double EaseOutQuarticTime(in double time)
         {
-            return (1 - EaseInQuartTime(1 - time));
+            return (1 - EaseInQuarticTime(1 - time));
         }
 
-        private static InterpolationMethod EaseInOutQuart = EaseInOutQuartTime;
-        private static double EaseInOutQuartTime(in double time)
+        private static InterpolationMethod EaseInOutQuartic = EaseInOutQuarticTime;
+        private static double EaseInOutQuarticTime(in double time)
         {
-            if (time < .5d) return (EaseInQuartTime(time * 2d) / 2d);
-            return (1 - (EaseInQuartTime((1 - time) * 2d) / 2d));
+            if (time < .5d) return (EaseInQuarticTime(time * 2d) / 2d);
+            return (1 - (EaseInQuarticTime((1 - time) * 2d) / 2d));
         }
 
-        private static InterpolationMethod EaseInQuint = EaseInQuintTime;
-        private static double EaseInQuintTime(in double time)
+        private static InterpolationMethod EaseInQuintic = EaseInQuinticTime;
+        private static double EaseInQuinticTime(in double time)
         {
             return Math.Pow(time, 5);
         }
 
-        private static InterpolationMethod EaseOutQuint = EaseOutQuintTime;
-        private static double EaseOutQuintTime(in double time)
+        private static InterpolationMethod EaseOutQuintic = EaseOutQuinticTime;
+        private static double EaseOutQuinticTime(in double time)
         {
-            return (1 - EaseInQuintTime(1 - time));
+            return (1 - EaseInQuinticTime(1 - time));
         }
 
-        private static InterpolationMethod EaseInOutQuint = EaseInOutQuintTime;
-        private static double EaseInOutQuintTime(in double time)
+        private static InterpolationMethod EaseInOutQuintic = EaseInOutQuinticTime;
+        private static double EaseInOutQuinticTime(in double time)
         {
-            if (time < .5d) return (EaseInQuintTime(time * 2d) / 2d);
-            return (1 - (EaseInQuintTime((1 - time) * 2d) / 2d));
+            if (time < .5d) return (EaseInQuinticTime(time * 2d) / 2d);
+            return (1 - (EaseInQuinticTime((1 - time) * 2d) / 2d));
         }
 
         private static InterpolationMethod EaseInExponential = EaseInExponentialTime;
@@ -224,12 +224,12 @@ namespace TDMonoGameEngine
                 case InterpolationTypes.CubicIn: return EaseInCubic;
                 case InterpolationTypes.CubicOut: return EaseOutCubic;
                 case InterpolationTypes.CubicInOut: return EaseInOutCubic;
-                case InterpolationTypes.QuartIn: return EaseInQuart;
-                case InterpolationTypes.QuartOut: return EaseOutQuart;
-                case InterpolationTypes.QuartInOut: return EaseInOutQuart;
-                case InterpolationTypes.QuintIn: return EaseInQuint;
-                case InterpolationTypes.QuintOut: return EaseOutQuint;
-                case InterpolationTypes.QuintInOut: return EaseInOutQuint;
+                case InterpolationTypes.QuarticIn: return EaseInQuartic;
+                case InterpolationTypes.QuarticOut: return EaseOutQuartic;
+                case InterpolationTypes.QuarticInOut: return EaseInOutQuartic;
+                case InterpolationTypes.QuinticIn: return EaseInQuintic;
+                case InterpolationTypes.QuinticOut: return EaseOutQuintic;
+                case InterpolationTypes.QuinticInOut: return EaseInOutQuintic;
                 case InterpolationTypes.ExponentialIn: return EaseInExponential;
                 case InterpolationTypes.ExponentialOut: return EaseOutExponential;
                 case InterpolationTypes.ExponentialInOut: return EaseInOutExponential;
