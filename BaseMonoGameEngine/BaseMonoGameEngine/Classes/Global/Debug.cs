@@ -638,8 +638,8 @@ namespace TDMonoGameEngine
 
             debugUIBatch.DrawString(font, rendererStr, new Vector2(640, 0), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
 
-            debugUIBatch.DrawString(font, "Fixed Timestep: " + Time.FixedTimeStep, new Vector2(640, 0), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
-            debugUIBatch.DrawString(font, "VSync: " + Time.VSyncEnabled, new Vector2(703, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
+            debugUIBatch.DrawString(font, "Fixed Timestep: " + Time.FixedTimeStep, new Vector2(640, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
+            debugUIBatch.DrawString(font, "VSync: " + Time.VSyncEnabled, new Vector2(703, 40), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
 
             //Rendering info
             //ClearCount is the number of times Clear was called

@@ -313,8 +313,14 @@ namespace TDMonoGameEngine
         /// </summary>
         public void ClearInputState()
         {
-            KeyboardInput.ClearKeyboardState(ref KBState);
-            JoystickInput.ClearJoystickState(ref JSState);
+            if (InputType == InputTypes.Keyboard)
+            {
+                KeyboardInput.ClearKeyboardState(ref KBState);
+            }
+            else
+            {
+                JoystickInput.ClearJoystickState(ref JSState);
+            }
         }
 
         /// <summary>
@@ -323,8 +329,14 @@ namespace TDMonoGameEngine
         /// <param name="playerIndex">The player index for updating the joystick input state.</param>
         public void UpdateInputState(in int playerIndex)
         {
-            KeyboardInput.UpdateKeyboardState(ref KBState);
-            JoystickInput.UpdateJoystickState(playerIndex, ref JSState);
+            if (InputType == InputTypes.Keyboard)
+            {
+                KeyboardInput.UpdateKeyboardState(ref KBState);
+            }
+            else
+            {
+                JoystickInput.UpdateJoystickState(playerIndex, ref JSState);
+            }
         }
 
         /// <summary>
