@@ -33,11 +33,6 @@ namespace TDMonoGameEngine
         public static double FPS = 60d;
 
         /// <summary>
-        /// Whether in-game time is enabled or not. If set to false, ActiveMilliseconds won't be updated.
-        /// </summary>
-        public static bool InGameTimeEnabled { get; private set; } = true;
-
-        /// <summary>
         /// The total number of game updates since the game booted up.
         /// </summary>
         public static long TotalUpdates { get; private set; } = 0L;
@@ -48,48 +43,25 @@ namespace TDMonoGameEngine
         public static long TotalFrames { get; private set; } = 0L;
 
         /// <summary>
-        /// The total amount of time, in milliseconds, since the game booted up.
-        /// </summary>
-        public static double TotalMilliseconds => TotalTime.TotalMilliseconds;
-
-        /// <summary>
-        /// The total amount of unpaused or unfrozen time, in milliseconds, since the game booted up.
-        /// </summary>
-        public static double ActiveTotalMS { get; private set; } = 0d;
-
-        /// <summary>
-        /// The amount of time, in milliseconds, since the previous frame.
-        /// </summary>
-        public static double ElapsedMilliseconds => ElapsedTime.TotalMilliseconds;
-
-        /// <summary>
-        /// The amount of unpaused or unfrozen time, in milliseconds, since the previous frame.
-        /// </summary>
-        public static double ActiveElapsedMS => (InGameTimeEnabled == true) ? ElapsedTime.TotalMilliseconds : 0d;
-
-        /// <summary>
         /// Determines if the game is running slowly or not.
         /// </summary>
         public static bool RunningSlowly { get; private set; } = false;
 
         /// <summary>
-        /// Whether the game is run at a fixed interval or not.
+        /// The current timestep setting.
         /// </summary>
-        public static bool FixedTimeStep = true;
+        public static TimestepSettings TimeStep = TimestepSettings.Fixed;
 
         /// <summary>
-        /// Whether VSync is enabled or not.
+        /// The current VSync setting.
         /// </summary>
-        public static bool VSyncEnabled = true;
+        public static VSyncSettings VSyncSetting = VSyncSettings.Enabled;
 
         /// <summary>
-        /// Enables or disables in-game time. If false, <see cref="ActiveTotalMS"/> will not be updated.
+        /// The max amount of time to frameskip and perform only updates with no draws.
+        /// The elapsed time in a frame cannot exceed this.
         /// </summary>
-        /// <param name="ingameTimeEnabled">Whether to enable in-game time or not.</param>
-        public static void ToggleInGameTime(in bool ingameTimeEnabled)
-        {
-            InGameTimeEnabled = ingameTimeEnabled;
-        }
+        public static TimeSpan MaxElapsedTime = new TimeSpan(0, 0, 0, 0, 500);
 
         /// <summary>
         /// Updates the game time.
@@ -100,11 +72,6 @@ namespace TDMonoGameEngine
             TotalTime = gameTime.TotalGameTime;
             ElapsedTime = gameTime.ElapsedGameTime;
             RunningSlowly = gameTime.IsRunningSlowly;
-
-            if (InGameTimeEnabled == true)
-            {
-                ActiveTotalMS += ElapsedTime.TotalMilliseconds;
-            }
 
             TotalUpdates++;
         }

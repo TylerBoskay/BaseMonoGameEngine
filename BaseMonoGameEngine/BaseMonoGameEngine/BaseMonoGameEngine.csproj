@@ -13,7 +13,7 @@
     <AssemblyName>TDMonoGameEngine</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>DesktopGL</MonoGamePlatform>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
@@ -64,6 +64,7 @@
     <Compile Include="Classes\Animations\AnimManager.cs" />
     <Compile Include="Classes\Animations\SimpleAnimation.cs" />
     <Compile Include="Classes\Gameplay\AfterImages.cs" />
+    <Compile Include="Classes\Gameplay\FrameRateSettings.cs" />
     <Compile Include="Classes\Gameplay\PlayerStateMachines\PlayerAttackState.cs" />
     <Compile Include="Classes\Gameplay\PlayerStateMachines\PlayerDashState.cs" />
     <Compile Include="Classes\Gameplay\TestGameHUD.cs" />
@@ -81,7 +82,11 @@
     <Compile Include="Classes\Global\Extensions.cs" />
     <Compile Include="Classes\Global\FPSCounter.cs" />
     <Compile Include="Classes\Global\GameScene.cs" />
+    <Compile Include="Classes\Global\Input\GamePadInput.cs" />
+    <Compile Include="Classes\Global\Input\GamePadMapper.cs" />
+    <Compile Include="Classes\Global\Input\KeyboardMapper.cs" />
     <Compile Include="Classes\Global\Input\MouseInput.cs" />
+    <Compile Include="Classes\Global\MouseHider.cs" />
     <Compile Include="Classes\Global\RandomGlobals.cs" />
     <Compile Include="Classes\Global\Input\Input.cs" />
     <Compile Include="Classes\Global\Input\InputHandler.cs" />

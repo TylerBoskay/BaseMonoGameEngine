@@ -38,7 +38,7 @@ namespace TDMonoGameEngine
 
         public static void Update()
         {
-            PrevUpdateVal += Time.ElapsedMilliseconds;
+            PrevUpdateVal += Time.ElapsedTime.TotalMilliseconds;
 
             //Check if we should update the FPS value displayed
             if (PrevUpdateVal >= UpdateInterval)

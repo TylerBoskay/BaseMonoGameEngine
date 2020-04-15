@@ -55,6 +55,12 @@ namespace TDMonoGameEngine
         public GraphicsDeviceManager graphicsDeviceManager { get; private set; } = null;
         public GraphicsDevice graphicsDevice => graphicsDeviceManager?.GraphicsDevice;
 
+        /// <summary>
+        /// The size of the monitor screen the game is being played on.
+        /// </summary>
+        public Vector2 ScreenSize => new Vector2(graphicsDevice.Adapter.CurrentDisplayMode.Width, graphicsDevice.Adapter.CurrentDisplayMode.Height);
+        public float AspectRatio => graphicsDevice.Adapter.CurrentDisplayMode.AspectRatio;
+
         private GameWindow gameWindow { get; set; } = null;
 
         public SpriteBatch spriteBatch { get; private set; } = null;
@@ -93,10 +99,29 @@ namespace TDMonoGameEngine
         /// <summary>
         /// Tells whether the game is full screen or not.
         /// </summary>
-        public bool IsFullScreen => graphicsDeviceManager.IsFullScreen;
+        public bool IsFullscreen => graphicsDeviceManager.IsFullScreen;
+
+        /// <summary>
+        /// Tells whether the game window is borderless or not.
+        /// </summary>
+        public bool IsBorderless => gameWindow.IsBorderless;
+
+        /// <summary>
+        /// The size to render the final RenderTarget at in relation to the base resolution.
+        /// This is always the back buffer size unless set to fullscreen.
+        /// </summary>
+        private Vector2 RTRenderSize = RenderingGlobals.BaseResolution;
+
+        public RenderTarget2D GetMainRenderTarget => MainRenderTarget;
 
         private RenderTarget2D MainRenderTarget = null;
         private RenderTarget2D PPRenderTarget = null;
+
+        /// <summary>
+        /// The origin to render the RenderTarget.
+        /// It's set to the center for better fullscreen scaling.
+        /// </summary>
+        private Vector2 RTOrigin = Vector2.Zero;
 
         /// <summary>
         /// A list of post-processing shaders to apply. They'll be applied in order.
@@ -150,6 +175,8 @@ namespace TDMonoGameEngine
 
             ResizeWindow(screenSize, true);
 
+            CenterWindow();
+
             //Keep the render targets at base resolution
             //They'll be upscaled or downscaled to the window size
             Vector2 size = new Vector2(RenderingGlobals.BaseResolutionWidth, RenderingGlobals.BaseResolutionHeight);
@@ -158,6 +185,8 @@ namespace TDMonoGameEngine
             RenderingGlobals.ResizeRenderTarget(ref PPRenderTarget, size);
 
             FinalRenderTarget = MainRenderTarget;
+
+            RTOrigin = FinalRenderTarget.GetCenterOrigin();
 
             StartedRendering = false;
 
@@ -201,11 +230,24 @@ namespace TDMonoGameEngine
             //Confirm window size
             CheckWindowSize(ref newSize);
 
-            //Set the back buffer width and height and apply the changes
-            graphicsDeviceManager.PreferredBackBufferWidth = (int)newSize.X;
-            graphicsDeviceManager.PreferredBackBufferHeight = (int)newSize.Y;
+            //We don't need to set the back buffer width and height since it's already set when resizing the window
+            //Only set this explicitly if we should do so manually
+            if (manualSet == true)
+            {
+                //Set the back buffer width and height and apply the changes
+                graphicsDeviceManager.PreferredBackBufferWidth = (int)newSize.X;
+                graphicsDeviceManager.PreferredBackBufferHeight = (int)newSize.Y;
 
-            graphicsDeviceManager.ApplyChanges();
+                graphicsDeviceManager.ApplyChanges();
+            }
+
+            RTRenderSize = newSize;
+
+            //If fullscreen, scale the RenderTarget appropriately
+            if (IsFullscreen == true)
+            {
+                SetRenderTargetToFullscreenScale();
+            }
 
             ScreenResizedEvent?.Invoke(newSize);
         }
@@ -218,6 +260,51 @@ namespace TDMonoGameEngine
         {
             graphicsDeviceManager.IsFullScreen = fullScreen;
             graphicsDeviceManager.ApplyChanges();
+        }
+
+        /// <summary>
+        /// Sets the borderless state of the game window.
+        /// </summary>
+        /// <param name="borderless">Whether to make the game window borderless or not.</param>
+        public void SetWindowBorderless(in bool borderless)
+        {
+            gameWindow.IsBorderless = borderless;
+        }
+
+        /// <summary>
+        /// Sets the position of the game window.
+        /// </summary>
+        /// <param name="pos">A Point representing the position of the game window.</param>
+        public void SetWindowPosition(in Point pos)
+        {
+            gameWindow.Position = pos;
+        }
+
+        /// <summary>
+        /// Sets the position of the game window to the center of the monitor screen.
+        /// </summary>
+        public void CenterWindow()
+        {
+            SetWindowPosition(((RenderingManager.Instance.ScreenSize / 2) - (RenderingManager.Instance.BackBufferDimensions / 2)).ToPoint());
+        }
+
+        /// <summary>
+        /// Sets the final RenderTarget to fit within the size of the screen.
+        /// </summary>
+        private void SetRenderTargetToFullscreenScale()
+        {
+            //Set to the screen size over the base resolution - this fits it into the whole screen
+            Vector2 finalSize = RenderingManager.Instance.ScreenSize / RenderingGlobals.BaseResolution;
+
+            //Choose the lowest value out of the X or Y so it fits on the screen
+            //We need 1:1 scaling of the RenderTarget to avoid stretching
+            if (finalSize.X < finalSize.Y)
+                finalSize.Y = finalSize.X;
+            else if (finalSize.Y < finalSize.X)
+                finalSize.X = finalSize.Y;
+
+            //Finally, multiply by the base resolution to get the actual size
+            RTRenderSize = finalSize * RenderingGlobals.BaseResolution;
         }
 
         /// <summary>
@@ -384,13 +471,12 @@ namespace TDMonoGameEngine
 
             //Perform a final draw to the backbuffer using the final RenderTarget
             graphicsDevice.SetRenderTarget(null);
-            graphicsDevice.Clear(ClearColor);
 
             //Everything was drawn at native resolution; scale to the window/screen size
-            Vector2 resScale = BackBufferDimensions / new Vector2(RenderingGlobals.BaseResolutionWidth, RenderingGlobals.BaseResolutionHeight);
+            Vector2 resScale = RTRenderSize / new Vector2(RenderingGlobals.BaseResolutionWidth, RenderingGlobals.BaseResolutionHeight);
 
-            StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.Opaque, null, null, null, null, null);
-            CurrentBatch.Draw(FinalRenderTarget, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, resScale, SpriteEffects.None, 0f);
+            StartBatch(spriteBatch, SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, null, null, null, null);
+            CurrentBatch.Draw(FinalRenderTarget, BackBufferDimensions / 2, null, Color.White, 0f, RTOrigin, resScale, SpriteEffects.None, 0f);
             EndCurrentBatch();
 
             //Get rendering metrics

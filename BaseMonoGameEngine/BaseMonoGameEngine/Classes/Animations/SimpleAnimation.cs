@@ -70,7 +70,7 @@ namespace TDMonoGameEngine
 
         public void Update()
         {
-            ElapsedFrameTime += Time.ElapsedMilliseconds;
+            ElapsedFrameTime += Time.ElapsedTime.TotalMilliseconds;
 
             if (ElapsedFrameTime >= CurFrame.Duration)
             {

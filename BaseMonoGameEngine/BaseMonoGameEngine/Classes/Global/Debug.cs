@@ -316,12 +316,12 @@ namespace TDMonoGameEngine
                 //Toggle VSync
                 else if (KeyboardInput.GetKeyDown(Keys.Back))
                 {
-                    Time.VSyncEnabled = !Time.VSyncEnabled;
+                    Time.VSyncSetting = (VSyncSettings)(1 ^ (int)Time.VSyncSetting);
                 }
                 //Toggle fixed time step
                 else if (KeyboardInput.GetKeyDown(Keys.OemCloseBrackets))
                 {
-                    Time.FixedTimeStep = !Time.FixedTimeStep;
+                    Time.TimeStep = (TimestepSettings)(1 ^ (int)Time.TimeStep);
                 }
                 //Toggle Debug Draw
                 else if (KeyboardInput.GetKeyDown(Keys.Q, DebugKeyboard))
@@ -638,8 +638,10 @@ namespace TDMonoGameEngine
 
             debugUIBatch.DrawString(font, rendererStr, new Vector2(640, 0), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
 
-            debugUIBatch.DrawString(font, "Fixed Timestep: " + Time.FixedTimeStep, new Vector2(640, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
-            debugUIBatch.DrawString(font, "VSync: " + Time.VSyncEnabled, new Vector2(703, 40), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
+            debugUIBatch.DrawString(font, "Fixed Timestep: " + (Time.TimeStep == TimestepSettings.Fixed ? "True" : "False"),
+                new Vector2(640, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
+            debugUIBatch.DrawString(font, "VSync: " + (Time.VSyncSetting == VSyncSettings.Enabled ? "True" : "False"),
+                new Vector2(703, 40), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
 
             //Rendering info
             //ClearCount is the number of times Clear was called
@@ -682,7 +684,7 @@ namespace TDMonoGameEngine
             }
         }
 
-#region Classes
+        #region Classes
 
         /// <summary>
         /// Global values regarding debugging.
@@ -752,7 +754,7 @@ namespace TDMonoGameEngine
                 //Getting the OS version can fail if the user is running an extremely uncommon or old OS and/or it can't retrieve the information
                 try
                 {
-                    osVersion = Environment.OSVersion.ToString();
+                    osVersion = Environment.OSVersion.ToString() + " (" + Environment.OSVersion.Platform.ToString() + ")";
 
                     //Check for a Linux OS and get more detailed info
                     if (osVersion.ToLower().StartsWith("unix") == true)

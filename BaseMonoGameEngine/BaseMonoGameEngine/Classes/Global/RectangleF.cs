@@ -121,13 +121,23 @@ namespace TDMonoGameEngine
         }
 
         /// <summary>
+        /// Gets whether or not the provided <see cref="Vector2"/> lies within the bounds of this <see cref="RectangleF"/>.
+        /// </summary>
+        /// <param name="value">The coordinates to check for inclusion in this <see cref="RectangleF"/>.</param>
+        /// <returns><c>true</c> if the provided <see cref="Vector2"/> lies inside this <see cref="RectangleF"/>; <c>false</c> otherwise.</returns>
+        public bool Contains(in Vector2 value)
+        {
+            return ((((this.X <= value.X) && (value.X < (this.X + this.Width))) && (this.Y <= value.Y)) && (value.Y < (this.Y + this.Height)));
+        }
+
+        /// <summary>
         /// Tells whether this RectangleF intersects with another RectangleF.
         /// </summary>
         /// <param name="value">The RectangleF to test intersection with.</param>
         /// <returns>true if this RectangleF intersects with the other, otherwise false.</returns>
-        public bool Intersects(RectangleF value)
+        public bool Intersects(in RectangleF value)
         {
-            return (value.Left < Right && Left < value.Right && value.Top < Bottom && Top < value.Bottom);
+            return (value.X < Right && Left < (value.X + value.Width) && value.Y < Bottom && Top < (value.Y + value.Height));
         }
 
         /// <summary>
@@ -227,7 +237,12 @@ namespace TDMonoGameEngine
         /// <returns><c>true</c> if the instances are equal; <c>false</c> otherwise.</returns>
         public override bool Equals(object obj)
         {
-            return (obj is RectangleF) && this == ((RectangleF)obj);
+            if (obj is RectangleF rectF)
+            {
+                return (this == rectF);
+            }
+
+            return false;
         }
 
         /// <summary>

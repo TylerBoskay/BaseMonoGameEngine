@@ -201,7 +201,7 @@ namespace TDMonoGameEngine
             if (TotalDuration >= 0)
             {
                 //If after-images last a certain amount of time, increment the elapsed time and check if they should end
-                ElapsedTime += Time.ElapsedMilliseconds;
+                ElapsedTime += Time.ElapsedTime.TotalMilliseconds;
             
                 if (ElapsedTime >= TotalDuration)
                 {

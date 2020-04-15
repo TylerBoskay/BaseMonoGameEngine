@@ -40,10 +40,12 @@ namespace TDMonoGameEngine
         /// </summary>
         public GameWindow GameWindow => Window;
 
+        public static bool ShouldQuit { get; private set; } = false;
+
         /// <summary>
         /// The name of this game.
         /// </summary>
-        public const string GameName = "TDMonoGameEngine";
+        public const string GameName = "BaseMonoGameEngine";
 
         public Engine()
         {
@@ -51,24 +53,20 @@ namespace TDMonoGameEngine
 
             Debug.Log("Initializing graphics device");
 
-#if LINUX
-            Debug.Log("Renderer: OpenGL");
-#elif WINDOWS
-            Debug.Log("Renderer: DirectX");
-#endif
+            Debug.Log($"OS: {Debug.DebugGlobals.GetOSInfo()} | Platform: {MonoGame.Framework.Utilities.PlatformInfo.MonoGamePlatform} | Renderer: {MonoGame.Framework.Utilities.PlatformInfo.GraphicsBackend}");
 
             graphics = new GraphicsDeviceManager(this);
             
             //false for variable timestep, true for fixed
-            Time.FixedTimeStep = true;
-            Time.VSyncEnabled = true;
+            Time.TimeStep = TimestepSettings.Variable;
+            Time.VSyncSetting = VSyncSettings.Enabled;
             
             Window.AllowUserResizing = true;
+            IsMouseVisible = true;
 
             //MonoGame sets x32 MSAA by default if enabled
             //If enabled and we want a lower value, set the value in the PreparingDeviceSettings event
             graphics.PreferMultiSampling = false;
-            graphics.SynchronizeWithVerticalRetrace = Time.VSyncEnabled;
 
             //Make switching to full screen fast but less efficient; we want to switch as fast as possible
             //On top of that, this allows for borderless full screen on DesktopGL
@@ -96,7 +94,10 @@ namespace TDMonoGameEngine
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
             Window.Title = GameName;
-            IsFixedTimeStep = Time.FixedTimeStep;
+            MaxElapsedTime = Time.MaxElapsedTime;
+            IsFixedTimeStep = Time.TimeStep == TimestepSettings.Fixed;
+
+            Debug.Log($"GPU: {GraphicsDevice.Adapter.Description} | Display: {GraphicsDevice.Adapter.CurrentDisplayMode} | Widescreen: {GraphicsDevice.Adapter.IsWideScreen}");
 
             AssetManager.Instance.Initialize(Content);
             RenderingManager.Instance.Initialize(graphics, GameWindow, new Vector2(RenderingGlobals.BaseResolutionWidth, RenderingGlobals.BaseResolutionHeight));
@@ -116,7 +117,7 @@ namespace TDMonoGameEngine
             scene.AddSceneObject(new TestEnemy());
             scene.AddSceneObject(new TestEnemy2());
             scene.AddSceneObject(new TestGameHUD(player1, 1));
-            scene.AddSceneObject(new AfterImages(player1.spriteRenderer, player1.AnimationManager, 3, 8, .25f,
+            scene.AddSceneObject(new AfterImages(player1.spriteRenderer, player1.AnimationManager, 3, 17, .25f,
                 AfterImages.AfterImageAlphaSetting.FadeOff, AfterImages.AfterImageAnimSetting.Current));
 
             base.Initialize();
@@ -139,8 +140,8 @@ namespace TDMonoGameEngine
         {
             graphics.PreparingDeviceSettings -= OnPreparingDeviceSettings;
 
-            AssetManager.Instance.CleanUp();
             SoundManager.Instance.CleanUp();
+            AssetManager.Instance.CleanUp();
             SceneManager.Instance.CleanUp();
             RenderingManager.Instance.CleanUp();
 
@@ -189,8 +190,8 @@ namespace TDMonoGameEngine
             //Set focus state
             WasFocused = focused;
 
-            Time.UpdateTime(gameTime);
             Debug.DebugUpdate();
+            Time.UpdateTime(gameTime);
         }
 
         /// <summary>
@@ -210,6 +211,10 @@ namespace TDMonoGameEngine
         {
             SoundManager.Instance.Update();
 
+            //Update mouse visibility
+            MouseHider.Update();
+            IsMouseVisible = MouseHider.MouseVisible;
+
             //Frame advance debugging for input
             if (Debug.DebugPaused == false || Debug.AdvanceNextFrame == true)
             {
@@ -221,16 +226,31 @@ namespace TDMonoGameEngine
             base.Update(gameTime);
 
             //Set time step and VSync settings
-            IsFixedTimeStep = Time.FixedTimeStep;
+            IsFixedTimeStep = Time.TimeStep == TimestepSettings.Fixed ? true : false;
 
-            if (graphics.SynchronizeWithVerticalRetrace != Time.VSyncEnabled)
+            bool vSync = Time.VSyncSetting == VSyncSettings.Enabled ? true : false;
+
+            if (graphics.SynchronizeWithVerticalRetrace != vSync)
             {
-                graphics.SynchronizeWithVerticalRetrace = Time.VSyncEnabled;
+                graphics.SynchronizeWithVerticalRetrace = vSync;
                 graphics.ApplyChanges();
+            }
+
+            MaxElapsedTime = Time.MaxElapsedTime;
+
+            //If we should exit, do so
+            if (ShouldQuit == true)
+            {
+                Exit();
+                return;
             }
 
             /* This should always be at the end of PostUpdate() */
             TargetElapsedTime = Time.GetTimeSpanFromFPS(Time.FPS);
+
+            //Prevent a game freeze if the elapsed time will be greater than the max elapsed time
+            if (TargetElapsedTime > MaxElapsedTime)
+                TargetElapsedTime = MaxElapsedTime;
         }
 
         /// <summary>
@@ -276,6 +296,14 @@ namespace TDMonoGameEngine
             {
                 Debug.DebugEndDraw();
             }
+        }
+
+        /// <summary>
+        /// Notifies the engine to terminate the game at the end of the next update loop.
+        /// </summary>
+        public static void QuitGame()
+        {
+            ShouldQuit = true;
         }
     }
 }

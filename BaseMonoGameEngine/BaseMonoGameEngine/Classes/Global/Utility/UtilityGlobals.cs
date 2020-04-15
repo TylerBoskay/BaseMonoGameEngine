@@ -468,5 +468,78 @@ namespace TDMonoGameEngine
                 return val;
             }
         }
+
+        /// <summary>
+        /// Returns points for a regular polygon with a number of sides around a starting point.
+        /// </summary>
+        /// <param name="sides">The number of sides the polygon has.</param>
+        /// <param name="startingPoint">The starting position.</param>
+        /// <param name="radius">The radius.</param>
+        /// <param name="startingAngle">The starting angle. Change this to rotate the points.</param>
+        /// <param name="pointArray">A supplied array to fill the points into.</param>
+        /// <remarks>
+        /// Calculation for points obtained from this answer:
+        /// https://stackoverflow.com/questions/7198144/how-to-draw-a-n-sided-regular-polygon-in-cartesian-coordinates/7198171#7198171
+        /// </remarks>
+        public static void GetPointsForRegularPolygon(in int sides, in Vector2 startingPoint, in double radius, in double startingAngle, Vector2[] pointArray)
+        {
+            double radianIncrement = (Math.PI * 2d) / sides;
+
+            for (int i = 0; i < pointArray.Length; i++)
+            {
+                double angleVal = startingAngle + (radianIncrement * i);
+
+                pointArray[i].X = (float)(startingPoint.X + (radius * Math.Cos(angleVal)));
+                pointArray[i].Y = (float)(startingPoint.Y + (radius * Math.Sin(angleVal)));
+            }
+        }
+
+        /// <summary>
+        /// Returns points for a regular polygon with a number of sides around a starting point.
+        /// </summary>
+        /// <param name="sides">The number of sides the polygon has.</param>
+        /// <param name="startingPoint">The starting position.</param>
+        /// <param name="radius">The radius.</param>
+        /// <param name="startingAngle">The starting angle, in radians. Change this to rotate the points.</param>
+        /// <remarks>
+        public static Vector2[] GetPointsForRegularPolygon(in int sides, in Vector2 startingPoint, in double radius, in double startingAngle)
+        {
+            Vector2[] pointArray = new Vector2[sides];
+            GetPointsForRegularPolygon(sides, startingPoint, radius, startingAngle, pointArray);
+            return pointArray;
+        }
+
+        /// <summary>
+        /// Opens a link in the default web browser.
+        /// </summary>
+        /// <param name="URL">The URL to visit.</param>
+        public static void OpenURL(string URL)
+        {
+            try
+            {
+                //Simply start a process with the URL
+                System.Diagnostics.Process.Start(URL);
+            }
+            catch (Exception e) when (e is System.ComponentModel.Win32Exception || e is ObjectDisposedException || e is System.IO.FileNotFoundException)
+            {
+                Debug.LogError($"Ran into an issue starting the process to open URL \"{URL}\": {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Opens a folder at the given path in the operating system's file manager.
+        /// </summary>
+        /// <param name="folderPath">The folder path to open.</param>
+        public static void OpenFolderInFileManager(string folderPath)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(folderPath);
+            }
+            catch (Exception e) when (e is System.ComponentModel.Win32Exception || e is ObjectDisposedException || e is System.IO.FileNotFoundException)
+            {
+                Debug.LogError($"Ran into an issue starting the process to open file path \"{folderPath}\": {e.Message}");
+            }
+        }
     }
 }

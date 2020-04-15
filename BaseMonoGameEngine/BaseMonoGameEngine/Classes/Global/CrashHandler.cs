@@ -47,11 +47,10 @@ namespace TDMonoGameEngine
                 //Dump the message, stack trace, and logs
                 sb.Append($"Uh oh, looks like {Engine.GameName} crashed :(. Please report this crash by submitting this log file to emailhere@email.com.\n\n");
                 sb.Append($"OS Version: {Debug.DebugGlobals.GetOSInfo()}\n");
-#if LINUX
-                sb.Append("Renderer: OpenGL\n\n");
-#elif WINDOWS
-                sb.Append("Renderer: DirectX\n\n");
-#endif
+
+                sb.Append("Platform: ").Append(MonoGame.Framework.Utilities.PlatformInfo.MonoGamePlatform.ToString()).Append("\n");
+                sb.Append("Renderer: ").Append(MonoGame.Framework.Utilities.PlatformInfo.GraphicsBackend.ToString()).Append("\n\n");
+
                 sb.Append($"Message: {exc.Message}\n\nStack Trace:\n");
                 sb.Append($"{exc.StackTrace}\n\n");
 

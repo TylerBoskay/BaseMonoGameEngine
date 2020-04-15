@@ -17,82 +17,163 @@ namespace TDMonoGameEngine
         /// <summary>
         /// The inputs handlers. The key is the player index, and the value is an input handler.
         /// </summary>
-        private static readonly Dictionary<int, InputHandler> InputHandlers = new Dictionary<int, InputHandler>();
+        private static readonly Dictionary<int, InputHandler> InputHandlers = new Dictionary<int, InputHandler>(1 + InputGlobals.MaxGamePadCount);
 
         static Input()
         {
-            InputHandlers.Add(0, InputHandler.CreateWithDefaultMappings(InputHandler.InputTypes.Keyboard));
+            InputHandler inputHandler = InputHandler.CreateWithDefaultMappings(InputHandler.InputTypes.Keyboard, 0, 0);
+            InputHandlers.Add(0, inputHandler);
+
+            //Add input handlers for all possible gamepads
+            int maxIndex = InputGlobals.GamePadInputIndex + InputGlobals.MaxGamePadCount;
+            for (int i = InputGlobals.GamePadInputIndex; i < maxIndex; i++)
+            {
+                InputHandler inputHandlerGamePad = InputHandler.CreateWithDefaultMappings(InputHandler.InputTypes.GamePad, i, i - InputGlobals.GamePadInputIndex);
+                InputHandlers.Add(i, inputHandlerGamePad);
+            }
         }
 
         /// <summary>
         /// Sets the default mapping of an input for a player.
         /// </summary>
-        /// <param name="playerIndex">The index of the player.</param>
+        /// <param name="inputIndex">The index of the player.</param>
         /// <param name="inputType">The input type.</param>
-        public static void SetDefaultMapping(in int playerIndex, in InputHandler.InputTypes inputType)
+        public static void SetDefaultMapping(in int inputIndex, in InputHandler.InputTypes inputType)
         {
-            if (InputHandlers.ContainsKey(playerIndex) == false)
+            if (InputHandlers.TryGetValue(inputIndex, out InputHandler handler) == false)
             {
                 return;
             }
 
-            InputHandlers[playerIndex].SetDefaultMappings(inputType);
+            handler.SetDefaultMappings(inputType);
+        }
+
+        /// <summary>
+        /// Returns the InputHandler at the given input index if one is found, otherwise null.
+        /// </summary>
+        /// <param name="inputIndex">The input index.</param>
+        /// <returns>The InputHandler at <paramref name="inputIndex"/> if found, otherwise null.</returns>
+        public static InputHandler GetInputHandler(in int inputIndex)
+        {
+            InputHandlers.TryGetValue(inputIndex, out InputHandler handler);
+
+            return handler;
         }
 
         /// <summary>
         /// Gets the axis value for a player.
         /// </summary>
-        /// <param name="playerIndex">The index of the player.</param>
+        /// <param name="inputIndex">The index of the player.</param>
         /// <param name="action">The action to get the axis value for.</param>
         /// <returns>A float from -1 to 1 representing the axis value.</returns>
-        public static float GetAxis(in int playerIndex, in string action)
+        public static float GetAxis(in int inputIndex, in string action)
         {
-            if (InputHandlers.ContainsKey(playerIndex) == false)
+            if (InputHandlers.TryGetValue(inputIndex, out InputHandler handler) == false)
                 return 0f;
 
-            return InputHandlers[playerIndex].GetAxis(playerIndex, action);
+            return handler.GetAxis(action);
         }
 
         /// <summary>
         /// Tells whether a button is pressed for a player.
         /// </summary>
-        /// <param name="playerIndex">The index of the player.</param>
+        /// <param name="inputIndex">The index of the player.</param>
         /// <param name="action">The action to get the axis value for.</param>
         /// <returns>true if the button is pressed, otherwise false.</returns>
-        public static bool GetButton(in int playerIndex, in string action)
+        public static bool GetButton(in int inputIndex, in string action)
         {
-            if (InputHandlers.ContainsKey(playerIndex) == false)
+            if (InputHandlers.TryGetValue(inputIndex, out InputHandler handler) == false)
                 return false;
 
-            return InputHandlers[playerIndex].GetButton(playerIndex, action);
+            return handler.GetButton(action);
         }
 
         /// <summary>
         /// Tells whether a button was just pressed for a player.
         /// </summary>
-        /// <param name="playerIndex">The index of the player.</param>
+        /// <param name="inputIndex">The index of the player.</param>
         /// <param name="action">The action to get the axis value for.</param>
         /// <returns>true if the button was just pressed, otherwise false.</returns>
-        public static bool GetButtonDown(in int playerIndex, in string action)
+        public static bool GetButtonDown(in int inputIndex, in string action)
         {
-            if (InputHandlers.ContainsKey(playerIndex) == false)
+            if (InputHandlers.TryGetValue(inputIndex, out InputHandler handler) == false)
                 return false;
 
-            return InputHandlers[playerIndex].GetButtonDown(playerIndex, action);
+            return handler.GetButtonDown(action);
         }
 
         /// <summary>
         /// Tells whether a button was just released for a player.
         /// </summary>
-        /// <param name="playerIndex">The index of the player.</param>
+        /// <param name="inputIndex">The index of the player.</param>
         /// <param name="action">The action to get the axis value for.</param>
         /// <returns>true if the button was just released, otherwise false.</returns>
-        public static bool GetButtonUp(in int playerIndex, in string action)
+        public static bool GetButtonUp(in int inputIndex, in string action)
         {
-            if (InputHandlers.ContainsKey(playerIndex) == false)
+            if (InputHandlers.TryGetValue(inputIndex, out InputHandler handler) == false)
                 return false;
 
-            return InputHandlers[playerIndex].GetButtonUp(playerIndex, action);
+            return handler.GetButtonUp(action);
+        }
+
+        /// <summary>
+        /// Tells whether a button is pressed for any player.
+        /// </summary>
+        /// <param name="action">The action to get the axis value for.</param>
+        /// <returns>true if the button is pressed, otherwise false.</returns>
+        public static bool GetButton(in string action)
+        {
+            int count = InputHandlers.Keys.Count;
+
+            for (int i = 0; i < count; i++)
+            {
+                if (GetButton(i, action) == true)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Tells whether a button was just pressed for any player.
+        /// </summary>
+        /// <param name="action">The action to get the axis value for.</param>
+        /// <returns>true if the button was just pressed, otherwise false.</returns>
+        public static bool GetButtonDown(in string action)
+        {
+            int count = InputHandlers.Keys.Count;
+
+            for (int i = 0; i < count; i++)
+            {
+                if (GetButtonDown(i, action) == true)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Tells whether a button was just released for any player.
+        /// </summary>
+        /// <param name="action">The action to get the axis value for.</param>
+        /// <returns>true if the button was just released, otherwise false.</returns>
+        public static bool GetButtonUp(in string action)
+        {
+            int count = InputHandlers.Keys.Count;
+
+            for (int i = 0; i < count; i++)
+            {
+                if (GetButtonUp(i, action) == true)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -114,7 +195,7 @@ namespace TDMonoGameEngine
         {
             foreach (KeyValuePair<int, InputHandler> inputs in InputHandlers)
             {
-                inputs.Value.UpdateInputState(inputs.Key);
+                inputs.Value.UpdateInputState();
             }
         }
     }

@@ -58,7 +58,7 @@ namespace TDMonoGameEngine
 
         public override void Update()
         {
-            ElapsedTime += Time.ElapsedMilliseconds;
+            ElapsedTime += Time.ElapsedTime.TotalMilliseconds;
 
             if (ElapsedTime >= UpdateRate)
             {

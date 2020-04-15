@@ -34,7 +34,7 @@ namespace TDMonoGameEngine
         /// <param name="key">The key to test.</param>
         /// <param name="keyboardState">The KeyboardState to check.</param>
         /// <returns>true if the key is pressed on the KeyboardState, otherwise false.</returns>
-        public static bool GetKey(in Keys key, in KeyboardState keyboardState)
+        public static bool GetKey(in Keys key, KeyboardState keyboardState)
         {
             return keyboardState.IsKeyDown(key);
         }
@@ -55,9 +55,21 @@ namespace TDMonoGameEngine
         /// <param name="key">The key to test.</param>
         /// <param name="keyboardState">The KeyboardState to check.</param>
         /// <returns>true if the key on the KeyboardState was just released, otherwise false.</returns>
-        public static bool GetKeyUp(in Keys key, in KeyboardState keyboardState)
+        public static bool GetKeyUp(in Keys key, KeyboardState keyboardState)
         {
             return (keyboardState.IsKeyDown(key) == true && KBState.IsKeyUp(key) == true);
+        }
+
+        /// <summary>
+        /// Tells if a key on a KeyboardState was just released.
+        /// </summary>
+        /// <param name="key">The key to test.</param>
+        /// <param name="keyboardState">The KeyboardState to check.</param>
+        /// <param name="checkKBState">The KeyboardState to compare with. This is often the most up-to-date one.</param>
+        /// <returns>true if the key on the KeyboardState was just released, otherwise false.</returns>
+        public static bool GetKeyUp(in Keys key, KeyboardState keyboardState, KeyboardState checkKBState)
+        {
+            return (keyboardState.IsKeyDown(key) == true && checkKBState.IsKeyUp(key) == true);
         }
 
         /// <summary>
@@ -76,28 +88,55 @@ namespace TDMonoGameEngine
         /// <param name="key">The key to test.</param>
         /// <param name="keyboardState">The KeyboardState to check.</param>
         /// <returns>true if the key on the KeyboardState was just pressed, otherwise false.</returns>
-        public static bool GetKeyDown(in Keys key, in KeyboardState keyboardState)
+        public static bool GetKeyDown(in Keys key, KeyboardState keyboardState)
         {
             return (keyboardState.IsKeyUp(key) == true && KBState.IsKeyDown(key) == true);
         }
 
         /// <summary>
+        /// Tells if a key on a KeyboardState was just pressed.
+        /// </summary>
+        /// <param name="key">The key to test.</param>
+        /// <param name="keyboardState">The KeyboardState to check.</param>
+        /// <param name="checkKBState">The KeyboardState to compare with. This is often the most up-to-date one.</param>
+        /// <returns>true if the key on the KeyboardState was just pressed, otherwise false.</returns>
+        public static bool GetKeyDown(in Keys key, KeyboardState keyboardState, KeyboardState checkKBState)
+        {
+            return (keyboardState.IsKeyUp(key) == true && checkKBState.IsKeyDown(key) == true);
+        }
+
+        /// <summary>
+        /// Finds and returns the first key on the keyboard that was just pressed in a set of keys.
+        /// </summary>
+        /// <param name="keys">The set of keys to test.</param>
+        /// <returns>The key in the set that was pressed, otherwise <see cref="Keys.None"/>.</returns>
+        public static Keys GetKeyDownInRange(Keys[] keys)
+        {
+            if (keys == null) return Keys.None;
+
+            for (int i = 0; i < keys.Length; i++)
+            {
+                if (GetKeyDown(keys[i]) == true) return keys[i];
+            }
+
+            return Keys.None;
+        }
+
+        /// <summary>
         /// Clears the keyboard input state.
         /// </summary>
-        /// <param name="keys">An optional array of Keys to be marked as pressed initially.</param>
-        public static void ClearKeyboardState(params Keys[] keys)
+        public static void ClearKeyboardState()
         {
-            InputKeyboard = new KeyboardState(keys);
+            InputKeyboard = new KeyboardState(null);
         }
 
         /// <summary>
         /// Clears the keyboard input state.
         /// </summary>
         /// <param name="keyboardState">The KeyboardState to clear.</param>
-        /// <param name="keys">An optional array of Keys to be marked as pressed initially.</param>
-        public static void ClearKeyboardState(ref KeyboardState keyboardState, params Keys[] keys)
+        public static void ClearKeyboardState(ref KeyboardState keyboardState)
         {
-            keyboardState = new KeyboardState(keys);
+            keyboardState = new KeyboardState(null);
         }
 
         /// <summary>

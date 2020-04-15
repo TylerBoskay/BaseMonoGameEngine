@@ -56,10 +56,28 @@ namespace TDMonoGameEngine
         {
             MoveSpeed = Vector2.Zero;
 
-            MoveSpeed.X = Input.GetAxis(0, InputActions.Horizontal) * PlayerRef.Speed.X;
-            MoveSpeed.Y = Input.GetAxis(0, InputActions.Vertical) * PlayerRef.Speed.Y;
+            if (Input.GetButton(InputActions.Left) == true)
+            {
+                MoveSpeed.X = -1f;
+            }
+            else if (Input.GetButton(InputActions.Right) == true)
+            {
+                MoveSpeed.X = 1f;
+            }
 
-            if (Input.GetButtonDown(0, InputActions.B) == true)
+            if (Input.GetButton(InputActions.Up) == true)
+            {
+                MoveSpeed.Y = -1f;
+            }
+            else if (Input.GetButton(InputActions.Down) == true)
+            {
+                MoveSpeed.Y = 1f;
+            }
+
+            MoveSpeed.X *= PlayerRef.Speed.X;
+            MoveSpeed.Y *= PlayerRef.Speed.Y;
+
+            if (Input.GetButtonDown(InputActions.B) == true)
             {
                 PlayerRef.ChangeState(new PlayerAttackState(PlayerRef, GetAttackVec));
             }
@@ -86,9 +104,9 @@ namespace TDMonoGameEngine
             UpdatePos();
             CheckChange();
 
-            if (Input.GetButton(0, InputActions.B) == true)
+            if (Input.GetButton(InputActions.B) == true)
             {
-                ChargeTime += Time.ElapsedMilliseconds;
+                ChargeTime += Time.ElapsedTime.TotalMilliseconds;
                 double chargeRate = CHARGE_COLOR_RATE;
                 if (ChargeTime > MAX_CHARGE)
                     chargeRate = FULL_CHARGE_COLOR_RATE;

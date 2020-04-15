@@ -16,8 +16,8 @@ namespace TDMonoGameEngine
     {
         public int Health = 31;
         public int MaxHealth = 38;
-
-        public Vector2 Speed = new Vector2(2f, 2f);
+        
+        public Vector2 Speed = new Vector2(1f, 1f);
 
         public AnimManager AnimationManager { get; private set; } = null;
         public SpriteRenderer spriteRenderer { get; private set; } = null;
