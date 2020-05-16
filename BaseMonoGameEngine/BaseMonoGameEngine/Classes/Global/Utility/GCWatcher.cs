@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TDMonoGameEngine
+namespace BaseMonoGameEngine
 {
     /// <summary>
     /// A static class for watching GC activity within any range of code.

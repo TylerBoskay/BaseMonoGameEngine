@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TDMonoGameEngine
+namespace BaseMonoGameEngine
 {
     /// <summary>
     /// A test game HUD. Tests drawing health in a unique way (Illusion of Gaia/Time's method)
@@ -42,7 +42,7 @@ namespace TDMonoGameEngine
             renderer = hudRenderer;
             renderer.Order = renderOrder;
 
-            Texture2D tex = AssetManager.Instance.LoadRawTexture2D($"{ContentGlobals.UIRoot}HUD.png");
+            Texture2D tex = AssetManager.Instance.LoadAsset<Texture2D>($"{ContentGlobals.UIRoot}HUD");
 
             EmptyHealth = new Sprite(tex, new Rectangle(220, 47, 4, 4));
             HalfHealth = new Sprite(tex, new Rectangle(228, 46, 5, 5));

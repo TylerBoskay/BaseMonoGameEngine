@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace TDMonoGameEngine
+namespace BaseMonoGameEngine
 {
     /// <summary>
     /// The buttons on a mouse.

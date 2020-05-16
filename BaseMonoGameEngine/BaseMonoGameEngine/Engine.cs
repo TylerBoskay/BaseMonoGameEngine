@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace TDMonoGameEngine
+namespace BaseMonoGameEngine
 {
     /// <summary>
     /// The entry point to the engine.

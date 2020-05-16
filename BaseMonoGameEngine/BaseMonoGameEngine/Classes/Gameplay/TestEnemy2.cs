@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TDMonoGameEngine
+namespace BaseMonoGameEngine
 {
     public class TestEnemy2 : SceneObject
     {
@@ -18,7 +18,7 @@ namespace TDMonoGameEngine
         {
             transform.Position = new Vector2(-100, 0);
 
-            Texture2D tex = AssetManager.Instance.LoadRawTexture2D($"{ContentGlobals.SpriteRoot}Enemies.png");
+            Texture2D tex = AssetManager.Instance.LoadAsset<Texture2D>($"{ContentGlobals.SpriteRoot}Enemies");
 
             spriteRenderer = new SpriteRenderer(transform, new Sprite(tex, new Rectangle(2, 2, 30, 32)));
 

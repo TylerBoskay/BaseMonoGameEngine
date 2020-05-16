@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Audio;
 
-namespace TDMonoGameEngine
+namespace BaseMonoGameEngine
 {
     public class PlayerAttackState : PlayerStateMachine
     {
@@ -19,7 +20,7 @@ namespace TDMonoGameEngine
 
         public override void Enter()
         {
-            SoundManager.Instance.PlaySound(AssetManager.Instance.LoadRawSound($"{ContentGlobals.AudioRoot}SFX/Attack.wav"), false);
+            SoundManager.Instance.PlaySound(AssetManager.Instance.LoadAsset<SoundEffect>($"{ContentGlobals.SFXRoot}Attack"), false);
 
             PlayerRef.spriteRenderer.FlipData = SpriteEffects.None;
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TDMonoGameEngine
+namespace BaseMonoGameEngine
 {
     /// <summary>
     /// A 9-sliced Sprite. It produces a set of source rectangles that slice the Sprite into 9 slices, which can be used for rendering.

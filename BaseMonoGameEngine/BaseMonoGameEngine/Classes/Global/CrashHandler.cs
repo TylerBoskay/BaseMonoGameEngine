@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TDMonoGameEngine
+namespace BaseMonoGameEngine
 {
     /// <summary>
     /// Handles crashes through unhandled exceptions.
@@ -45,7 +45,7 @@ namespace TDMonoGameEngine
                 StringBuilder sb = new StringBuilder();
 
                 //Dump the message, stack trace, and logs
-                sb.Append($"Uh oh, looks like {Engine.GameName} crashed :(. Please report this crash by submitting this log file to emailhere@email.com.\n\n");
+                sb.Append($"Uh oh, looks like {Engine.GameName} crashed :(. Please report this crash by submitting this log file to the developer.\n\n");
                 sb.Append($"OS Version: {Debug.DebugGlobals.GetOSInfo()}\n");
 
                 sb.Append("Platform: ").Append(MonoGame.Framework.Utilities.PlatformInfo.MonoGamePlatform.ToString()).Append("\n");
@@ -71,7 +71,7 @@ namespace TDMonoGameEngine
                 }
 
                 //On Windows, show an error message box
-#if WINDOWS || DEBUG
+#if false//WINDOWS || DEBUG
                 string thing = $"Uh oh, looks like {Engine.GameName} crashed :(. Please report this crash by submitting the file found at the following path to emailhere@email.com.\n\n\"{fileName}\"\n\nCrash Message: { exc.Message}";
 
                 System.Windows.Forms.MessageBox.Show(thing, $"{Engine.GameName} crashed!", System.Windows.Forms.MessageBoxButtons.OK,

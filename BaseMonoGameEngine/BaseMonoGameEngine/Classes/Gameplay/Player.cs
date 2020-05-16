@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace TDMonoGameEngine
+namespace BaseMonoGameEngine
 {
     /// <summary>
     /// Player object
@@ -27,7 +27,7 @@ namespace TDMonoGameEngine
 
         public Player()
         {
-            Sprite playerSprite = new Sprite(AssetManager.Instance.LoadRawTexture2D($"{ContentGlobals.SpriteRoot}Will.png"),
+            Sprite playerSprite = new Sprite(AssetManager.Instance.LoadAsset<Texture2D>($"{ContentGlobals.SpriteRoot}Will"),
                 new Rectangle(210, 374, 25, 38));
             playerSprite.Pivot.Y = 1f;
 

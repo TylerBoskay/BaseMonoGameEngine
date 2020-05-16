@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
-namespace TDMonoGameEngine
+namespace BaseMonoGameEngine
 {
     public class SlicedSpriteRenderer : SpriteRenderer
     {

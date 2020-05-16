@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TDMonoGameEngine
+namespace BaseMonoGameEngine
 {
     public sealed class TestEnemy : SceneObject
     {
@@ -14,7 +14,7 @@ namespace TDMonoGameEngine
         {
             Name = "Pokey";
 
-            Texture2D tex = AssetManager.Instance.LoadRawTexture2D($"{ContentGlobals.SpriteRoot}Pokey.png");
+            Texture2D tex = AssetManager.Instance.LoadAsset<Texture2D>($"{ContentGlobals.SpriteRoot}Pokey");
 
             PokeyRenderer pokeyRender = new PokeyRenderer(transform, null);
 
@@ -27,11 +27,11 @@ namespace TDMonoGameEngine
 
             renderer = pokeyRender;
 
-            Effect outlineShader = AssetManager.Instance.LoadAsset<Effect>($"{ContentGlobals.ShaderRoot}Outline");
-            outlineShader.Parameters["outlineColor"].SetValue(new Vector4(1, 1, 1, 1));
-            outlineShader.Parameters["sheetSize"].SetValue(new Vector2(tex.Width, tex.Height));
-
-            renderer.Shader = outlineShader;
+            //Effect outlineShader = AssetManager.Instance.LoadAsset<Effect>($"{ContentGlobals.ShaderRoot}Outline");
+            //outlineShader.Parameters["outlineColor"].SetValue(new Vector4(1, 1, 1, 1));
+            //outlineShader.Parameters["sheetSize"].SetValue(new Vector2(tex.Width, tex.Height));
+            //
+            //renderer.Shader = outlineShader;
 
 
             transform.Position = new Vector2(100, 0);

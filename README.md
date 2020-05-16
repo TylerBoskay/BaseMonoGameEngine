@@ -1,9 +1,9 @@
-# TDMonoGameEngine
-A 2D MonoGame engine with flexible core fuctionality and useful wrappers and utilities.
+# BaseMonoGameEngine
+A simple 2D MonoGame boilerplate engine with useful wrappers and utilities.
 
 This simple engine aims to eliminate a lot of boilerplate code by providing the following:
 * Several debug features (frame-by-frame stepping, logs, FPS counter, rendering statistics)
-* Keyboard, mouse, and joystick input wrappers
+* Keyboard, mouse, gamepad, and joystick input wrappers
 * 2D camera
 * Finite state machine for game states
 * Injectable debug update and draw routines, which can also be unique to certain game states
@@ -18,4 +18,4 @@ This simple engine aims to eliminate a lot of boilerplate code by providing the 
 * Crash handler that works on Windows, macOS, and Linux
 * And more!
 
-This engine is primarily made for 2D games on desktop platforms, but it can easily be extended to work with other platforms. If you'd like to add onto this engine, feel free to submit a PR.
+This engine is primarily made for 2D games on desktop platforms. If you'd like to add onto this engine, feel free to submit a PR.

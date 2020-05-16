@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace TDMonoGameEngine
+namespace BaseMonoGameEngine
 {
     /// <summary>
     /// Static class for debugging
@@ -285,15 +285,15 @@ namespace TDMonoGameEngine
                 //Take screenshot
                 else if (KeyboardInput.GetKeyDown(Keys.S, DebugKeyboard))
                 {
-#if WINDOWS || DEBUG
+#if false//WINDOWS || DEBUG
                     TakeScreenshotWindows();
-#elif !WINDOWS
+#else//#elif !WINDOWS
                     TakeScreenshotNonWindows();
 #endif
                 }
                 else if (KeyboardInput.GetKeyDown(Keys.M, DebugKeyboard))
                 {
-#if WINDOWS || DEBUG
+#if false//WINDOWS || DEBUG
                     //Log dump
                     DumpLogs();
 #endif
@@ -382,7 +382,7 @@ namespace TDMonoGameEngine
             KeyboardInput.UpdateKeyboardState(ref DebugKeyboard);
         }
 
-#if WINDOWS || DEBUG
+#if false//WINDOWS || DEBUG
         /// <summary>
         /// Takes a screenshot of the screen. This uses a SaveFileDialog and only works on Windows platforms.
         /// </summary>
@@ -493,7 +493,7 @@ namespace TDMonoGameEngine
             return screenshot;
         }
 
-#if WINDOWS || DEBUG
+#if false//WINDOWS || DEBUG
 
         /// <summary>
         /// Dumps the current debug logs to a .txt file.
