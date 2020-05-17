@@ -9,7 +9,7 @@ namespace BaseMonoGameEngine
     /// <summary>
     /// An object in a game scene.
     /// </summary>
-    public abstract class SceneObject : INameable, ITransformable, IUpdateable, IRenderable, IEnableable, ICleanup
+    public abstract class SceneObject : INameable, ITransformable, IUpdateable, IEnableable, ICleanup
     {
         /// <summary>
         /// The GameScene the SceneObject belongs to.
@@ -25,11 +25,6 @@ namespace BaseMonoGameEngine
         /// The Transform of the SceneObject.
         /// </summary>
         public Transform transform { get; set; } = new Transform();
-
-        /// <summary>
-        /// The Renderer of the SceneObject.
-        /// </summary>
-        public Renderer renderer { get; set; } = null;
 
         /// <summary>
         /// Whether the SceneObject is enabled or not.

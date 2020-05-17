@@ -18,6 +18,8 @@ namespace BaseMonoGameEngine
     public static class Debug
     {
         private const string ScreenshotFolderName = "Screenshots";
+        private const string LogFolderName = "Logs";
+        private const string CrashFolderName = "Crash Logs";
 
         /// <summary>
         /// A delegate for custom debug commands.
@@ -103,6 +105,16 @@ namespace BaseMonoGameEngine
                 return debugUIBatch;
             }
         }
+
+        /// <summary>
+        /// Whether to draw debug stats and invoke custom debug drawing methods.
+        /// </summary>
+        private static bool DrawStatsAndCustomDebug = true;
+
+        /// <summary>
+        /// A camera that can be used to help render debug information.
+        /// </summary>
+        public static Camera2D DebugCamera { get; private set; } = null;
 
         /// <summary>
         /// A separate SpriteBatch for debugging.
@@ -206,6 +218,19 @@ namespace BaseMonoGameEngine
             WriteLine(value);
         }
 
+        /// <summary>
+        /// Debug pauses the game.
+        /// </summary>
+        public static void Pause()
+        {
+            if (DebugEnabled == false)
+            {
+                return;
+            }
+
+            DebugPaused = true;
+        }
+
         public static void Log(in object value)
         {
             if (LogsEnabled == false || DebugLogTypesHasFlag(LogLevels, DebugLogTypes.Information) == false) return;
@@ -237,6 +262,11 @@ namespace BaseMonoGameEngine
         {
             if (condition == false)
                 LogAssert();
+        }
+
+        public static void SetDebugCamera(Camera2D camera)
+        {
+            DebugCamera = camera;
         }
 
         public static void DebugUpdate()
@@ -295,7 +325,9 @@ namespace BaseMonoGameEngine
                 {
 #if false//WINDOWS || DEBUG
                     //Log dump
-                    DumpLogs();
+                    DumpLogsWindows();
+#else
+                    DumpLogsNonWindows();
 #endif
                 }
                 //FPS increase
@@ -328,47 +360,17 @@ namespace BaseMonoGameEngine
                 {
                     DebugDrawEnabled = !DebugDrawEnabled;
                 }
-            }
-
-            //Camera controls
-            if (KeyboardInput.GetKey(Keys.LeftShift, DebugKeyboard))
-            {
-                Camera2D camera = null;
-                if (SceneManager.HasInstance == true && SceneManager.Instance.ActiveScene != null)
+                //Force a GC collect
+                else if (KeyboardInput.GetKeyDown(Keys.G, DebugKeyboard))
                 {
-                    camera = SceneManager.Instance.ActiveScene.Camera;
+                    Debug.Log("Forcing GC Collect!");
+
+                    GC.Collect();
                 }
-
-                if (KeyboardInput.GetKeyDown(Keys.Space, DebugKeyboard))
+                //Toggle drawing debug information, including custom
+                else if (KeyboardInput.GetKeyDown(Keys.H, DebugKeyboard))
                 {
-                    //Reset camera coordinates
-                    camera?.SetTranslation(Vector2.Zero);
-                    camera?.SetRotation(0f);
-                    camera?.SetZoom(1f);
-                }
-                else
-                {
-                    Vector2 translation = Vector2.Zero;
-                    float rotation = 0f;
-                    float zoom = 0f;
-
-                    //Translation
-                    if (KeyboardInput.GetKey(Keys.Left, DebugKeyboard)) translation.X -= 2;
-                    if (KeyboardInput.GetKey(Keys.Right, DebugKeyboard)) translation.X += 2;
-                    if (KeyboardInput.GetKey(Keys.Down, DebugKeyboard)) translation.Y += 2;
-                    if (KeyboardInput.GetKey(Keys.Up, DebugKeyboard)) translation.Y -= 2;
-
-                    //Rotation
-                    if (KeyboardInput.GetKey(Keys.OemComma, DebugKeyboard)) rotation -= .1f;
-                    if (KeyboardInput.GetKey(Keys.OemPeriod, DebugKeyboard)) rotation += .1f;
-
-                    //Scale
-                    if (KeyboardInput.GetKey(Keys.OemMinus, DebugKeyboard)) zoom -= .1f;
-                    if (KeyboardInput.GetKey(Keys.OemPlus, DebugKeyboard)) zoom += .1f;
-
-                    if (translation != Vector2.Zero) camera?.Translate(translation);
-                    if (rotation != 0f) camera?.Rotate(rotation);
-                    if (zoom != 0f) camera?.Zoom(zoom);
+                    DrawStatsAndCustomDebug = !DrawStatsAndCustomDebug;
                 }
             }
 
@@ -467,6 +469,12 @@ namespace BaseMonoGameEngine
             else return curPath + index + ".png";
         }
 
+        private static string GetNextLogPath(in string curPath, int? index)
+        {
+            if (index == null) return curPath + ".txt";
+            else return curPath + " " + index + ".txt";
+        }
+
         /// <summary>
         /// Gets what is currently rendered on the backbuffer and returns it in a Texture2D.
         /// <para>IMPORTANT: Dispose the Texture2D when you're done with it.</para>
@@ -498,7 +506,7 @@ namespace BaseMonoGameEngine
         /// <summary>
         /// Dumps the current debug logs to a .txt file.
         /// </summary>
-        public static void DumpLogs()
+        public static void DumpLogsWindows()
         {
             string initFileName = "Log Dump " + DebugGlobals.GetFileFriendlyTimeStamp();
 
@@ -518,7 +526,45 @@ namespace BaseMonoGameEngine
                 }
             }
         }
+#else
+        /// <summary>
+        /// Dumps the current debug logs to a .txt file on non-windows platforms.
+        /// </summary>
+        private static void DumpLogsNonWindows()
+        {
+            /* Non-Windows platforms can't use System.Windows.Forms on Mono, so we'll put all logs in a dedicated folder */
+            string logFolderPath = Path.Combine(Environment.CurrentDirectory, LogFolderName);
 
+            //Create the directory if it doesn't exist
+            if (Directory.Exists(logFolderPath) == false)
+            {
+                Directory.CreateDirectory(logFolderPath);
+            }
+
+            string fileName = "GameLog - " + DebugGlobals.GetFileFriendlyTimeStamp();
+            string filePath = Path.Combine(logFolderPath, fileName);
+
+            int? index = null;
+
+            string finalPath = GetNextLogPath(filePath, index);
+
+            //Keep searching for the next file name
+            while (File.Exists(finalPath) == true)
+            {
+                if (index == null) index = 0;
+                else index++;
+
+                finalPath = GetNextLogPath(filePath, index);
+            }
+
+            //Dump the logs to the file
+            using (StreamWriter writer = File.CreateText(finalPath))
+            {
+                writer.Write($"Log Dump:\n{Debug.LogDump.ToString()}");
+
+                writer.Flush();
+            }
+        }
 #endif
 
         /// <summary>
@@ -529,20 +575,18 @@ namespace BaseMonoGameEngine
         /// <returns>true if any of the flags in debugLogTypes are in debugLogTypesFlags, otherwise false.</returns>
         public static bool DebugLogTypesHasFlag(in Debug.DebugLogTypes debugLogTypes, in Debug.DebugLogTypes debugLogTypesFlags)
         {
-            Debug.DebugLogTypes flags = (debugLogTypes & debugLogTypesFlags);
-
-            return (flags != 0);
+            return EnumUtility.HasEnumVal((long)debugLogTypes, (long)debugLogTypesFlags);
         }
 
-    #region Custom Debug Command and Drawing Methods
+        #region Custom Debug Command and Drawing Methods
 
         /// <summary>
-        /// Injects a custom debug command at the end of the debug update loop.
+        /// Adds a custom debug command at the end of the debug update loop.
         /// This method will be invoked even if the game is paused through debug, provided debug is enabled.
         /// </summary>
         /// <param name="debugCommand">The debug command to inject.</param>
         /// <param name="index">The index to insert the debug command at. If less than 0, it will add it to the end of the list.</param>
-        public static void InjectCustomDebugCommand(in DebugCommand debugCommand, int index = -1)
+        public static void AddCustomDebugCommand(in DebugCommand debugCommand, int index = -1)
         {
             if (index < 0)
             {
@@ -607,11 +651,11 @@ namespace BaseMonoGameEngine
             CustomDebugDrawMethods.Clear();
         }
 
-    #endregion
+        #endregion
 
         public static void DebugStartDraw()
         {
-            DebugSpriteBatch?.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, SceneManager.Instance.ActiveScene.Camera?.TransformMatrix);
+            DebugSpriteBatch?.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, DebugCamera?.TransformMatrix);
             DebugUIBatch?.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, null, null, null, null, null);
         }
 
@@ -628,15 +672,9 @@ namespace BaseMonoGameEngine
             //FPS counter
             FPSCounter.Draw();
 
-            SpriteFont font = AssetManager.Instance.LoadAsset<SpriteFont>($"{ContentGlobals.FontRoot}Font");
+            SpriteFont font = AssetManager.Instance.LoadFont("Font");
 
-#if LINUX
-            string rendererStr = "Renderer: OpenGL";
-#elif WINDOWS
-            string rendererStr = "Renderer: DirectX";
-#endif
-
-            debugUIBatch.DrawString(font, rendererStr, new Vector2(640, 0), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
+            debugUIBatch.DrawString(font, $"Renderer: {MonoGame.Framework.Utilities.PlatformInfo.GraphicsBackend}", new Vector2(640, 0), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
 
             debugUIBatch.DrawString(font, "Fixed Timestep: " + (Time.TimeStep == TimestepSettings.Fixed ? "True" : "False"),
                 new Vector2(640, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, .1f);
@@ -667,14 +705,11 @@ namespace BaseMonoGameEngine
             Vector2 memBasePos = new Vector2(0, 200);
             debugUIBatch.DrawString(font, "Managed Memory: " + Math.Round((GC.GetTotalMemory(false) / 1024f) / 1024f, 2) + " MB", memBasePos, Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
 
-            //Camera info
-            if (SceneManager.HasInstance == true && SceneManager.Instance.ActiveScene != null && SceneManager.Instance.ActiveScene.Camera != null)
+            //Loaded assets
+            if (AssetManager.Instance != null)
             {
-                Vector2 cameraBasePos = new Vector2(0, 390);
-                DebugUIBatch?.DrawString(font, "Camera:", cameraBasePos, Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
-                DebugUIBatch?.DrawString(font, $"Pos: {SceneManager.Instance.ActiveScene.Camera.Position}", cameraBasePos + new Vector2(0, 20), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
-                DebugUIBatch?.DrawString(font, $"Rot: {SceneManager.Instance.ActiveScene.Camera.Rotation}", cameraBasePos + new Vector2(0, 40), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
-                DebugUIBatch?.DrawString(font, $"Zoom: {SceneManager.Instance.ActiveScene.Camera.Scale}", cameraBasePos + new Vector2(0, 60), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
+                debugUIBatch.DrawString(font, "Loaded Assets: " + AssetManager.Instance.GetTotalLoadedAssetCounts(),
+                    memBasePos + new Vector2(0f, 20), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, .1f);
             }
 
             //Invoke custom drawing methods
@@ -710,7 +745,17 @@ namespace BaseMonoGameEngine
             /// <returns>A string representing current local time.</returns>
             public static string GetFileFriendlyTimeStamp()
             {
-                string time = DateTime.Now.ToString();
+                return GetFileFriendlyTimeStamp(DateTime.Now);
+            }
+
+            /// <summary>
+            /// Returns a file friendly time stamp of a given time.
+            /// </summary>
+            /// <param name="dateTime">A given DateTime.</param>
+            /// <returns>A string representing the given time.</returns>
+            public static string GetFileFriendlyTimeStamp(DateTime dateTime)
+            {
+                string time = dateTime.ToString();
                 time = time.Replace(':', '-');
                 time = time.Replace('/', '-');
 
@@ -781,9 +826,9 @@ namespace BaseMonoGameEngine
             }
 
             /// <summary>
-            /// Retrieves more detailed information about a Linux OS by reading from its lsb-release file.
+            /// Retrieves more detailed information about a Linux distro by reading from its lsb-release file.
             /// </summary>
-            /// <returns>A string representing the Linux ID and Release number. If the file isn't found or accessible, then null.</returns>
+            /// <returns>A string representing the Distributor ID, Release number, and codename. If the file isn't found or accessible, then null.</returns>
             private static string GetDetailedLinuxOSInfo()
             {
                 //Try to find the OS info in the "/etc/lsb-release" file

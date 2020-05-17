@@ -31,6 +31,28 @@ namespace BaseMonoGameEngine
             Pivot = pivot;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is AnimationFrame animFrame)
+            {
+                return (DrawRegion == animFrame.DrawRegion && Duration == animFrame.Duration && Pivot == animFrame.Pivot);
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = (hash * 19) + DrawRegion.GetHashCode();
+                hash = (hash * 19) + Duration.GetHashCode();
+                hash = (hash * 19) + Pivot.GetHashCode();
+                return hash;
+            }
+        }
+
         public AnimationFrame Copy()
         {
             return new AnimationFrame(DrawRegion, Duration, Pivot);

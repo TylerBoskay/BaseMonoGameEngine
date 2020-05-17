@@ -11,26 +11,20 @@ namespace BaseMonoGameEngine
     /// <summary>
     /// Handles simple sprite animation.
     /// </summary>
-    public class SimpleAnimation : IUpdateable
+    public class SimpleAnimation : IUpdateable, IAnimation
     {
-        public enum AnimTypes
-        {
-            Normal,
-            Looping
-        }
-
-        public Sprite SpriteToChange = null;
+        public Sprite SpriteToChange { get; set; } = null;
         protected readonly AnimationFrame[] AnimFrames = null;
 
         /// <summary>
         /// A key identifying the animation.
         /// </summary>
-        public string Key { get; private set; } = string.Empty;
+        public string Key { get; set; } = string.Empty;
 
         public int MaxFrameIndex => (AnimFrames.Length - 1);
         public int CurFrameIndex { get; protected set; } = 0;
 
-        public ref readonly AnimationFrame CurFrame => ref AnimFrames[CurFrameIndex];
+        public AnimationFrame CurFrame => AnimFrames[CurFrameIndex];
 
         public AnimTypes AnimType = AnimTypes.Normal;
         public int Loops { get; private set; } = 0;

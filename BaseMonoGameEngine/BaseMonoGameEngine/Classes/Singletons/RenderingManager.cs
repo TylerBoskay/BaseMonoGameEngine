@@ -73,8 +73,10 @@ namespace BaseMonoGameEngine
         /// <summary>
         /// The dimensions of the back buffer.
         /// </summary>
-        public Vector2 BackBufferDimensions => new Vector2(graphicsDevice.PresentationParameters.BackBufferWidth,
-            graphicsDevice.PresentationParameters.BackBufferHeight);
+        public Vector2 BackBufferDimensions
+        {
+            get => new Vector2(graphicsDevice.PresentationParameters.BackBufferWidth, graphicsDevice.PresentationParameters.BackBufferHeight);
+        }
 
         /// <summary>
         /// The minimum size of the game window.
@@ -128,11 +130,6 @@ namespace BaseMonoGameEngine
         /// </summary>
         private readonly List<Effect> PostProcessingEffects = new List<Effect>();
 
-        /// <summary>
-        /// The list of layered RenderTargets. These are rendered, in order, to the MainRenderTarget, which is then drawn to the backbuffer.
-        /// </summary>
-        private readonly List<RenderTarget2D> LayerRenderTargets = new List<RenderTarget2D>();
-
         private Color clearColor = Color.CornflowerBlue;
 
         /// <summary>
@@ -153,8 +150,6 @@ namespace BaseMonoGameEngine
         public void CleanUp()
         {
             RemoveAllPostProcessingEffects();
-            
-            LayerRenderTargets.Clear();
 
             MainRenderTarget.Dispose();
             PPRenderTarget.Dispose();
@@ -174,8 +169,6 @@ namespace BaseMonoGameEngine
             spriteBatch = new SpriteBatch(graphicsDevice);
 
             ResizeWindow(screenSize, true);
-
-            CenterWindow();
 
             //Keep the render targets at base resolution
             //They'll be upscaled or downscaled to the window size
@@ -350,59 +343,6 @@ namespace BaseMonoGameEngine
             PostProcessingEffects.Clear();
         }
 
-        /// <summary>
-        /// Renders a scene.
-        /// </summary>
-        /// <param name="scene">The scene to render.</param>
-        public void PerformRendering(in GameScene scene)
-        {
-            //Don't bother if the scene is null
-            if (scene == null)
-            {
-                Debug.LogError("Attempting to render a null scene!");
-                return;
-            }
-
-            //Get all renderers and render layers in the scene
-            List<Renderer> allRenderers = scene.GetActiveVisibleRenderersInScene();
-            List<RenderLayer> renderLayers = scene.GetRenderLayersInScene();
-
-            //Go through all render layers, find all Renderers that match the layer order, and render the layer with those Renderers
-            for (int i = 0; i < renderLayers.Count; i++)
-            {
-                RenderLayer layer = renderLayers[i];
-
-                //If the layer is disabled, don't render it
-                if (layer.Enabled == false)
-                    continue;
-
-                List<Renderer> renderersInLayer = new List<Renderer>();
-
-                for (int j = allRenderers.Count - 1; j >= 0; j--)
-                {
-                    Renderer rend = allRenderers[j];
-                    if (rend.Order == layer.LayerOrder)
-                    {
-                        renderersInLayer.Add(rend);
-                        allRenderers.RemoveAt(j);
-                    }
-                }
-
-                //Only render and add this layer's RenderTarget if there's something to render
-                if (renderersInLayer.Count != 0)
-                {
-                    //Render the layer
-                    layer.Render(renderersInLayer, scene.Camera);
-
-                    //Add the RenderTarget for this layer
-                    if (LayerRenderTargets.Contains(layer.RendTarget) == false)
-                    {
-                        LayerRenderTargets.Add(layer.RendTarget);
-                    }
-                }
-            }
-        }
-
         public void StartBatch(in SpriteBatch sb, in SpriteSortMode spriteSortMode, in BlendState blendState, in SamplerState samplerState,
             in DepthStencilState depthStencilState, in RasterizerState rasterizerState, in Effect shader, in Matrix? transformMatrix)
         {
@@ -418,32 +358,15 @@ namespace BaseMonoGameEngine
 
         public void StartDraw()
         {
-            //Start with no RenderTarget
-            graphicsDevice.SetRenderTarget(null);
+            //Start with the main RenderTarget
+            graphicsDevice.SetRenderTarget(MainRenderTarget);
+            graphicsDevice.Clear(ClearColor);
 
             StartedRendering = true;
         }
 
         public void EndDraw()
         {
-            //Set to the main RenderTarget and clear the screen
-            graphicsDevice.SetRenderTarget(MainRenderTarget);
-            graphicsDevice.Clear(ClearColor);
-
-            //Go through all RenderTargets in all layers and draw their contents, in order, to the main RenderTarget
-            for (int i = 0; i < LayerRenderTargets.Count; i++)
-            {
-                RenderTarget2D layerTarget = LayerRenderTargets[i];
-                StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, null, null);
-            
-                CurrentBatch.Draw(layerTarget, new Rectangle(0, 0, layerTarget.Width, layerTarget.Height), null, Color.White);
-            
-                EndCurrentBatch();
-            }
-            
-            //Clear layered targets, then prepare for post-processing effects
-            LayerRenderTargets.Clear();
-
             //Handle rendering multiple post-processing effects with two RenderTargets
             RenderTarget2D renderToTarget = PPRenderTarget;
             RenderTarget2D renderTarget = MainRenderTarget;
@@ -456,7 +379,7 @@ namespace BaseMonoGameEngine
                 graphicsDevice.Clear(ClearColor);
 
                 //Draw the RenderTarget with the shader
-                StartBatch(spriteBatch, SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, PostProcessingEffects[i], null);
+                StartBatch(spriteBatch, SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, PostProcessingEffects[i], null);
 
                 CurrentBatch.Draw(renderTarget, new Rectangle(0, 0, renderTarget.Width, renderTarget.Height), null, Color.White);
 
@@ -483,18 +406,6 @@ namespace BaseMonoGameEngine
             RenderingMetrics = graphicsDevice.Metrics;
 
             StartedRendering = false;
-        }
-
-        public void DrawSprite(in Texture2D tex, in Vector2 position, in Rectangle? sourceRect, in Color color, in float rotation,
-            in Vector2 origin, in Vector2 scale, in SpriteEffects spriteEffects, in float depth)
-        {
-            CurrentBatch.Draw(tex, position, sourceRect, color, rotation, origin, scale, spriteEffects, depth);
-        }
-
-        public void DrawSprite(in Texture2D tex, in Rectangle destRectangle, in Rectangle? sourceRect, in Color color, in float rotation,
-            in Vector2 origin, in SpriteEffects spriteEffects, in float depth)
-        {
-            CurrentBatch.Draw(tex, destRectangle, sourceRect, color, rotation, origin, spriteEffects, depth);
         }
     }
 }

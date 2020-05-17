@@ -13,8 +13,8 @@ namespace BaseMonoGameEngine
     /// </summary>
     public static class RenderingGlobals
     {
-        public const int BaseResolutionWidth = 800;
-        public const int BaseResolutionHeight = 480;
+        public const int BaseResolutionWidth = 640;
+        public const int BaseResolutionHeight = 360;
 
         private static readonly Vector2 Resolution = new Vector2(BaseResolutionWidth, BaseResolutionHeight);
         private static readonly Vector2 ResolutionHalf = Resolution / 2;

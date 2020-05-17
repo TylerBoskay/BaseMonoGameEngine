@@ -66,7 +66,7 @@ namespace BaseMonoGameEngine
 
         public static void Draw()
         {
-            SpriteFont font = AssetManager.Instance.LoadAsset<SpriteFont>($"{ContentGlobals.FontRoot}Font");
+            SpriteFont font = AssetManager.Instance.LoadFont("Font");
 
             if (FPSText != string.Empty)
             {

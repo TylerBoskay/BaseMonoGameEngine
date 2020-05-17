@@ -21,16 +21,24 @@ namespace BaseMonoGameEngine
         /// <summary>
         /// The animations, referred to by string.
         /// </summary>
-        protected readonly Dictionary<string, SimpleAnimation> Animations = new Dictionary<string, SimpleAnimation>();
+        protected readonly Dictionary<string, IAnimation> Animations = new Dictionary<string, IAnimation>();
         
         /// <summary>
         /// The current animation being played.
         /// </summary>
-        public SimpleAnimation CurrentAnim { get; private set; } = null;
+        public IAnimation CurrentAnim { get; private set; } = null;
 
         public AnimManager(Sprite animSprite)
+            : this(animSprite, 4)
+        {
+
+        }
+
+        public AnimManager(Sprite animSprite, in int initialAnimCount)
         {
             AnimSprite = animSprite;
+
+            Animations = new Dictionary<string, IAnimation>(initialAnimCount);
         }
 
         /// <summary>
@@ -39,7 +47,7 @@ namespace BaseMonoGameEngine
         /// </summary>
         /// <param name="animName">The name of the animation.</param>
         /// <param name="anim">The animation reference.</param>
-        public void AddAnimation(string animName, SimpleAnimation anim)
+        public void AddAnimation(string animName, IAnimation anim)
         {
             //Return if trying to add null animation
             if (anim == null)
@@ -48,12 +56,11 @@ namespace BaseMonoGameEngine
                 return;
             }
 
-            if (Animations.ContainsKey(animName) == true)
+            if (Animations.TryGetValue(animName, out IAnimation prevAnim) == true)
             {
                 Debug.LogWarning($"There already is an animation called \"{animName}\" and will be replaced");
 
                 //Clear the current animation reference if it is the animation being removed
-                SimpleAnimation prevAnim = Animations[animName];
                 if (CurrentAnim == prevAnim)
                 {
                     CurrentAnim = null;
@@ -67,7 +74,7 @@ namespace BaseMonoGameEngine
                 anim.SpriteToChange = AnimSprite;
 
             //Set the animation's key
-            anim.SetKey(animName);
+            anim.Key = animName;
 
             Animations.Add(animName, anim);
 
@@ -84,16 +91,16 @@ namespace BaseMonoGameEngine
         /// </summary>
         /// <param name="animName">The name of the animation.</param>
         /// <returns>An animation if found, otherwise null.</returns>
-        public SimpleAnimation GetAnimation(string animName)
+        public IAnimation GetAnimation(string animName)
         {
             //If animation cannot be found
-            if (Animations.ContainsKey(animName) == false)
+            if (Animations.TryGetValue(animName, out IAnimation anim) == false)
             {
                 Debug.LogError($"Cannot find animation called \"{animName}\" to play");
                 return null;
             }
 
-            return Animations[animName];
+            return anim;
         }
 
         /// <summary>
@@ -101,13 +108,13 @@ namespace BaseMonoGameEngine
         /// </summary>
         /// <param name="animNames">The names of the animations.</param>
         /// <returns>An array of animations. If none were found, an empty array.</returns>
-        public SimpleAnimation[] GetAnimations(params string[] animNames)
+        public IAnimation[] GetAnimations(params string[] animNames)
         {
-            List<SimpleAnimation> animations = new List<SimpleAnimation>();
+            List<IAnimation> animations = new List<IAnimation>();
 
             for (int i = 0; i < animNames.Length; i++)
             {
-                SimpleAnimation anim = GetAnimation(animNames[i]);
+                IAnimation anim = GetAnimation(animNames[i]);
                 if (anim != null) animations.Add(anim);
             }
 
@@ -118,7 +125,7 @@ namespace BaseMonoGameEngine
         /// Gets all animations.
         /// </summary>
         /// <returns>An array of all the animations.</returns>
-        public SimpleAnimation[] GetAllAnimations()
+        public IAnimation[] GetAllAnimations()
         {
             return GetAnimations(Animations.Keys.ToArray());
         }
@@ -129,7 +136,7 @@ namespace BaseMonoGameEngine
         /// <param name="animName">The name of the animation to play.</param>
         public void PlayAnimation(string animName)
         {
-            SimpleAnimation animToPlay = GetAnimation(animName);
+            IAnimation animToPlay = GetAnimation(animName);
 
             //Return if null;
             if (animToPlay == null)

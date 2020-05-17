@@ -36,18 +36,6 @@ namespace BaseMonoGameEngine
 
         #endregion
 
-        #region Enumerations
-
-        /// <summary>
-        /// Enum for Sound IDs.
-        /// </summary>
-        public enum Sound
-        {
-
-        }
-
-        #endregion
-
         /// <summary>
         /// The global music volume.
         /// </summary>
@@ -80,6 +68,21 @@ namespace BaseMonoGameEngine
 
         private float musicVolume = .5f;
         private float soundVolume = .5f;
+
+        /// <summary>
+        /// The minimum possible pitch value for audio.
+        /// </summary>
+        public const float MinPitch = -1f;
+
+        /// <summary>
+        /// The default pitch value for audio.
+        /// </summary>
+        public const float DefaultPitch = 0f;
+
+        /// <summary>
+        /// The maximum possible pitch value for audio.
+        /// </summary>
+        public const float MaxPitch = 1f;
 
         /// <summary>
         /// A cache of SoundEffectInstances for each music track.
@@ -169,7 +172,8 @@ namespace BaseMonoGameEngine
             {
                 for (int i = 0; i < soundHolders.Count; i++)
                 {
-                    soundHolders[i].SoundInstance.Volume = soundHolders[i].Volume * soundVolume;
+                    SoundInstanceHolder soundInstanceHolder = soundHolders[i];
+                    soundInstanceHolder.SoundInstance.Volume = soundHolders[i].Volume * soundVolume;
                 }
             }
         }
@@ -184,7 +188,8 @@ namespace BaseMonoGameEngine
         {
             if (music == null)
             {
-                Debug.LogError($"Cannot play {nameof(music)} because it is null!");
+                if (Engine.IgnoreAudioErrors == false)
+                    Debug.LogError($"Cannot play {nameof(music)} because it is null!");
                 return;
             }
 
@@ -268,17 +273,20 @@ namespace BaseMonoGameEngine
         }
 
         /// <summary>
-        /// Plays a sound.
+        /// Plays a sound with a specified volume and an option to loop.
         /// </summary>
         /// <param name="sound">The SoundEffect to play.</param>
         /// <param name="loop">Whether to loop the SoundEffect or not.</param>
-        /// <param name="volume">The volume to play the sound at.</param>
-        public void PlaySound(in SoundEffect sound, in bool loop, in float volume = 1f)
+        /// <param name="volume">The volume to play the sound at, ranging from 0 to 1.</param>
+        /// <param name="pitch">The pitch to play the sound at, ranging from -1 to 1.</param>
+        /// <returns>The <see cref="SoundInstanceHolder"/> used to play the sound.</returns>
+        public SoundInstanceHolder PlaySound(in SoundEffect sound, in bool loop, in float volume = 1f, in float pitch = DefaultPitch)
         {
             if (sound == null)
             {
-                Debug.LogError($"Cannot play {nameof(sound)} because it is null!");
-                return;
+                if (Engine.IgnoreAudioErrors == false)
+                    Debug.LogError($"Cannot play {nameof(sound)} because it is null!");
+                return null;
             }
 
             //Retrieve the next sound instance
@@ -288,10 +296,56 @@ namespace BaseMonoGameEngine
 
             //Scale the volume by the sound volume
             soundInstanceHolder.SoundInstance.Volume = volume * SoundVolume;
+            soundInstanceHolder.SoundInstance.Pitch = pitch;
+            soundInstanceHolder.SoundInstance.Stop(true);
             soundInstanceHolder.SoundInstance.IsLooped = loop;
             soundInstanceHolder.SoundInstance.Play();
 
-            UpdateLastSoundTimer();
+            //UpdateLastSoundTimer();
+
+            return soundInstanceHolder;
+        }
+
+        /// <summary>
+        /// Plays a sound with a specified volume within a limit to the number of sounds.
+        /// This can return null if playing the sound would go over the limit.
+        /// </summary>
+        /// <param name="sound">The SoundEffect to play.</param>
+        /// <param name="limit">The limit to the number of sounds played.</param>
+        /// <param name="loop">Whether to loop the SoundEffect or not.</param>
+        /// <param name="volume">The volume to play the sound at, ranging from 0 to 1.</param>
+        /// <param name="pitch">The pitch to play the sound at, ranging from -1 to 1.</param>
+        /// <returns>The <see cref="SoundInstanceHolder"/> used to play the sound.</returns>
+        public SoundInstanceHolder PlaySoundWithLimit(in SoundEffect sound, in int limit, in bool loop, in float volume = 1f, in float pitch = DefaultPitch)
+        {
+            if (sound == null)
+            {
+                if (Engine.IgnoreAudioErrors == false)
+                    Debug.LogError($"Cannot play {nameof(sound)} because it is null!");
+                return null;
+            }
+
+            //Retrieve the next sound instance
+            SoundInstanceHolder soundInstanceHolder = NextAvailableSoundWithLimit(sound, limit);
+
+            //If null, simply return
+            if (soundInstanceHolder == null)
+            {
+                return null;
+            }
+
+            soundInstanceHolder.Volume = volume;
+
+            //Scale the volume by the sound volume
+            soundInstanceHolder.SoundInstance.Volume = volume * SoundVolume;
+            soundInstanceHolder.SoundInstance.Pitch = pitch;
+            soundInstanceHolder.SoundInstance.Stop(true);
+            soundInstanceHolder.SoundInstance.IsLooped = loop;
+            soundInstanceHolder.SoundInstance.Play();
+
+            //UpdateLastSoundTimer();
+
+            return soundInstanceHolder;
         }
 
         /// <summary>
@@ -322,7 +376,70 @@ namespace BaseMonoGameEngine
             //No sounds are available, so create a new instance and add it to the pool
             SoundInstanceHolder soundInstanceHolder = new SoundInstanceHolder(sound.CreateInstance(), 1f);
             availableSounds.Add(soundInstanceHolder);
+            
+            return soundInstanceHolder;
+        }
 
+        /// <summary>
+        /// Obtains the next available SoundInstanceHolder in the sound pool for a particular SoundEffect within a limit.
+        /// If within the limit and no SoundInstanceHolders are available, a new one is created.
+        /// </summary>
+        /// <param name="sound">The SoundEffect to retrieve the available SoundInstanceHolder for.</param>
+        /// <param name="limit">The limit to the number of SoundEffectInstances that can be played for this SoundEffect.</param>
+        /// <returns>A SoundInstanceHolder that is not currently playing a sound if within the limit, otherwise null.</returns>
+        private SoundInstanceHolder NextAvailableSoundWithLimit(in SoundEffect sound, in int limit)
+        {
+            if (limit <= 0)
+                return null;
+
+            //Check for the available SoundInstanceHolders associated with this SoundEffect
+            List<SoundInstanceHolder> availableSounds = null;
+
+            //If there are none, add them as an entry in the sound pool
+            if (SoundPool.TryGetValue(sound.Name, out availableSounds) == false)
+            {
+                availableSounds = new List<SoundInstanceHolder>();
+                SoundPool.Add(sound.Name, availableSounds);
+            }
+
+            int playingCount = 0;
+            int firstNonPlayingIndex = -1;
+
+            //Check all existing sound instances and see if they're available for use and within the limit
+            for (int i = 0; i < availableSounds.Count; i++)
+            {
+                //Consider ones that are not playing
+                if (availableSounds[i].SoundInstance.State != SoundState.Playing)
+                {
+                    //Track the first non-playing index in the event we can play the sound
+                    if (firstNonPlayingIndex < 0)
+                    {
+                        firstNonPlayingIndex = i;
+                    }
+                }
+                //Track how many are playing
+                else
+                {
+                    playingCount++;
+                }
+            }
+
+            //We're over the limit, so we can't play more of this sound
+            if (playingCount >= limit)
+            {
+                return null;
+            }
+
+            //We're not over the limit and there's an available sound, so reuse it
+            if (firstNonPlayingIndex >= 0)
+            {
+                return availableSounds[firstNonPlayingIndex];
+            }
+
+            //No sounds are available, so create a new instance and add it to the pool
+            SoundInstanceHolder soundInstanceHolder = new SoundInstanceHolder(sound.CreateInstance(), 1f);
+            availableSounds.Add(soundInstanceHolder);
+            
             return soundInstanceHolder;
         }
 
@@ -357,13 +474,12 @@ namespace BaseMonoGameEngine
         {
             if (string.IsNullOrEmpty(soundName) == true)
             {
-                Debug.LogError($"Cannot stop all sound instances of {nameof(soundName)} because it is null or empty!");
+                if (Engine.IgnoreAudioErrors == false)
+                    Debug.LogError($"Cannot stop all sound instances of {nameof(soundName)} because it is null or empty!");
                 return;
             }
-
-            List<SoundInstanceHolder> instanceList = null;
-
-            if (SoundPool.TryGetValue(soundName, out instanceList) == true)
+            
+            if (SoundPool.TryGetValue(soundName, out List<SoundInstanceHolder> instanceList) == true)
             {
                 //Immediately stop the instances
                 for (int i = 0; i < instanceList.Count; i++)
@@ -404,10 +520,12 @@ namespace BaseMonoGameEngine
                 //Stop all sound instances in the list and dispose them
                 for (int i = instanceList.Count - 1; i >= 0; i--)
                 {
-                    if (instanceList[i].SoundInstance.IsDisposed == false)
+                    SoundInstanceHolder soundInstHolder = instanceList[i];
+
+                    if (soundInstHolder.SoundInstance.IsDisposed == false)
                     {
-                        instanceList[i].SoundInstance.Stop(true);
-                        instanceList[i].SoundInstance.Dispose();
+                        soundInstHolder.SoundInstance.Stop(true);
+                        soundInstHolder.SoundInstance.Dispose();
                     }
                     instanceList.RemoveAt(i);
                 }
@@ -431,16 +549,26 @@ namespace BaseMonoGameEngine
             }
 
             MusicCache.Clear();
-
+            
             CurMusicTrack = null;
             MusicTrack = null;
+        }
+
+        /// <summary>
+        /// Calculates the volume a sound should be at, factoring in the global sound volume.
+        /// </summary>
+        /// <param name="volumeForSound">The volume a sound is played at, from 0 to 1.</param>
+        /// <returns></returns>
+        public float CalculateSoundVolume(in float volumeForSound)
+        {
+            return volumeForSound * SoundVolume;
         }
 
         /// <summary>
         /// Holds a SoundEffectInstance and a value for its volume.
         /// This exists to help with the master sound volume.
         /// </summary>
-        private class SoundInstanceHolder
+        public class SoundInstanceHolder
         {
             public SoundEffectInstance SoundInstance = null;
             public float Volume = 0f;

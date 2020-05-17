@@ -17,6 +17,19 @@ namespace BaseMonoGameEngine
         {
             crashHandler = new CrashHandler();
 
+            //Set current working directory
+            try
+            {
+                Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                //Debug.Log($"Set current working directory to: {Environment.CurrentDirectory}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Attempted to set current directory to AppDomain base directory, but something bad happened: {e.Message}");
+            }
+
+            Debug.Log("Initializing engine");
+
             using (Engine game = new Engine())
                 game.Run();
 

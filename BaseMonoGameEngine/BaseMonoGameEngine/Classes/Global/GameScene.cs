@@ -19,11 +19,6 @@ namespace BaseMonoGameEngine
         public Camera2D Camera { get; private set; } = null;
 
         /// <summary>
-        /// The list of Render Layers in the scene
-        /// </summary>
-        private readonly List<RenderLayer> RenderLayers = new List<RenderLayer>();
-
-        /// <summary>
         /// The objects in the scene.
         /// </summary>
         private readonly List<SceneObject> SceneObjects = new List<SceneObject>();
@@ -35,9 +30,7 @@ namespace BaseMonoGameEngine
 
         public GameScene()
         {
-            //Add a default render layer
-            RenderLayers.Add(new RenderLayer(0, new RenderLayer.RenderingSettings(RenderingManager.Instance.spriteBatch,
-                SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, true)));
+            
         }
 
         /// <summary>
@@ -53,12 +46,6 @@ namespace BaseMonoGameEngine
         {
             RemoveAllSceneObjects();
 
-            for (int i = 0; i < RenderLayers.Count; i++)
-            {
-                RenderLayers[i].CleanUp();
-            }
-
-            RenderLayers.Clear();
             Camera?.CleanUp();
         }
 
@@ -116,142 +103,6 @@ namespace BaseMonoGameEngine
         public List<SceneObject> GetAllSceneObjects()
         {
             return new List<SceneObject>(SceneObjects);
-        }
-
-        /// <summary>
-        /// Adds a RenderLayer to the scene and sorts all RenderLayers in the scene by their LayerOrder.
-        /// </summary>
-        /// <param name="renderLayer">The RenderLayer to add.</param>
-        public void AddRenderLayer(in RenderLayer renderLayer)
-        {
-            RenderLayers.Add(renderLayer);
-            RenderLayers.Sort(RenderLayerSorter);
-        }
-
-        /// <summary>
-        /// Gets all RenderLayers in the scene in a new list.
-        /// </summary>
-        /// <returns>A new list of RenderLayers.</returns>
-        public List<RenderLayer> GetRenderLayersInScene()
-        {
-            return new List<RenderLayer>(RenderLayers);
-        }
-
-        /// <summary>
-        /// Adds a layer effect for a particular RenderLayer.
-        /// </summary>
-        /// <param name="layerOrder">The layer order to apply the effect to.</param>
-        /// <param name="layerEffect">The effect.</param>
-        public void AddRenderLayerEffect(in int layerOrder, in Effect layerEffect)
-        {
-            if (layerEffect == null) return;
-        
-            RenderLayer layer = null;
-
-            //Find the layer
-            for (int i = 0; i < RenderLayers.Count; i++)
-            {
-                if (RenderLayers[i].LayerOrder == layerOrder)
-                {
-                    layer = RenderLayers[i];
-                    break;
-                }
-            }
-        
-            if (layer != null)
-                layer.AddLayerEffect(layerEffect);
-        }
-
-        /// <summary>
-        /// Removes a layer effect from a particular RenderLayer.
-        /// </summary>
-        /// <param name="layerOrder">The layer order to remove the effect from.</param>
-        /// <param name="layerEffect">The effect.</param>
-        public void RemoveRenderLayerEffect(in int layerOrder, in Effect layerEffect)
-        {
-            if (layerEffect == null) return;
-        
-            RenderLayer layer = null;
-        
-            //Find the layer
-            for (int i = 0; i < RenderLayers.Count; i++)
-            {
-                if (RenderLayers[i].LayerOrder == layerOrder)
-                {
-                    layer = RenderLayers[i];
-                    break;
-                }
-            }
-        
-            if (layer != null)
-                layer.RemoveLayerEffect(layerEffect);
-        }
-
-        /// <summary>
-        /// Removes all layer effects from a particular RenderLayer.
-        /// </summary>
-        /// <param name="layerOrder">The layer order to remove all effects from.</param>
-        public void RemoveAllRenderLayerEffects(in int layerOrder)
-        {
-            RenderLayer layer = null;
-
-            //Find the layer
-            for (int i = 0; i < RenderLayers.Count; i++)
-            {
-                if (RenderLayers[i].LayerOrder == layerOrder)
-                {
-                    layer = RenderLayers[i];
-                    break;
-                }
-            }
-
-            if (layer != null)
-                layer.RemoveAllLayerEffects();
-        }
-
-        /// <summary>
-        /// Gets all the active visible renderers in the game scene.
-        /// Renderers on SceneObjects that are disabled, as well as disabled and null renderers, are not included in this list.
-        /// Renderers not visible at all by the camera are excluded as well.
-        /// </summary>
-        /// <returns>A new List of Renderers.</returns>
-        public List<Renderer> GetActiveVisibleRenderersInScene()
-        {
-            List<Renderer> renderers = new List<Renderer>();
-
-            //Cache visible area
-            Rectangle visibleArea = Camera != null ? Camera.VisibleArea : Rectangle.Empty;
-
-            for (int i = 0; i < SceneObjects.Count; i++)
-            {
-                SceneObject sceneObj = SceneObjects[i];
-                if (sceneObj.Enabled == false) continue;
-
-                if (sceneObj.renderer != null && sceneObj.renderer.Enabled == true)
-                {
-                    //if (Camera?.IsInCameraView(visibleArea, sceneObj.renderer.Bounds) == true)
-                    //{
-                        renderers.Add(sceneObj.renderer);
-                    //}
-                }
-            }
-
-            return renderers;
-        }
-
-        private int RenderLayerSorter(RenderLayer layer1, RenderLayer layer2)
-        {
-            if (layer1 == null)
-                return 1;
-            if (layer2 == null)
-                return -1;
-
-            if (layer1.LayerOrder < layer2.LayerOrder)
-                return -1;
-            if (layer1.LayerOrder > layer2.LayerOrder)
-                return 1;
-
-            return 0;
         }
     }
 }

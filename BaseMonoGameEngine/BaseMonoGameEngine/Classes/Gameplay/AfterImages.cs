@@ -11,7 +11,7 @@ namespace BaseMonoGameEngine
     /// <summary>
     /// Leaves after-images behind an object.
     /// </summary>
-    public sealed class AfterImages : SceneObject
+    public sealed class AfterImages : IUpdateable
     {
         /// <summary>
         /// Types of animation settings for after-images.
@@ -44,14 +44,9 @@ namespace BaseMonoGameEngine
         }
 
         /// <summary>
-        /// The after-image renderer.
+        /// The Transform to get data from.
         /// </summary>
-        private AfterImageRenderer AIRenderer = null;
-
-        /// <summary>
-        /// The SpriteRenderer to take rendering data from.
-        /// </summary>
-        public SpriteRenderer SprRenderer = null;
+        public Transform TransfrmData = null;
 
         /// <summary>
         /// The AnimationManager to get animation data from.
@@ -104,10 +99,15 @@ namespace BaseMonoGameEngine
         /// </summary>
         private double ElapsedTime = 0d;
 
-        public AfterImages(SpriteRenderer spriteRenderer, AnimManager animationManager, int maxAfterImages, int framesBehind, float alphaValue,
+        /// <summary>
+        /// Tells if the after-images expired if they are set to.
+        /// </summary>
+        public bool AfterImagesExpired => (TotalDuration >= 0 && ElapsedTime >= TotalDuration);
+
+        public AfterImages(Transform transformData, AnimManager animationManager, int maxAfterImages, int framesBehind, float alphaValue,
             AfterImageAlphaSetting alphaSetting, AfterImageAnimSetting animSetting)
         {
-            SprRenderer = spriteRenderer;
+            TransfrmData = transformData;
             AnimationManager = animationManager;
 
             MaxAfterImages = maxAfterImages;
@@ -117,37 +117,17 @@ namespace BaseMonoGameEngine
             AnimSetting = animSetting;
 
             PrevObjectStates = new List<AfterImageState>(MaxAfterImages * FramesBehind);
-            AIRenderer = new AfterImageRenderer(MaxAfterImages);
-
-            for (int i = 0; i < AIRenderer.SpriteRenderers.Capacity; i++)
-            {
-                Sprite spriteToRender = SprRenderer.SpriteToRender;
-
-                if (AnimSetting == AfterImageAnimSetting.Previous)
-                {
-                    spriteToRender = new Sprite(SprRenderer.SpriteToRender.Tex, SprRenderer.SpriteToRender.SourceRect, SprRenderer.SpriteToRender.Pivot);
-                }
-
-                AIRenderer.SpriteRenderers.Add(new SpriteRenderer(new Transform(), spriteToRender));
-            }
-
-            renderer = AIRenderer;
         }
 
-        public AfterImages(SpriteRenderer spriteRenderer, AnimManager animationManager, int maxAfterImages, int framesBehind, float alphaValue,
+        public AfterImages(Transform transformData, AnimManager animationManager, int maxAfterImages, int framesBehind, float alphaValue,
             AfterImageAlphaSetting alphaSetting, AfterImageAnimSetting animSetting, double totalDuration)
-            : this(spriteRenderer, animationManager, maxAfterImages, framesBehind, alphaValue, alphaSetting, animSetting)
+            : this(transformData, animationManager, maxAfterImages, framesBehind, alphaValue, alphaSetting, animSetting)
         {
             TotalDuration = totalDuration;
         }
 
-        public override void Update()
+        public void Update()
         {
-            if (SprRenderer == null || AnimationManager == null)
-                return;
-
-            AIRenderer.Shader = SprRenderer.Shader;
-
             //If we're past the position capacity, remove the last one
             if (PrevObjectStates.Count >= PrevObjectStates.Capacity)
             {
@@ -155,58 +135,12 @@ namespace BaseMonoGameEngine
             }
 
             //Add the most recent position and animation frame at the front of the list
-            PrevObjectStates.Insert(0, new AfterImageState(SprRenderer.TransformData.Position, AnimationManager.CurrentAnim.CurFrame, SprRenderer.FlipData));
-
-            for (int i = 0; i < AIRenderer.SpriteRenderers.Count; i++)
-            {
-                //Find the index of the state list to render this after-image
-                int posIndex = ((i + 1) * FramesBehind) - 1;
-
-                //If we don't have the state available yet, don't update this one or the rest
-                if (posIndex >= PrevObjectStates.Count)
-                {
-                    AIRenderer.SpriteRenderers[i].Enabled = false;
-                    break;
-                }
-
-                AIRenderer.SpriteRenderers[i].Enabled = true;
-
-                //If the after-image's position is the same as the object's position, don't render it
-                //If the anim setting is Previous, don't render if the draw region also is the same (indicating it's the same animation frame)
-                if (PrevObjectStates[posIndex].Position == SprRenderer.TransformData.Position &&
-                    (AnimSetting == AfterImageAnimSetting.Current || (AnimSetting == AfterImageAnimSetting.Previous
-                    && PrevObjectStates[posIndex].AnimFrame.DrawRegion == SprRenderer.SpriteToRender.SourceRect)))
-                {
-                    AIRenderer.SpriteRenderers[i].Enabled = false;
-                }
-
-                //Get the color
-                Color color = GetAfterImageColor(i);
-
-                AIRenderer.SpriteRenderers[i].TransformData.Position = PrevObjectStates[posIndex].Position;
-                AIRenderer.SpriteRenderers[i].TransformData.Rotation = SprRenderer.TransformData.Rotation;
-                AIRenderer.SpriteRenderers[i].TransformData.Scale = SprRenderer.TransformData.Scale;
-                AIRenderer.SpriteRenderers[i].FlipData = SprRenderer.FlipData;
-                AIRenderer.SpriteRenderers[i].TintColor = color;
-                AIRenderer.SpriteRenderers[i].Depth = SprRenderer.Depth - (i * .001f);
-
-                //Render based on the animation setting
-                if (AnimSetting == AfterImageAnimSetting.Previous)
-                {
-                    AIRenderer.SpriteRenderers[i].SpriteToRender.SourceRect = PrevObjectStates[posIndex].AnimFrame.DrawRegion;
-                    AIRenderer.SpriteRenderers[i].FlipData = PrevObjectStates[posIndex].FlipData;
-                }
-            }
+            PrevObjectStates.Insert(0, new AfterImageState(TransfrmData.Position, AnimationManager.CurrentAnim.CurFrame));
 
             if (TotalDuration >= 0)
             {
-                //If after-images last a certain amount of time, increment the elapsed time and check if they should end
+                //If after-images last a certain amount of time, increment the elapsed time
                 ElapsedTime += Time.ElapsedTime.TotalMilliseconds;
-            
-                if (ElapsedTime >= TotalDuration)
-                {
-                    Scene.RemoveSceneObject(this);
-                }
             }
         }
 
@@ -251,7 +185,7 @@ namespace BaseMonoGameEngine
                         color, Vector2.Zero, Entity.Scale, Entity.EntityType == Enumerations.EntityTypes.Player, .09f, false);
                 }
             }
-        }*/
+        }
 
         private Color GetAfterImageColor(int index)
         {
@@ -267,19 +201,17 @@ namespace BaseMonoGameEngine
             }
 
             return color;
-        }
+        }*/
 
         private struct AfterImageState
         {
             public Vector2 Position;
             public AnimationFrame AnimFrame;
-            public SpriteEffects FlipData;
 
-            public AfterImageState(Vector2 position, AnimationFrame animFrame, SpriteEffects flipData)
+            public AfterImageState(in Vector2 position, in AnimationFrame animFrame)
             {
                 Position = position;
                 AnimFrame = animFrame;
-                FlipData = flipData;
             }
         }
     }

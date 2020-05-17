@@ -47,6 +47,11 @@ namespace BaseMonoGameEngine
         /// </summary>
         public const string GameName = "BaseMonoGameEngine";
 
+        /// <summary>
+        /// Indicates whether to ignore audio errors. This is true if no audio device can be found at the start of the game.
+        /// </summary>
+        public static bool IgnoreAudioErrors { get; private set; } = false;
+
         public Engine()
         {
             Debug.Log("Starting up engine");
@@ -99,26 +104,26 @@ namespace BaseMonoGameEngine
 
             Debug.Log($"GPU: {GraphicsDevice.Adapter.Description} | Display: {GraphicsDevice.Adapter.CurrentDisplayMode} | Widescreen: {GraphicsDevice.Adapter.IsWideScreen}");
 
+            //Initialize the audio system
+            try
+            {
+                Microsoft.Xna.Framework.Audio.SoundEffect.Initialize();
+            }
+            catch (Microsoft.Xna.Framework.Audio.NoAudioHardwareException)
+            {
+                Debug.Log("No audio hardware present. Disabling audio exception logs.");
+                IgnoreAudioErrors = true;
+            }
+
             AssetManager.Instance.Initialize(Content);
-            RenderingManager.Instance.Initialize(graphics, GameWindow, new Vector2(RenderingGlobals.BaseResolutionWidth, RenderingGlobals.BaseResolutionHeight));
 
-            Camera2D camera = new Camera2D();
-            camera.SetBounds(new Rectangle(0, 0, (int)RenderingManager.Instance.BackBufferDimensions.X, (int)RenderingManager.Instance.BackBufferDimensions.Y));
+            //Dispose the original ContentManager since we set up our own and are no longer using it
+            Content.Dispose();
 
-            GameScene scene = new GameScene();
-            SceneManager.Instance.LoadScene(scene);
-            SceneManager.Instance.ActiveScene.SetCamera(camera);
+            RenderingManager.Instance.Initialize(graphics, GameWindow, RenderingGlobals.BaseResolution);
+            RenderingManager.Instance.CenterWindow();
 
-            scene.AddRenderLayer(new RenderLayer(1, new RenderLayer.RenderingSettings(RenderingManager.Instance.spriteBatch,
-                SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, false)));
-
-            Player player1 = new Player();
-            scene.AddSceneObject(player1);
-            scene.AddSceneObject(new TestEnemy());
-            scene.AddSceneObject(new TestEnemy2());
-            scene.AddSceneObject(new TestGameHUD(player1, 1));
-            scene.AddSceneObject(new AfterImages(player1.spriteRenderer, player1.AnimationManager, 3, 17, .25f,
-                AfterImages.AfterImageAlphaSetting.FadeOff, AfterImages.AfterImageAnimSetting.Current));
+            GameStateManager.Instance.ChangeGameState(new BlankGameState());
 
             base.Initialize();
         }
@@ -142,7 +147,7 @@ namespace BaseMonoGameEngine
 
             SoundManager.Instance.CleanUp();
             AssetManager.Instance.CleanUp();
-            SceneManager.Instance.CleanUp();
+            GameStateManager.Instance.CleanUp();
             RenderingManager.Instance.CleanUp();
 
             Debug.DebugCleanup();
@@ -200,7 +205,7 @@ namespace BaseMonoGameEngine
         /// <param name="gameTime">Provides a snapshot of timing values</param>
         private void MainUpdate(in GameTime gameTime)
         {
-            SceneManager.Instance.ActiveScene.Update();
+            GameStateManager.Instance.Update();
         }
         
         /// <summary>
@@ -276,7 +281,7 @@ namespace BaseMonoGameEngine
         {
             PreDraw();
             
-            RenderingManager.Instance.PerformRendering(SceneManager.Instance.ActiveScene);
+            GameStateManager.Instance.Render();
             Debug.DebugDraw();
 
             base.Draw(gameTime);
@@ -286,9 +291,6 @@ namespace BaseMonoGameEngine
 
         private void PostDraw()
         {
-            //NOTE: TESTING
-            //MapTestRender.DrawMap();
-
             RenderingManager.Instance.EndDraw();
 
             //Draw debug information on top of everything else
