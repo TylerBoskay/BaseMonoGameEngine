@@ -367,6 +367,14 @@ namespace BaseMonoGameEngine
 
                     GC.Collect();
                 }
+                else if (KeyboardInput.GetKey(Keys.LeftShift, DebugKeyboard))
+                {
+                    //Simulate a crash
+                    if (KeyboardInput.GetKeyDown(Keys.Tab, DebugKeyboard))
+                    {
+                        throw new Exception("Simulated game crash!");
+                    }
+                }
                 //Toggle drawing debug information, including custom
                 else if (KeyboardInput.GetKeyDown(Keys.H, DebugKeyboard))
                 {
@@ -727,16 +735,24 @@ namespace BaseMonoGameEngine
         public static class DebugGlobals
         {
             /// <summary>
-            /// Gets the path for crash log files.
+            /// Gets the path for the folder containing crash logs.
             /// </summary>
-            /// <returns>A string with the full name of the crash log file.</returns>
-            public static string GetCrashLogPath()
+            /// <returns>A string with the path to the crash folder.</returns>
+            public static string GetCrashFolderPath()
             {
-                string time = GetFileFriendlyTimeStamp();
+                return Path.Combine(ConfigGlobals.GetApplicationDataPath(), CrashFolderName);
+            }
 
-                string path = Path.Combine(System.Environment.CurrentDirectory, $"{Engine.GameName} Crash Log - {time}.txt");
+            /// <summary>
+            /// Gets the name of the crash log file.
+            /// </summary>
+            /// <param name="crashTime">A DateTime representing the time of the crash.</param>
+            /// <returns>A string containing the filename of the crash log.</returns>
+            public static string GetCrashLogFilename(in DateTime crashTime)
+            {
+                string time = GetFileFriendlyTimeStamp(crashTime);
 
-                return path;
+                return $"{Engine.GameName} Crash Log - {time}.txt";
             }
 
             /// <summary>

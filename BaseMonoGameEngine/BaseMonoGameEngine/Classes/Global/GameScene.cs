@@ -37,7 +37,7 @@ namespace BaseMonoGameEngine
         /// Sets the Camera2D for the GameScene.
         /// </summary>
         /// <param name="camera">The new Camera for the scene.</param>
-        public void SetCamera(in Camera2D camera)
+        public void SetCamera(Camera2D camera)
         {
             Camera = camera;
         }
@@ -63,13 +63,13 @@ namespace BaseMonoGameEngine
             }
         }
 
-        public void AddSceneObject(in SceneObject sceneObject)
+        public void AddSceneObject(SceneObject sceneObject)
         {
             sceneObject.OnAddedToScene(this);
             SceneObjects.Add(sceneObject);
         }
 
-        public void RemoveSceneObject(in SceneObject sceneObject)
+        public void RemoveSceneObject(SceneObject sceneObject)
         {
             //Clean up before removing
             if (sceneObject != null)
@@ -86,14 +86,22 @@ namespace BaseMonoGameEngine
         /// </summary>
         private void RemoveAllSceneObjects()
         {
-            for (int i = 0; i < SceneObjects.Count; i++)
+            for (int i = SceneObjects.Count - 1; i >= 0; i--)
             {
                 SceneObject sceneObj = SceneObjects[i];
                 sceneObj.CleanUp();
 
                 SceneObjects.RemoveAt(i);
-                i--;
             }
+        }
+
+        /// <summary>
+        /// Fills a list with all the SceneObjects in the game scene.
+        /// </summary>
+        /// <param name="sceneObjects">The list to fill.</param>
+        public void GetAllSceneObjects(List<SceneObject> sceneObjects)
+        {
+            sceneObjects.AddRange(SceneObjects);
         }
 
         /// <summary>

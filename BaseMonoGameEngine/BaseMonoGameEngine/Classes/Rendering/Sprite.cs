@@ -48,5 +48,21 @@ namespace BaseMonoGameEngine
 
             return rect.GetOrigin(Pivot.X, Pivot.Y);
         }
+
+        public Vector2 GetOriginFloat()
+        {
+            Rectangle rect = Rectangle.Empty;
+
+            if (SourceRect != null)
+            {
+                rect = SourceRect.Value;
+            }
+            else if (Tex != null)
+            {
+                rect = Tex.Bounds;
+            }
+
+            return rect.GetOriginFloat(Pivot.X, Pivot.Y);
+        }
     }
 }

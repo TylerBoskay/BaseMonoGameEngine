@@ -17,6 +17,8 @@ namespace BaseMonoGameEngine
 
         AnimationFrame CurFrame { get; }
 
+        AnimationFrame GetFrame(in int index);
+
         void Play();
     }
 }

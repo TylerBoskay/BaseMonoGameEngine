@@ -189,6 +189,21 @@ namespace BaseMonoGameEngine
         }
 
         /// <summary>
+        /// Gets the origin of a Rectangle without truncating the result.
+        /// </summary>
+        /// <param name="rectangle">The Rectangle to get the origin for.</param>
+        /// <param name="x">The X ratio of the origin, from 0 to 1.</param>
+        /// <param name="y">The Y ratio of the origin, from 0 to 1.</param>
+        /// <returns>A Vector2 with the origin.</returns>
+        public static Vector2 GetOriginFloat(this Rectangle rectangle, in float x, in float y)
+        {
+            float xVal = (float)(rectangle.Width * UtilityGlobals.Clamp(x, 0f, 1f));
+            float yVal = (float)(rectangle.Height * UtilityGlobals.Clamp(y, 0f, 1f));
+
+            return new Vector2(xVal, yVal);
+        }
+
+        /// <summary>
         /// Gets the center origin of a Rectangle.
         /// </summary>
         /// <param name="rectangle">The Rectangle to get the origin for.</param>
@@ -266,6 +281,18 @@ namespace BaseMonoGameEngine
             }
         }
 
+        /// <summary>
+        /// Adds an element to the <see cref="List{T}"/> if it doesn't already exist in the list.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the list.</typeparam>
+        /// <param name="list">The list to add the element to.</param>
+        /// <param name="element">The element to add to the list.</param>
+        public static void AddIfNotIn<T>(this List<T> list, in T element)
+        {
+            if (list.Contains(element) == false)
+                list.Add(element);
+        }
+
         #endregion
 
         #region Dictionary Extensions
@@ -286,15 +313,7 @@ namespace BaseMonoGameEngine
             //Go through all keys and values
             foreach (KeyValuePair<T, U> kvPair in dictCopiedFrom)
             {
-                T key = kvPair.Key;
-
-                //Replace if already exists
-                if (dictCopiedTo.ContainsKey(key) == true)
-                {
-                    dictCopiedTo.Remove(key);
-                }
-
-                dictCopiedTo.Add(key, kvPair.Value);
+                dictCopiedTo[kvPair.Key] = kvPair.Value;
             }
         }
 
@@ -312,7 +331,7 @@ namespace BaseMonoGameEngine
             //Copy all elements into the new Dictionary
             foreach (KeyValuePair<T, U> kvPair in dictionary)
             {
-                newDict.Add(kvPair.Key, kvPair.Value);
+                newDict[kvPair.Key] = kvPair.Value;
             }
 
             return newDict;
@@ -332,6 +351,30 @@ namespace BaseMonoGameEngine
         public static double NextDouble(this Random random, in double minValue, in double maxValue)
         {
             return random.NextDouble() * (maxValue - minValue) + minValue;
+        }
+
+        /// <summary>
+        /// Returns a random floating-point number that is greater than or equal to <paramref name="minValue"/> and less than <paramref name="maxValue"/>.
+        /// </summary>
+        /// <param name="random">The Random instance.</param>
+        /// <param name="minValue">The inclusive lower bound of the random number returned.</param>
+        /// <param name="maxValue">The exclusive upper bound of the random number returned. This must be greater than or equal to <paramref name="minValue"/>.</param>
+        /// <returns>A float between <paramref name="minValue"/> and <paramref name="maxValue"/>.</returns>
+        public static float NextFloat(this Random random, in float minValue, in float maxValue)
+        {
+            return (float)NextDouble(random, minValue, maxValue);
+        }
+
+        /// <summary>
+        /// Returns a random Vector2 that is greater than or equal to <paramref name="minValue"/> and less than <paramref name="maxValue"/>.
+        /// </summary>
+        /// <param name="random">The Random instance.</param>
+        /// <param name="minValue">The inclusive lower bound of the Vector2 returned.</param>
+        /// <param name="maxValue">The exclusive upper bound of the Vector2 returned.</param>
+        /// <returns>A Vector2 with the X and Y components between <paramref name="minValue"/>'s and <paramref name="maxValue"/>'s X and Y components.</returns>
+        public static Vector2 NextVector2(this Random random, in Vector2 minValue, in Vector2 maxValue)
+        {
+            return new Vector2(NextFloat(random, minValue.X, maxValue.X), NextFloat(random, minValue.Y, maxValue.Y));
         }
 
         #endregion

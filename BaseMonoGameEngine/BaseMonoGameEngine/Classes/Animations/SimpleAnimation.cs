@@ -43,6 +43,8 @@ namespace BaseMonoGameEngine
             Key = key;
         }
 
+        public AnimationFrame GetFrame(in int index) => AnimFrames[index];
+
         protected void Progress()
         {
             if (AnimType == AnimTypes.Normal)

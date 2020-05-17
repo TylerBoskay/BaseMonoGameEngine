@@ -37,47 +37,71 @@ namespace BaseMonoGameEngine
         private void HandleCrash(object sender, UnhandledExceptionEventArgs e)
         {
             //Get the exception object
+            string exceptionMessage = "N/A";
+            string exceptionStackTrace = "Unavailable";
+
             Exception exc = e.ExceptionObject as Exception;
             if (exc != null)
             {
-                string fileName = Debug.DebugGlobals.GetCrashLogPath();
-
-                StringBuilder sb = new StringBuilder();
-
-                //Dump the message, stack trace, and logs
-                sb.Append($"Uh oh, looks like {Engine.GameName} crashed :(. Please report this crash by submitting this log file to the developer.\n\n");
-                sb.Append($"OS Version: {Debug.DebugGlobals.GetOSInfo()}\n");
-
-                sb.Append("Platform: ").Append(MonoGame.Framework.Utilities.PlatformInfo.MonoGamePlatform.ToString()).Append("\n");
-                sb.Append("Renderer: ").Append(MonoGame.Framework.Utilities.PlatformInfo.GraphicsBackend.ToString()).Append("\n\n");
-
-                sb.Append($"Message: {exc.Message}\n\nStack Trace:\n");
-                sb.Append($"{exc.StackTrace}\n\n");
-
-                //Don't write the log dump unless there are logs
-                if (Debug.LogDump.Length > 0)
-                {
-                    sb.Append($"Log Dump:\n{Debug.LogDump.ToString()}");
-                }
-
-                string crashDump = sb.ToString();
-
-                //Dump the message, stack trace, and logs to a file
-                using (StreamWriter writer = File.CreateText(fileName))
-                {
-                    writer.Write(crashDump);
-
-                    writer.Flush();
-                }
-
-                //On Windows, show an error message box
-#if false//WINDOWS || DEBUG
-                string thing = $"Uh oh, looks like {Engine.GameName} crashed :(. Please report this crash by submitting the file found at the following path to emailhere@email.com.\n\n\"{fileName}\"\n\nCrash Message: { exc.Message}";
-
-                System.Windows.Forms.MessageBox.Show(thing, $"{Engine.GameName} crashed!", System.Windows.Forms.MessageBoxButtons.OK,
-                    System.Windows.Forms.MessageBoxIcon.Error);
-#endif
+                exceptionMessage = exc.Message;
+                exceptionStackTrace = exc.StackTrace;
             }
+
+            string folderName = Debug.DebugGlobals.GetCrashFolderPath();
+            DateTime crashTime = DateTime.Now;
+
+            //If the crash directory doesn't exist, create it
+            if (Directory.Exists(folderName) == false)
+            {
+                //If we fail to create the directory here, put the log in the current directory
+                try
+                {
+                    Directory.CreateDirectory(folderName);
+                }
+                catch (Exception)
+                {
+                    folderName = Environment.CurrentDirectory;
+                }
+            }
+
+            string fileName = Path.Combine(folderName, Debug.DebugGlobals.GetCrashLogFilename(crashTime));
+
+            StringBuilder sb = new StringBuilder();
+
+            //Dump the message, stack trace, and logs
+            sb.Append($"Uh oh, looks like {Engine.GameName} crashed :(. Please report this crash by submitting this log file to the developer.\n\n");
+            sb.Append($"OS Version: {Debug.DebugGlobals.GetOSInfo()}\n");
+
+            sb.Append("Platform: ").Append(MonoGame.Framework.Utilities.PlatformInfo.MonoGamePlatform.ToString()).Append("\n");
+            sb.Append("Renderer: ").Append(MonoGame.Framework.Utilities.PlatformInfo.GraphicsBackend.ToString()).Append("\n\n");
+            
+            sb.Append($"Message: {exceptionMessage}\n\nStack Trace:\n");
+            sb.Append($"{exceptionStackTrace}\n\n");
+
+            //Don't write the log dump unless there are logs
+            if (Debug.LogDump.Length > 0)
+            {
+                sb.Append($"Log Dump:\n{Debug.LogDump.ToString()}");
+            }
+
+            string crashDump = sb.ToString();
+
+            //Dump the message, stack trace, and logs to a file
+            using (StreamWriter writer = File.CreateText(fileName))
+            {
+                writer.Write(crashDump);
+                
+                writer.Flush();
+            }
+
+            //On Windows, show an error message box
+#if false//WINDOWS || DEBUG
+            string title = $"{Engine.GameName} crashed!";
+            string message = $"Uh oh, looks like {Engine.GameName} crashed :(. Please report this crash by submitting the file at the following path to the developer.\n\n\"{fileName}\"\n\nCrash Message: {exceptionMessage}";
+
+            System.Windows.Forms.MessageBox.Show(message, title, System.Windows.Forms.MessageBoxButtons.OK,
+                System.Windows.Forms.MessageBoxIcon.Error);
+#endif
         }
     }
 }
