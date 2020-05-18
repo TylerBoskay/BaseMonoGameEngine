@@ -770,6 +770,11 @@ namespace BaseMonoGameEngine
             effect.Parameters[name]?.SetValue(value);
         }
 
+        public static void SetParameterValue(this Effect effect, string name, int[] value)
+        {
+            effect.Parameters[name]?.SetValue(value);
+        }
+
         public static void SetParameterValue(this Effect effect, string name, Matrix value)
         {
             effect.Parameters[name]?.SetValue(value);

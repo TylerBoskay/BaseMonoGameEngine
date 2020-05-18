@@ -369,8 +369,10 @@ namespace BaseMonoGameEngine
             //Check all existing sound instances and see if they're available for use
             for (int i = 0; i < availableSounds.Count; i++)
             {
+                SoundInstanceHolder soundHolder = availableSounds[i];
+
                 //Return ones that are not playing
-                if (availableSounds[i].SoundInstance.State != SoundState.Playing) return availableSounds[i];
+                if (soundHolder.SoundInstance.State != SoundState.Playing) return soundHolder;
             }
 
             //No sounds are available, so create a new instance and add it to the pool
@@ -558,7 +560,7 @@ namespace BaseMonoGameEngine
         /// Calculates the volume a sound should be at, factoring in the global sound volume.
         /// </summary>
         /// <param name="volumeForSound">The volume a sound is played at, from 0 to 1.</param>
-        /// <returns></returns>
+        /// <returns>A float representing the volume of a sound.</returns>
         public float CalculateSoundVolume(in float volumeForSound)
         {
             return volumeForSound * SoundVolume;
